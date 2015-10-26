@@ -17,7 +17,7 @@ import com.vaadin.ui.VerticalLayout;
  *
  */
 @Theme("mytheme")
-@Widgetset("lgk.nsbc.ru.MyAppWidgetset")
+//@Widgetset("lgk.nsbc.ru.MyAppWidgetset")
 public class MyUI extends UI {
 
     @Override
