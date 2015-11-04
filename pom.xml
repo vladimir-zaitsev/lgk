@@ -6,7 +6,7 @@
 	<groupId>lgk.nsbc.ru</groupId>
 	<artifactId>lgk-base</artifactId>
 	<packaging>war</packaging>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<name>lgk-base</name>
 
 	<properties>
@@ -91,6 +91,11 @@
 			<groupId>commons-dbutils</groupId>
 			<artifactId>commons-dbutils</artifactId>
 			<version>1.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.4-1205-jdbc42</version>
 		</dependency>
 	</dependencies>
 

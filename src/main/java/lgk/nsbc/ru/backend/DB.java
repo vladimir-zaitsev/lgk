@@ -11,6 +11,7 @@ public class DB {
 		String user_name = "java";
 		String user_password = "1";
 		try {
+			DriverManager.registerDriver(new org.postgresql.Driver());
 			return DriverManager.getConnection(url, user_name, user_password);
 		} catch (SQLException e) {
 			Logger.getGlobal().severe("can't connect to database (" + url + ")");
