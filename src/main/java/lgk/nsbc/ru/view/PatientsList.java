@@ -10,5 +10,6 @@ public class PatientsList extends AbstructView<PatientsModel> {
 
 	public PatientsList(PatientsModelImpl patientsModel) {
 		super(patientsModel);
+		setCompositionRoot(listGrid);
 	}
 }

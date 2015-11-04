@@ -6,7 +6,7 @@
 	<groupId>lgk.nsbc.ru</groupId>
 	<artifactId>lgk-base</artifactId>
 	<packaging>war</packaging>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 	<name>lgk-base</name>
 
 	<properties>
