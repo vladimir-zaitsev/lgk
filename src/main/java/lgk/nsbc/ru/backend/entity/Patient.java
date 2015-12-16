@@ -3,28 +3,19 @@ package lgk.nsbc.ru.backend.entity;
 import java.util.Date;
 
 public class Patient {
-	Long id;
-	Date cdate;
+	Long n;
 	String name; //(255)
 	String surname; //(255)
 	String patronymic; //(255)
 	String sex;
 	Date birthday;
 
-	public Long getId() {
-		return id;
+	public Long getN() {
+		return n;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Date getCdate() {
-		return cdate;
-	}
-
-	public void setCdate(Date cdate) {
-		this.cdate = cdate;
+	public void setN(Long n) {
+		this.n = n;
 	}
 
 	public String getName() {
@@ -68,18 +59,25 @@ public class Patient {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		Patient patient = (Patient) o;
-
-		return !(id != null ? !id.equals(patient.id) : patient.id != null);
-
+	public String toString() {
+		return "Patient{" +
+			"n=" + n +
+			", name='" + name + '\'' +
+			", surname='" + surname + '\'' +
+			", patronymic='" + patronymic + '\'' +
+			", sex='" + sex + '\'' +
+			", birthday=" + birthday +
+			"}\n";
 	}
 
-	@Override
-	public int hashCode() {
-		return id != null ? id.hashCode() : 0;
+	public enum Props{
+		 n
+		,name
+		,surname
+		,patronymic
+		,sex
+		,birthday
 	}
+
+	public static final String relationName = "BAS_PEOPLE";
 }

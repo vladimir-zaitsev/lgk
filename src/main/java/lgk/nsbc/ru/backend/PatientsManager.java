@@ -16,7 +16,7 @@ public class PatientsManager {
 		) {
 			QueryRunner qr = new QueryRunner();
 			BeanListHandler<Patient> handler = new BeanListHandler<>(Patient.class);
-			return qr.query(con, "SELECT * FROM lgk.patients", handler);
+			return qr.query(con, "select first 5 * from "+Patient.relationName, handler);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}

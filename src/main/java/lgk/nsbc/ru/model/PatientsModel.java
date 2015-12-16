@@ -4,4 +4,6 @@ import com.vaadin.data.Container;
 
 public interface PatientsModel {
 	Container.Indexed getPatientsList();
+
+	String getCaption(String relationName, String s);
 }

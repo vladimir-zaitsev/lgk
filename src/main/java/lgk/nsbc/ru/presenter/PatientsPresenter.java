@@ -13,6 +13,7 @@ public class PatientsPresenter {
 	}
 
 	public void start() {
+		model.patientsList.removeAllItems();
 		model.patientsList.addAll(manager.listPatients());
 	}
 }

@@ -6,12 +6,19 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 
 public class DB {
-	public static Connection getConnection() throws SQLException {
-		String url = "jdbc:postgresql://node26051-nsbc-lgk.mycloud.by/lgk";
-		String user_name = "java";
-		String user_password = "1";
+	static {
 		try {
-			DriverManager.registerDriver(new org.postgresql.Driver());
+			DriverManager.registerDriver(new org.firebirdsql.jdbc.FBDriver());
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	static final String url = "jdbc:firebirdsql://localhost:3050/I:/usr/local/firebird2/data/LGKNEW.FDB?encoding=WIN1251";
+	static final String user_name = "SYSDBA";
+	static final String user_password = "masterkey";
+
+	public static Connection getConnection() throws SQLException {
+		try {
 			return DriverManager.getConnection(url, user_name, user_password);
 		} catch (SQLException e) {
 			Logger.getGlobal().severe("can't connect to database (" + url + ")");
