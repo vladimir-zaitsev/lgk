@@ -4,6 +4,7 @@ import lgk.nsbc.ru.backend.DB;
 import lgk.nsbc.ru.backend.I18nManager;
 import lgk.nsbc.ru.backend.PatientsManager;
 import lgk.nsbc.ru.backend.entity.Patient;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -15,19 +16,24 @@ import java.util.Collection;
 
 public class Tests {
 
-	@Ignore
+	//@Ignore
 	@Test
 	public void conn() throws SQLException {
+		//noinspection UnnecessarySemicolon
 		try (
 			Connection con = DB.getConnection();
 		){
 			PreparedStatement st = con.prepareStatement("select first ? * from bas_people");
 			st.setInt(1, 5);
 			ResultSet rs = st.executeQuery();
+			String s = null;
 			while (rs.next()){
-				System.out.println(rs.getString("name"));
+				//System.out.println(rs.getString("name"));
+				s = rs.getString("name");
 			}
 			rs.close();
+
+			Assert.assertEquals("5-я Татьяна","Татьяна", s);
 		}
 	}
 

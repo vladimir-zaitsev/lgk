@@ -3,6 +3,15 @@ package lgk.nsbc.ru.backend.entity;
 import java.util.Date;
 
 public class Patient {
+	public enum Props{
+		n
+		,name
+		,surname
+		,patronymic
+		,sex
+		,birthday
+	}
+
 	Long n;
 	String name; //(255)
 	String surname; //(255)
@@ -70,14 +79,6 @@ public class Patient {
 			"}\n";
 	}
 
-	public enum Props{
-		 n
-		,name
-		,surname
-		,patronymic
-		,sex
-		,birthday
-	}
 
 	public static final String relationName = "BAS_PEOPLE";
 }
