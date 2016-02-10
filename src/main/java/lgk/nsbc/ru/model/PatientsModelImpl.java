@@ -4,9 +4,11 @@ import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItemContainer;
 import lgk.nsbc.ru.backend.I18nManager;
 import lgk.nsbc.ru.backend.entity.Patient;
+import lgk.nsbc.ru.backend.entity.Session;
 
 public class PatientsModelImpl implements PatientsModel {
 	private final I18nManager i18n;
+	public Session session;
 
 	public PatientsModelImpl(I18nManager i18n) {
 		this.i18n = i18n;

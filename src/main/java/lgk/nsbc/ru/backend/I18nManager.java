@@ -37,8 +37,9 @@ public class I18nManager {
 						"from RDB$RELATION_FIELDS\n" +
 						"cross join PARAMS\n" +
 						"where\n" +
-							"RDB$RELATION_NAME = PARAMS.RELATION_NAME\n" +
+							"RDB$RELATION_NAME IN (PARAMS.RELATION_NAME, PARAMS.RELATION_NAME||'_LST')\n" +
 							"and RDB$FIELD_NAME = PARAMS.FIELD_NAME\n" +
+							"and XI$RUS_FIELD_NAME IS NOT null\n" +
 					")\n" +
 				") as caption\n" +
 				"from rdb$database"
