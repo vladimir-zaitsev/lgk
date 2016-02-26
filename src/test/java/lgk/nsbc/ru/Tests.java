@@ -50,4 +50,6 @@ public class Tests {
 		System.out.println(new I18nManager().getCaption(Patient.relationName, Patient.Props.birthday.toString()));
 	}
 
+
+
 }
