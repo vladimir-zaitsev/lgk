@@ -33,4 +33,30 @@
   @include valo;
 
   // Insert your own theme rules here
+  .fixed-row-height .v-grid-row {
+    position: initial; transform: none !important;
+  }
+
+  @for $i from 2 through 10 {
+    .fixed-row-height .cell-height-#{$i}  {
+      height: $v-table-row-height * $i !important;
+    }
+  }
+
+  .v-grid-cell.red {
+    background-color: green;
+  }
+
+  .v-grid-cell.red1 {
+    height: 100.1429px; width: 100.946px;
+    background-color: blue;
+  }
+
+  .v-grid-cell.red2.v-grid-cell-focused:before {
+    display: none !important;
+  }
+
+  .v-grid-cell.red2{
+    background-color: gold;
+  }
 }
