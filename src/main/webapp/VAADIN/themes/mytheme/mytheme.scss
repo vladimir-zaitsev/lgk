@@ -33,18 +33,15 @@
   @include valo;
 
   // Insert your own theme rules here
-  .fixed-row-height .v-grid-row {
-    position: initial; transform: none !important;
+
+  .v-grid-row.exp1 {
+    height: $v-table-row-height * 2 !important;
+    background: #ff44ab;
   }
 
-  @for $i from 2 through 10 {
-    .fixed-row-height .cell-height-#{$i}  {
-      height: $v-table-row-height * $i !important;
-    }
-  }
-
-  .v-grid-cell.red {
-    background-color: green;
+  .v-grid-row.v-grid-row-has-data.exp1 {
+    height: $v-table-row-height * 2 !important;
+    background: #171eff;
   }
 
   .v-grid-cell.red1 {
@@ -56,7 +53,12 @@
     display: none !important;
   }
 
-  .v-grid-cell.red2{
-    background-color: gold;
+  .v-grid-cell{
+     height: $v-table-row-height * 2 !important;
+  }
+
+  .v-text-field {
+    height: $v-table-row-height !important;
+    width: 242.292px !important;
   }
 }

@@ -4,11 +4,11 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.ui.renderers.HtmlRenderer;
+import lgk.nsbc.ru.TextFieldRenderer;
 import lgk.nsbc.ru.backend.entity.Consultation;
 import lgk.nsbc.ru.backend.entity.ConsultationDays;
 import lgk.nsbc.ru.model.ConsultationModel;
@@ -53,7 +53,9 @@ public class ConsultationView extends AbstructView<ConsultationModel>{
 				@Override
 				public String getValue(Item item, Object o, Object o1) {
 					Consultation consultation =  ((ArrayList<Consultation>)item.getItemProperty("rs").getValue()).get(dayIndx);
-					return consultation.getName()==null?null:consultation.getName();
+					//return consultation.getName()==null?null:consultation.getName();
+					return "<p>This is a paragraph</p>\n" +
+						"<p>This is another paragraph</p> <b> WOW SEXY </b> <br> HEY";
 				}
 			});
 			container.addGeneratedProperty("ochno"+i, new PropertyValueGenerator<String>() {
@@ -99,18 +101,33 @@ public class ConsultationView extends AbstructView<ConsultationModel>{
 			Date consulDate = ((ConsultationDays)container.getIdByIndex(0)).getRs().get(dayIndx).getProcbegintime();
 			row.join("rs"+i,"ochno"+i,"zaochno"+i,"oncology"+i).setText(format.format(consulDate));
 		}
+		container.removeContainerProperty("rs");
+		container.removeContainerProperty("ochno");
+		container.removeContainerProperty("zaochno");
+		container.removeContainerProperty("oncology");
+		container.removeContainerProperty("other");
+		/*grid.setCellStyleGenerator(cell -> {
+			if (cell.getProperty().getValue() instanceof String)
+			if (((String)cell.getProperty().getValue()).startsWith("Роман")) {
+				return "wowstyle";
+			}
+			return null;
+		});*/
+		grid.setRowStyleGenerator(row1 -> {
+			if (((String)row1.getItem().getItemProperty("rs0").getValue()).startsWith("<p>This is")) {
+				return "exp1";
+			}
+			return null;
+		});
+		grid.getColumn("rs1").setRenderer(new TextFieldRenderer<String>());
+		grid.getColumn("rs0").setRenderer(new HtmlRenderer());
 		grid.setFrozenColumnCount(1);
-		grid.setSizeFull();
-		grid.setHeight("100%");
 		grid.setSelectionMode(Grid.SelectionMode.NONE);
-		//Grid.HeaderRow row = grid.addHeaderRowAt(0);
 		DateRenderer renderer = new DateRenderer("%1$tH:%tM", Locale.getDefault());
 		grid.getColumn("time").setRenderer(renderer);
-		grid.removeColumn("rs");
-		grid.removeColumn("ochno");
-		grid.removeColumn("zaochno");
-		grid.removeColumn("oncology");
-		grid.removeColumn("other");
+		grid.setSizeFull();
+		grid.setHeightMode(HeightMode.ROW);
+		grid.setHeightByRows(container.size());
 	}
 
 	private void initLayoutContent() {
@@ -165,8 +182,6 @@ public class ConsultationView extends AbstructView<ConsultationModel>{
 		HorizontalLayout horizontalLayout = new HorizontalLayout(hideRS,hideOhcno,hideZaohcno,hideOncology);
 		horizontalLayout.setSpacing(true);
 		VerticalLayout verticalLayout = new VerticalLayout(horizontalLayout,grid);
-		grid.setHeight(780,Unit.PIXELS);
-
 		setCompositionRoot(verticalLayout);
 	}
 }
