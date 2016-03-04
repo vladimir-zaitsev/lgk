@@ -1,0 +1,8 @@
+div.textfieldrenderer {
+	cursor: pointer !important;
+	user-select: none !important;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+    height: 50px !important;
+}

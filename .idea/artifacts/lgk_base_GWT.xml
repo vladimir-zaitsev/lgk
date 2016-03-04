@@ -3,6 +3,11 @@
     <output-path>$PROJECT_DIR$/target/classes/VAADIN/widgetsets</output-path>
     <root id="root">
       <element id="gwt-compiler-output" facet="lgk-base/gwt/GWT" />
+      <element id="directory" name="VAADIN">
+        <element id="directory" name="widgetsets">
+          <element id="gwt-compiler-output" facet="lgk-base/gwt/GWT" />
+        </element>
+      </element>
     </root>
   </artifact>
 </component>
