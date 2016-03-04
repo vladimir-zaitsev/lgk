@@ -1,7 +1,8 @@
-div.grid-renderers-collection-addon {
-	cursor: pointer;
-	user-select: none;
+div.textfieldrenderer {
+	cursor: pointer !important;
+	user-select: none !important;
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
+    height: 50px !important;
 }

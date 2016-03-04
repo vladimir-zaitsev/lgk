@@ -65,7 +65,6 @@ public class TextFieldRendererConnector extends ClickableRendererConnector<Strin
         @Override
         public VTextField createWidget() {
             VTextField textField = GWT.create(VTextField.class);
-
             textField.sinkBitlessEvent(BrowserEvents.CHANGE);
             textField.sinkBitlessEvent(BrowserEvents.CLICK);
             textField.sinkBitlessEvent(BrowserEvents.MOUSEDOWN);

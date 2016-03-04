@@ -53,9 +53,9 @@ public class ConsultationView extends AbstructView<ConsultationModel>{
 				@Override
 				public String getValue(Item item, Object o, Object o1) {
 					Consultation consultation =  ((ArrayList<Consultation>)item.getItemProperty("rs").getValue()).get(dayIndx);
-					//return consultation.getName()==null?null:consultation.getName();
-					return "<p>This is a paragraph</p>\n" +
-						"<p>This is another paragraph</p> <b> WOW SEXY </b> <br> HEY";
+					return consultation.getName()==null?null:consultation.getName();
+					//return "<p>This is a paragraph</p>\n" +
+					//	"<p>This is another paragraph</p> <b> WOW SEXY </b> <br> HEY";
 				}
 			});
 			container.addGeneratedProperty("ochno"+i, new PropertyValueGenerator<String>() {
@@ -94,10 +94,10 @@ public class ConsultationView extends AbstructView<ConsultationModel>{
 					return consultation.getName()==null?null:consultation.getName();
 				}
 			});
-			grid.getColumn("rs"+i).setHeaderCaption("Радиохирургия");
-			grid.getColumn("ochno"+i).setHeaderCaption("Очная");
-			grid.getColumn("zaochno"+i).setHeaderCaption("Заочная");
-			grid.getColumn("oncology"+i).setHeaderCaption("Онкология");
+			grid.getColumn("rs"+i).setHeaderCaption("Радиохирургия").setRenderer(new TextFieldRenderer<String>());
+			grid.getColumn("ochno"+i).setHeaderCaption("Очная").setRenderer(new TextFieldRenderer<String>());
+			grid.getColumn("zaochno"+i).setHeaderCaption("Заочная").setRenderer(new TextFieldRenderer<String>());
+			grid.getColumn("oncology"+i).setHeaderCaption("Онкология").setRenderer(new TextFieldRenderer<String>());
 			Date consulDate = ((ConsultationDays)container.getIdByIndex(0)).getRs().get(dayIndx).getProcbegintime();
 			row.join("rs"+i,"ochno"+i,"zaochno"+i,"oncology"+i).setText(format.format(consulDate));
 		}
@@ -107,11 +107,12 @@ public class ConsultationView extends AbstructView<ConsultationModel>{
 		container.removeContainerProperty("oncology");
 		container.removeContainerProperty("other");
 		/*grid.setCellStyleGenerator(cell -> {
-			if (cell.getProperty().getValue() instanceof String)
-			if (((String)cell.getProperty().getValue()).startsWith("Роман")) {
-				return "wowstyle";
+			/*if (cell.getProperty().getValue() instanceof String)
+			if (!((String)cell.getProperty().getValue()).startsWith("пон")) {
+				return "exp1";
 			}
-			return null;
+			return "exp1";
+			return "exp1cell";
 		});*/
 		grid.setRowStyleGenerator(row1 -> {
 			if (((String)row1.getItem().getItemProperty("rs0").getValue()).startsWith("<p>This is")) {
@@ -119,8 +120,8 @@ public class ConsultationView extends AbstructView<ConsultationModel>{
 			}
 			return null;
 		});
-		grid.getColumn("rs1").setRenderer(new TextFieldRenderer<String>());
-		grid.getColumn("rs0").setRenderer(new HtmlRenderer());
+		//grid.getColumn("rs1").setRenderer(new TextFieldRenderer<String>());
+		//grid.getColumn("rs0").setRenderer(new HtmlRenderer());
 		grid.setFrozenColumnCount(1);
 		grid.setSelectionMode(Grid.SelectionMode.NONE);
 		DateRenderer renderer = new DateRenderer("%1$tH:%tM", Locale.getDefault());
@@ -128,6 +129,7 @@ public class ConsultationView extends AbstructView<ConsultationModel>{
 		grid.setSizeFull();
 		grid.setHeightMode(HeightMode.ROW);
 		grid.setHeightByRows(container.size());
+		//grid.getHeaderRow(0).setStyleName("simplerow");
 	}
 
 	private void initLayoutContent() {
