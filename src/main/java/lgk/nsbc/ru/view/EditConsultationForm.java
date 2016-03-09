@@ -316,7 +316,7 @@ public class EditConsultationForm
 			event.setEnd(event.getStart());
 		}
 		if (!dataSource.containsEvent(event)) {
-			dataSource.addEvent(event);
+			calendarComponent.addEvent(event);
 		}
 
 		calendarView.getUI().removeWindow(scheduleEventPopup);

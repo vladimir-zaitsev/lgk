@@ -1,5 +1,7 @@
 package lgk.nsbc.ru.view;
 
+import com.vaadin.ui.components.calendar.event.EditableCalendarEvent;
+import com.vaadin.ui.components.calendar.handler.BasicEventResizeHandler;
 import lgk.nsbc.ru.backend.basicevent.ConsultationBasicEvent;
 import lgk.nsbc.ru.backend.entity.Consultation;
 import com.vaadin.navigator.View;
@@ -44,13 +46,6 @@ public class CalendarView extends GridLayout implements View {
 	private Button nextButton;
 	// Добавить новую консультацию
 	private Button addNewEvent;
-	// Заголовок типа Jan 2016 , Oct 2017 (Будет правее кнопки prevButton)
-	private final Label captionLabel = new Label("");
-	// Чекбоксы для сокрытия различных видов консультаций + сокрытие выходных
-	private CheckBox hideOhcno;
-	private CheckBox hideZaohcno;
-	private CheckBox hideRS;
-	private CheckBox hideOncology;
 	private CheckBox hideWeekendsButton;
 
 	// Текущй режим отображения
@@ -68,18 +63,12 @@ public class CalendarView extends GridLayout implements View {
 		initLayoutContent();
 	}
 
-	private void updateCaptionLabel() {
-		DateFormatSymbols s = new DateFormatSymbols(getLocale());
-		String month = s.getShortMonths()[gregorianCalendar.get(GregorianCalendar.MONTH)];
-		captionLabel.setValue(month + " "
-			+ gregorianCalendar.get(GregorianCalendar.YEAR));
-	}
-
 	private CalendarEvent createNewEvent(Date start, Date end) {
 		Consultation consultation = new Consultation(new Date(), 0, "", "", "", start, end, "");
 		ConsultationBasicEvent event = new ConsultationBasicEvent("Новая консультаций", "Здесь что-то будет", consultation);
 		event.setStyleName("color2");
-		consultationModel.beanItemContainer.addBean(event);
+		// Создание нового события ТОЛЬКО в форме! ТОЛЬКО ПОСЛЕ нажатия кнопки принять.
+		//consultationModel.beanItemContainer.addBean(event);
 		return event;
 	}
 
@@ -87,7 +76,8 @@ public class CalendarView extends GridLayout implements View {
 		Consultation consultation = new Consultation(new Date(), 0,  "", "", "", start, end, "");
 		ConsultationBasicEvent event = new ConsultationBasicEvent(caption, "new event", consultation);
 		event.setStyleName("color2");
-		consultationModel.beanItemContainer.addBean(event);
+		// Создание нового события ТОЛЬКО в форме! ТОЛЬКО ПОСЛЕ нажатия кнопки принять.
+		//consultationModel.beanItemContainer.addBean(event);
 		return event;
 	}
 
@@ -100,7 +90,6 @@ public class CalendarView extends GridLayout implements View {
 		calendarComponent.setContainerDataSource(consultationModel.beanItemContainer);
 		EditConsultationForm = new EditConsultationForm(this);
 		calendarComponent.setLocale(getLocale());
-		calendarComponent.setSizeFull();
 		// Чем меньше отображается часов, тем детальнее события.
 		calendarComponent.setFirstVisibleHourOfDay(9);
 		calendarComponent.setLastVisibleHourOfDay(18);
@@ -121,53 +110,40 @@ public class CalendarView extends GridLayout implements View {
 		currentMonthsFirstDate = gregorianCalendar.getTime();
 
 		addCalendarEventListeners();
+		calendarComponent.setHandler((CalendarComponentEvents.EventResizeHandler)null);
 	}
 
 	private void initLayoutContent() {
-		initNavigationButtons();
-		initHideWeekEndButton();
-		initAddNewEventButton();
-
+		calendarComponent.setSizeFull();
+		calendarComponent.setHeight(600,Unit.PIXELS);
+		initButtons();
 		HorizontalLayout hl = new HorizontalLayout();
 		hl.setWidth("100%");
-		hl.setSpacing(true);
-		hl.addComponents(prevButton, captionLabel);
+		hl.setHeightUndefined();
+		hl.addComponents(prevButton);
 
 		CssLayout group = new CssLayout();
-		group.addStyleName("v-component-group");
 		group.addComponents(dayButton, weekButton, monthButton);
 		hl.addComponent(group);
 
 		hl.addComponent(nextButton);
-		hl.setComponentAlignment(prevButton, Alignment.MIDDLE_LEFT);
-		hl.setComponentAlignment(captionLabel, Alignment.MIDDLE_CENTER);
-		hl.setComponentAlignment(group, Alignment.MIDDLE_CENTER);
-		hl.setComponentAlignment(nextButton, Alignment.MIDDLE_RIGHT);
+		hl.setComponentAlignment(prevButton, Alignment.TOP_LEFT);
+		hl.setComponentAlignment(group, Alignment.TOP_CENTER);
+		hl.setComponentAlignment(nextButton, Alignment.TOP_RIGHT);
 
 		HorizontalLayout controlPanel = new HorizontalLayout();
-		controlPanel.setMargin(true);
+		controlPanel.setHeightUndefined();
 		controlPanel.setSpacing(true);
-		controlPanel.setWidth("100%");
-		controlPanel.addComponents(hideWeekendsButton, hideRS, hideOhcno, hideOncology, hideZaohcno, addNewEvent);
-
+		controlPanel.addComponents(hideWeekendsButton, addNewEvent);
+		//calendarComponent.setHeight("100%");
+		//calendarComponent.setHeight(400,Unit.PIXELS);
 		addComponent(controlPanel);
 		addComponent(hl);
 		addComponent(calendarComponent);
-		setRowExpandRatio(getRows() - 1, 1.0f);
+		setSpacing(false);
 	}
 
-	private void initHideWeekEndButton() {
-		hideWeekendsButton = new CheckBox("Выходные");
-		hideWeekendsButton.setImmediate(true);
-		hideWeekendsButton
-			.addValueChangeListener(valueChangeEvent -> setWeekendsHidden(hideWeekendsButton.getValue()));
-		hideZaohcno = new CheckBox("Заочные");
-		hideOhcno = new CheckBox("Очные");
-		hideOncology = new CheckBox("Онкология");
-		hideRS = new CheckBox("Радиохирургия");
-	}
-
-	private void initNavigationButtons() {
+	private void initButtons() {
 		monthButton = new Button("Месяц", clickEvent -> switchToMonthView());
 
 		weekButton = new Button("Неделя", clickEvent -> {
@@ -187,9 +163,6 @@ public class CalendarView extends GridLayout implements View {
 
 		nextButton = new Button("Вперед", clickEvent -> handleNextButtonClick());
 		prevButton = new Button("Назад", clickEvent -> handlePreviousButtonClick());
-	}
-
-	public void initAddNewEventButton() {
 		addNewEvent = new Button("Новая консультация", (clickEvent -> {
 			Date start = getToday();
 			start.setHours(0);
@@ -198,6 +171,12 @@ public class CalendarView extends GridLayout implements View {
 			Date end = getEndOfDay(gregorianCalendar, start);
 			EditConsultationForm.showEventPopup(createNewEvent(start, end), true);
 		}));
+
+		hideWeekendsButton = new CheckBox("Выходные");
+		hideWeekendsButton.setImmediate(true);
+		hideWeekendsButton
+			.addValueChangeListener(valueChangeEvent -> setWeekendsHidden(hideWeekendsButton.getValue()));
+		hideWeekendsButton.setValue(true);
 	}
 
 	private void addCalendarEventListeners() {
@@ -209,7 +188,6 @@ public class CalendarView extends GridLayout implements View {
 				// let BasicWeekClickHandler handle calendar dates, and update
 				// only the other parts of UI here
 				super.weekClick(event);
-				updateCaptionLabel();
 				switchToWeekView();
 			}
 		});
@@ -322,9 +300,6 @@ public class CalendarView extends GridLayout implements View {
 		resetTime(false);
 		currentMonthsFirstDate = gregorianCalendar.getTime();
 		calendarComponent.setStartDate(currentMonthsFirstDate);
-
-		updateCaptionLabel();
-
 		gregorianCalendar.add(GregorianCalendar.MONTH, 1);
 		gregorianCalendar.add(GregorianCalendar.DATE, -1);
 		resetCalendarTime(true);
@@ -366,8 +341,6 @@ public class CalendarView extends GridLayout implements View {
 
 		calendarComponent.setStartDate(gregorianCalendar.getTime());
 
-		updateCaptionLabel();
-
 		gregorianCalendar.add(GregorianCalendar.MONTH, 1);
 		gregorianCalendar.add(GregorianCalendar.DATE, -1);
 
@@ -390,7 +363,6 @@ public class CalendarView extends GridLayout implements View {
 			calendarComponent.setEndDate(gregorianCalendar.getTime());
 		} else {
 			calendarComponent.setStartDate(gregorianCalendar.getTime());
-			updateCaptionLabel();
 		}
 	}
 
