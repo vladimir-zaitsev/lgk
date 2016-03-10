@@ -18,6 +18,8 @@ public class Patient {
 	String patronymic; //(255)
 	String sex;
 	Date birthday;
+	int case_history_num;
+	String diagnosis;
 
 	public Long getN() {
 		return n;
@@ -65,6 +67,22 @@ public class Patient {
 
 	public void setBirthday(Date birthday) {
 		this.birthday = birthday;
+	}
+
+	public int getCase_history_num() {
+		return case_history_num;
+	}
+
+	public void setCase_history_num(int case_history_num) {
+		this.case_history_num = case_history_num;
+	}
+
+	public String getDiagnosis() {
+		return diagnosis;
+	}
+
+	public void setDiagnosis(String diagnosis) {
+		this.diagnosis = diagnosis;
 	}
 
 	@Override

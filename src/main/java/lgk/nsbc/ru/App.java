@@ -4,23 +4,21 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
 import lgk.nsbc.ru.backend.ConsultationManager;
-import lgk.nsbc.ru.backend.I18nManager;
-import lgk.nsbc.ru.backend.PatientsManager;
-import lgk.nsbc.ru.backend.SessionManager;
 import lgk.nsbc.ru.model.ConsultationModel;
-import lgk.nsbc.ru.model.PatientsModelImpl;
 import lgk.nsbc.ru.presenter.ConsultationPresenter;
-import lgk.nsbc.ru.presenter.PatientsPresenter;
 import lgk.nsbc.ru.view.CalendarView;
-import lgk.nsbc.ru.view.PatientsList;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  *
@@ -31,10 +29,10 @@ public class App extends UI {
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-		/*String lgkSessionId = getPage().getUriFragment();
+		String lgkSessionId = getPage().getUriFragment();
 		getPage().setUriFragment(null, false);
 
-		PatientsModelImpl model = new PatientsModelImpl(new I18nManager());
+		/*PatientsModelImpl model = new PatientsModelImpl(new I18nManager());
 		PatientsList view = new PatientsList(model);
 		setContent(view);
 
@@ -44,11 +42,23 @@ public class App extends UI {
 		patientsPresenter.start();*/
 		ConsultationModel consultationModel = new ConsultationModel();
 		CalendarView calendarView = new CalendarView(consultationModel);
-		setContent(calendarView);
 
 		ConsultationManager consultationManager = new ConsultationManager();
 		ConsultationPresenter consultationPresenter = new ConsultationPresenter(consultationModel,consultationManager);
+		calendarView.setPresenter(consultationPresenter);
 		consultationPresenter.start();
+
+		//setContent(calendarView);
+		TabSheet tabSheet = new TabSheet();
+		tabSheet.setHeightUndefined();
+		tabSheet.addTab(calendarView,"Радиохирургия");
+		tabSheet.addTab(new Button("кнопка"),"Очные");
+		tabSheet.addTab(new Button("кнопка"),"Заочные");
+		tabSheet.addTab(new Button("кнопка"),"Онкология");
+		setContent(tabSheet);
+		//ConsultationManager consultationManager = new ConsultationManager();
+		//ConsultationPresenter consultationPresenter = new ConsultationPresenter(consultationModel,consultationManager);
+		//consultationPresenter.start();
 	}
 
 	@WebServlet(urlPatterns = "/*", name = "AppServlet", asyncSupported = true)
