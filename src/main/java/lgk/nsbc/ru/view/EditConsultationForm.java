@@ -8,7 +8,6 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.calendar.event.BasicEvent;
-import com.vaadin.ui.components.calendar.event.BasicEventProvider;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import lgk.nsbc.ru.backend.entity.Patient;
 import lgk.nsbc.ru.presenter.ConsultationPresenter;
@@ -31,7 +30,7 @@ public class EditConsultationForm
 	private DateField startDateField;
 	private DateField endDateField;
 	private Calendar calendarComponent;
-	private BasicEventProvider dataSource;
+	//private BasicEventProvider dataSource;
 	private boolean useSecondResolution;
 	CalendarView calendarView;
 
@@ -55,7 +54,7 @@ public class EditConsultationForm
 	{
 		this.calendarView = calendarView;
 		this.calendarComponent = calendarView.calendarComponent;
-		this.dataSource = calendarView.dataSource;
+		//this.dataSource = calendarView.dataSource;
 		patientCombobox = new PatientCombobox("Быстрый ввод");
 		patientContainer = new PatientContainer();
 		comboboxView = new ComboboxView(this);
@@ -91,12 +90,12 @@ public class EditConsultationForm
 
 	// Показывание всплывающего окна
 	public void showEventPopup(CalendarEvent event, boolean newEvent) {
+		calendarEvent = event;
 		if (event == null) {
 			return;
 		}
 		updateCalendarEventPopup(newEvent); // Создали форму в которой есть formlayout и кнопки удалить принять отмена
 		updateCalendarEventForm(event); // связываение с beanItemcontainer
-		captionField.focus();
 
 		if (!calendarView.getUI().getWindows().contains(scheduleEventPopup)) {
 			calendarView.getUI().addWindow(scheduleEventPopup);
@@ -271,21 +270,16 @@ public class EditConsultationForm
 		if (event.getEnd() == null) {
 			event.setEnd(event.getStart());
 		}
-		// TODO // FIXME: 10.03.2016
-		if (!dataSource.containsEvent(event)) {
+		if (!calendarView.consultationModel.beanItemContainer.containsId(event))
 			calendarComponent.addEvent(event);
-		}
-
 		scheduleEventPopup.close();
 	}
 	/* Removes the event from the data source and fires change event. */
 	private void deleteCalendarEvent() {
 		BasicEvent event = getFormCalendarEvent();
-		try {
+		System.out.println();
+		if (calendarView.consultationModel.beanItemContainer.containsId(event))
 			calendarComponent.removeEvent(event);
-		} catch (NullPointerException ex) {
-			System.out.println(ex.getMessage());
-		}
 		scheduleEventPopup.close();
 	}
 

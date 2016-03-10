@@ -12,13 +12,10 @@ import com.vaadin.ui.components.calendar.event.CalendarEvent;
 public class ComboboxView {
 
 	EditConsultationForm editConsultationForm;
-	 final FieldGroup fieldGroup;
-	public ComboboxView(EditConsultationForm editConsultationForm)
-	{
-
+	final FieldGroup fieldGroup;
+	public ComboboxView(EditConsultationForm editConsultationForm) {
 		this.editConsultationForm = editConsultationForm;
 		fieldGroup = new FieldGroup();
-
 	}
 
 	public void commitConsultationEvent() {
@@ -31,11 +28,9 @@ public class ComboboxView {
 		if (event.getEnd() == null) {
 			event.setEnd(event.getStart());
 		}
-		if (!editConsultationForm.calendarView.dataSource.containsEvent(event)) {
-			editConsultationForm.calendarView.dataSource.addEvent(event);
-		}
-
-		editConsultationForm.calendarView.getUI().removeWindow(editConsultationForm.scheduleEventPopup);
+		if (!editConsultationForm.calendarView.consultationModel.beanItemContainer.containsId(event))
+			editConsultationForm.calendarView.calendarComponent.addEvent(event);
+		editConsultationForm.scheduleEventPopup.close();
 
 	}
 
@@ -46,24 +41,18 @@ public class ComboboxView {
 		return (BasicEvent) event;
 	}
 
-
-	public void discardConsultationBasicEvent()
-	{
+	public void discardConsultationBasicEvent() {
 		fieldGroup.discard();
-    //    editConsultationForm.patientCombobox.clear();
-		editConsultationForm.calendarView.getUI().removeWindow(editConsultationForm.scheduleEventPopup);
+		editConsultationForm.scheduleEventPopup.close();
 	}
 
-	public void bindField(ConsultationBasicEvent basicEvent)
-	{
-		BeanItem<ConsultationBasicEvent> item = new BeanItem<ConsultationBasicEvent>(basicEvent);
+	public void bindField(ConsultationBasicEvent basicEvent) {
+		BeanItem<ConsultationBasicEvent> item = new BeanItem<>(basicEvent);
 		fieldGroup.setItemDataSource(item);
 		fieldGroup.bind(editConsultationForm.nameField,"name");
 		fieldGroup.bind(editConsultationForm.surnameField,"surname");
 		fieldGroup.bind(editConsultationForm.patronymicField,"patronymic");
 		fieldGroup.bind(editConsultationForm.birthdayField,"birthday");
 		fieldGroup.bind(editConsultationForm.casHisField,"case_history_num");
-
 	}
-
 }

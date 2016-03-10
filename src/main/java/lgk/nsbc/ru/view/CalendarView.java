@@ -10,7 +10,6 @@ import com.vaadin.ui.components.calendar.CalendarComponentEvents;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents.EventClick;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents.RangeSelectEvent;
 import com.vaadin.ui.components.calendar.CalendarDateRange;
-import com.vaadin.ui.components.calendar.event.BasicEventProvider;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import com.vaadin.ui.components.calendar.handler.BasicDateClickHandler;
 import com.vaadin.ui.components.calendar.handler.BasicWeekClickHandler;
@@ -50,7 +49,7 @@ public class CalendarView extends GridLayout implements View {
 	private ComboBox lastHourOfDay;
 	// Текущй режим отображения
 	private Mode viewMode = Mode.WEEK;
-	public BasicEventProvider dataSource;
+	//public BasicEventProvider dataSource;
 
 	EditConsultationForm EditConsultationForm;
 	ConsultationPresenter presenter;
@@ -92,12 +91,11 @@ public class CalendarView extends GridLayout implements View {
 
 	// Инициализируем компонент calendarComponent
 	private void initCalendar() {
-		dataSource = new BasicEventProvider();
-		calendarComponent = new Calendar(dataSource);
+		//dataSource = new BasicEventProvider();
+		calendarComponent = new Calendar();
 		calendarComponent.setContainerDataSource(consultationModel.beanItemContainer);
 		EditConsultationForm = new EditConsultationForm(this);
 		calendarComponent.setLocale(getLocale());
-		// Чем меньше отображается часов, тем детальнее события.
 		calendarComponent.setFirstVisibleHourOfDay(9);
 		calendarComponent.setLastVisibleHourOfDay(18);
 		calendarComponent.setTimeFormat(Calendar.TimeFormat.Format24H);
