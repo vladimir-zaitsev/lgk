@@ -1,28 +1,24 @@
 package lgk.nsbc.ru.view;
 
 import com.vaadin.event.Action;
-import com.vaadin.server.Page;
-import com.vaadin.ui.Calendar;
-import com.vaadin.ui.components.calendar.CalendarDateRange;
-import com.vaadin.ui.components.calendar.event.BasicEvent;
-import com.vaadin.ui.components.calendar.event.EditableCalendarEvent;
-import com.vaadin.ui.components.calendar.handler.BasicEventResizeHandler;
-import lgk.nsbc.ru.App;
-import lgk.nsbc.ru.backend.basicevent.ConsultationBasicEvent;
-import lgk.nsbc.ru.backend.entity.Consultation;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.Page;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Calendar;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents.EventClick;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents.RangeSelectEvent;
+import com.vaadin.ui.components.calendar.CalendarDateRange;
 import com.vaadin.ui.components.calendar.event.BasicEventProvider;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import com.vaadin.ui.components.calendar.handler.BasicDateClickHandler;
 import com.vaadin.ui.components.calendar.handler.BasicWeekClickHandler;
+import lgk.nsbc.ru.backend.basicevent.ConsultationBasicEvent;
+import lgk.nsbc.ru.backend.entity.Consultation;
 import lgk.nsbc.ru.model.ConsultationModel;
+import lgk.nsbc.ru.presenter.ConsultationPresenter;
 
-import java.text.DateFormatSymbols;
 import java.util.*;
 
 public class CalendarView extends GridLayout implements View {
@@ -57,6 +53,15 @@ public class CalendarView extends GridLayout implements View {
 	public BasicEventProvider dataSource;
 
 	EditConsultationForm EditConsultationForm;
+	ConsultationPresenter presenter;
+
+	public ConsultationPresenter getPresenter() {
+		return presenter;
+	}
+
+	public void setPresenter(ConsultationPresenter presenter) {
+		this.presenter = presenter;
+	}
 
 	public CalendarView(ConsultationModel consultationModel) {
 		this.consultationModel = consultationModel;
@@ -241,7 +246,6 @@ public class CalendarView extends GridLayout implements View {
 			@Override
 			public Action[] getActions(Object target, Object sender) {
 				// Цель, - CalendarDateRange,Источник, - CalendarDateRange и ничего другое
-				System.out.println(target.getClass());
 				if (!(target instanceof CalendarDateRange&&sender instanceof Calendar))
 					return null;
 				CalendarDateRange dateRange = (CalendarDateRange) target;

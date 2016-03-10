@@ -31,6 +31,19 @@ public class Consultation
 		this.surname = surname;
 	}
 
+	public Consultation(Patient patient,Date procbegintime,Date procendtime)
+	{
+		this.birthday = patient.getBirthday();
+		this.case_history_num = patient.getCase_history_num();
+		this.diagnosis = patient.getDiagnosis();
+		this.patronymic = patient.getPatronymic();
+		this.name = patient.getName();
+		this.procbegintime = procbegintime;
+		this.procendtime = procendtime;
+		this.surname = patient.getSurname();
+
+	}
+
 	public String getExecutor() {
 		return executor;
 	}
