@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * Created by user on 20.02.2016.
  */
-public class ConsultationBasicEvent extends BasicEvent {
+public class ConsultationEvent extends BasicEvent {
 	private String executor;
 	private String surname;
 	private String name;
@@ -18,7 +18,7 @@ public class ConsultationBasicEvent extends BasicEvent {
 	private String diagnosis;
 	private Date birthday;
 
-	public ConsultationBasicEvent(String caption, String description, Consultation consultation, String executor) {
+	public ConsultationEvent(String caption, String description, Consultation consultation, String executor) {
 		super(caption, description, consultation.getProcbegintime(), consultation.getProcendtime());
 		this.executor = executor;
 		this.name = consultation.getName();
@@ -29,7 +29,7 @@ public class ConsultationBasicEvent extends BasicEvent {
 		this.birthday = consultation.getBirthday();
 	}
 
-	public ConsultationBasicEvent(String caption, String description, Consultation consultation)
+	public ConsultationEvent(String caption, String description, Consultation consultation)
 	{
 		super(caption,description,consultation.getProcbegintime(),consultation.getProcendtime());
 		this.executor = consultation.getExecutor();
@@ -41,7 +41,7 @@ public class ConsultationBasicEvent extends BasicEvent {
 		this.birthday = consultation.getBirthday();
 	}
 
-	public ConsultationBasicEvent(String executor, String name, String patronymic, String surname, Date birthday, int case_history_num, String diagnosis) {
+	public ConsultationEvent(String executor, String name, String patronymic, String surname, Date birthday, int case_history_num, String diagnosis) {
 		this.executor = executor;
 		this.name = name;
 		this.case_history_num = case_history_num;

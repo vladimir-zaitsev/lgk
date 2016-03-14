@@ -1,7 +1,7 @@
 package lgk.nsbc.ru.view;
 
 import lgk.nsbc.ru.backend.PatientContainer;
-import lgk.nsbc.ru.backend.basicevent.ConsultationBasicEvent;
+import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItem;
@@ -32,7 +32,7 @@ public class EditConsultationForm
 	private Calendar calendarComponent;
 	//private BasicEventProvider dataSource;
 	private boolean useSecondResolution;
-	CalendarView calendarView;
+	CalendarViewOld calendarView;
 
 	//NEW
 	public final PatientCombobox patientCombobox;
@@ -43,14 +43,14 @@ public class EditConsultationForm
 	public final TextField patronymicField;
 	public final DateField  birthdayField;
 	public final TextField casHisField;
-	public ConsultationBasicEvent basicEvent;
+	public ConsultationEvent basicEvent;
 	private CalendarEvent calendarEvent;
 	private NativeSelect selectProcedure;
 
 	public static final List<String> diagnosis = new ArrayList<>(Arrays.asList("Сосудистые заболевания",
 		"АВМ-Артерио-венозная мальформация","Другое сосудистое заболевание","Доброкачественные опухоли",
 		"Менингиома","Множественные метастазы"));
-	public EditConsultationForm(CalendarView calendarView)
+	public EditConsultationForm(CalendarViewOld calendarView)
 	{
 		this.calendarView = calendarView;
 		this.calendarComponent = calendarView.calendarComponent;

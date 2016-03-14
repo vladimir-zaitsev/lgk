@@ -1,6 +1,6 @@
 package lgk.nsbc.ru.model;
 
-import lgk.nsbc.ru.backend.basicevent.ConsultationBasicEvent;
+import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 import com.vaadin.data.util.BeanItemContainer;
 
 /**
@@ -10,11 +10,11 @@ public class ConsultationModel {
 
 
 
-	public final BeanItemContainer<ConsultationBasicEvent> beanItemContainer = new BeanItemContainer<>(ConsultationBasicEvent.class);
+	public final BeanItemContainer<ConsultationEvent> beanItemContainer = new BeanItemContainer<>(ConsultationEvent.class);
 
 	//   public final BasicEventProvider dataSource = new BasicEventProvider();
 	// получаем контейнер
-	public BeanItemContainer<ConsultationBasicEvent> getConsultationBAsicEventContainer() {
+	public BeanItemContainer<ConsultationEvent> getConsultationBAsicEventContainer() {
 		return beanItemContainer;
 	}
 

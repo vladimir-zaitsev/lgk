@@ -2,11 +2,10 @@ package lgk.nsbc.ru.presenter;
 
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import lgk.nsbc.ru.backend.ConsultationManager;
-import lgk.nsbc.ru.backend.basicevent.ConsultationBasicEvent;
+import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 import lgk.nsbc.ru.backend.entity.Consultation;
 import lgk.nsbc.ru.backend.entity.Patient;
 import lgk.nsbc.ru.model.ConsultationModel;
-import lgk.nsbc.ru.view.EditConsultationForm;
 
 import java.util.*;
 
@@ -15,18 +14,14 @@ import java.util.*;
  */
 public class ConsultationPresenter {
 
-
 	public final ConsultationModel consultationModel;
 
 	public final ConsultationManager consultationManager;
 
-	public ConsultationBasicEvent consultationBasicEvent;
-
-	public EditConsultationForm editConsultationForm;
+	public ConsultationEvent consultationBasicEvent;
 
 	private List<Consultation> consultations = new ArrayList<>();
 
-	private  List<Consultation> patient = new ArrayList<>();
 	public static final ArrayList<String> PROCEDURES = new ArrayList<>(Arrays.asList("Радиохирургия","Заочная консультация","Очная консультация","Оннкология"));
 	private List<String> executor = new ArrayList<>(Arrays.asList("физик", "онколог", "планировщик", "врач", "лечащий врач"));
 
@@ -49,7 +44,7 @@ public class ConsultationPresenter {
 		for (int i = 0; i < consultations.size(); i++) {
 			Random random = new Random();
 			int value = random.nextInt(executor.size());
-			consultationBasicEvent = new ConsultationBasicEvent("Радиохирургия", "Some description.", consultations.get(i),
+			consultationBasicEvent = new ConsultationEvent("Радиохирургия", "Some description.", consultations.get(i),
 				executor.get(value));
 			consultationBasicEvent.setStyleName("mycolor");
 			consultationBasicEvent.getStart().setHours(9);
@@ -59,10 +54,10 @@ public class ConsultationPresenter {
 
 	}
 
-	public ConsultationBasicEvent onItemSelected(CalendarEvent calendarEvent, Patient item) {
-		Patient patient = consultationManager.selectpatient(item.getName(),item.getSurname(),item.getPatronymic(),item.getBirthday());
+	public ConsultationEvent onItemSelected(CalendarEvent calendarEvent, Patient item) {
+		Patient patient = consultationManager.selectPatient(item.getName(),item.getSurname(),item.getPatronymic(),item.getBirthday());
 		Consultation consultation = new Consultation(patient,calendarEvent.getStart(),calendarEvent.getEnd());
-		ConsultationBasicEvent basicEvent = new ConsultationBasicEvent
+		ConsultationEvent basicEvent = new ConsultationEvent
 			(calendarEvent.getCaption(),calendarEvent.getDescription(),consultation,"");
 		return basicEvent;
 	}

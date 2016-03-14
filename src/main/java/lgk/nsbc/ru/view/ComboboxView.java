@@ -1,6 +1,6 @@
 package lgk.nsbc.ru.view;
 
-import lgk.nsbc.ru.backend.basicevent.ConsultationBasicEvent;
+import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.components.calendar.event.BasicEvent;
@@ -35,7 +35,7 @@ public class ComboboxView {
 	}
 
 	public BasicEvent getFormCalendarEvent() {
-		BeanItem<ConsultationBasicEvent> item = (BeanItem<ConsultationBasicEvent>) fieldGroup
+		BeanItem<ConsultationEvent> item = (BeanItem<ConsultationEvent>) fieldGroup
 			.getItemDataSource();
 		CalendarEvent event = item.getBean();
 		return (BasicEvent) event;
@@ -46,8 +46,8 @@ public class ComboboxView {
 		editConsultationForm.scheduleEventPopup.close();
 	}
 
-	public void bindField(ConsultationBasicEvent basicEvent) {
-		BeanItem<ConsultationBasicEvent> item = new BeanItem<>(basicEvent);
+	public void bindField(ConsultationEvent basicEvent) {
+		BeanItem<ConsultationEvent> item = new BeanItem<>(basicEvent);
 		fieldGroup.setItemDataSource(item);
 		fieldGroup.bind(editConsultationForm.nameField,"name");
 		fieldGroup.bind(editConsultationForm.surnameField,"surname");
