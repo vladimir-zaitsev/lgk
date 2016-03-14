@@ -152,9 +152,9 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 
 		monthButton.addClickListener( clickEvent -> calendarPresenter.handleMonthButtonClick());
 
-		prevButton.addClickListener(clickEvent -> calendarPresenter.handleNextButtonClick());
+		prevButton.addClickListener(clickEvent -> calendarPresenter.handlePreviousButtonClick());
 
-		nextButton.addClickListener(clickEvent -> calendarPresenter.handlePreviousButtonClick());
+		nextButton.addClickListener(clickEvent -> calendarPresenter.handleNextButtonClick());
 
 		addNewEventButton.addClickListener(clickEvent -> calendarPresenter.handleAddNewEventButtonClick());
 

@@ -44,6 +44,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 		int rollAmount = gregorianCalendar.get(GregorianCalendar.DAY_OF_MONTH) - 1;
 		gregorianCalendar.add(GregorianCalendar.DAY_OF_MONTH, -rollAmount);
 		currentMonthsFirstDate = gregorianCalendar.getTime();
+		start();
 		calendarView = new CalendarViewImpl(consultationModel,this);
 	}
 
@@ -60,12 +61,12 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 		for (int i = 0; i < consultations.size(); i++) {
 			Random random = new Random();
 			int value = random.nextInt(executor.size());
-			ConsultationEvent consultationBasicEvent = new ConsultationEvent("Радиохирургия", "Some description.", consultations.get(i),
+			ConsultationEvent event = new ConsultationEvent("Радиохирургия", "Some description.", consultations.get(i),
 				executor.get(value));
-			consultationBasicEvent.setStyleName("color3");
-			consultationBasicEvent.getStart().setHours(9);
-			consultationBasicEvent.getEnd().setHours(18);
-			consultationModel.beanItemContainer.addBean(consultationBasicEvent);
+			event.setStyleName("color3");
+			event.getStart().setHours(9);
+			event.getEnd().setHours(18);
+			consultationModel.beanItemContainer.addBean(event);
 		}
 	}
 
@@ -81,7 +82,10 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 
 	@Override
 	public void handleNewEvent(Date start, Date end) {
-
+		Consultation consultation = new Consultation(new Date(), 0, "", "", "", start, end, "");
+		ConsultationEvent event = new ConsultationEvent("Новая консультаций", "Здесь что-то будет", consultation);
+		event.setStyleName("color2");
+		consultationModel.beanItemContainer.addBean(event);
 	}
 
 	@Override

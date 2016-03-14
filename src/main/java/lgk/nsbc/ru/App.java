@@ -51,7 +51,7 @@ public class App extends UI {
 		ConsultationModel consultationModel = new ConsultationModel();
 		ConsultationManager consultationManager = new ConsultationManager();
 		CalendarPresenterImpl calendarPresenter = new CalendarPresenterImpl(consultationModel,consultationManager);
-		calendarPresenter.start();
+		//calendarPresenter.start();
 
 		//setContent(calendarView);
 		TabSheet tabSheet = new TabSheet();
