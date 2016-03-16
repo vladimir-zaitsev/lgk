@@ -8,6 +8,7 @@ import org.apache.commons.dbutils.handlers.BeanListHandler;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 
@@ -18,6 +19,7 @@ import java.util.Date;
 
 public class ConsultationManager {
 
+	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
 	public Collection<? extends Consultation> listConsultation(Date fromDate, Date toDate) // дата будет браться от 01.01.2016 и 20.02.2016
 	{
@@ -39,8 +41,8 @@ public class ConsultationManager {
 				"AND  nbc_proc.procbegintime between '%s' and '%s'\n" +
 				"AND nbc_proc.procendtime is not NULL";
 
-			String to = Util.getDate(toDate);
-			String from = Util.getDate(fromDate);
+			String to = formatter.format(toDate);
+			String from = formatter.format(fromDate);
 			sql = String.format(sql, from, to);
 			BeanListHandler<Consultation> handler = new BeanListHandler<>(Consultation.class); //
 			return qr.query(con, sql, handler);
@@ -55,7 +57,7 @@ public class ConsultationManager {
   *@param параметры пациента, которого нашли ФИО, дата рождения
   *@return
   */
-	public Patient selectpatient (String name,String surname,String patronymic,Date birthday)
+	public Patient selectPatient(String name, String surname, String patronymic, Date birthday)
 	{
 		try (
 			Connection con = DB.getConnection()
@@ -77,7 +79,7 @@ public class ConsultationManager {
 					"AND surname = ?\n" +
 					"AND patronymic = ?\n"+
 					"AND birthday = ?\n";
-			String birthdayPatient =  Util.getDate(birthday);
+			String birthdayPatient =  formatter.format(birthday);
 			Object[] params = new Object[]{name,surname,patronymic,birthdayPatient};
 			BeanHandler<Patient> handler = new BeanHandler<>(Patient.class);
 			return qr.query(con,sql,handler,params);
@@ -86,5 +88,4 @@ public class ConsultationManager {
 		}
 
 	}
-
 }

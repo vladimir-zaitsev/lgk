@@ -11,7 +11,7 @@ import java.util.Locale;
 
 import static lgk.nsbc.ru.backend.entity.Patient.Props.*;
 
-public class PatientsList extends AbstructView<PatientsModel> {
+public class PatientsList extends AbstractView<PatientsModel> {
 
 	public final Grid listGrid = new Grid("Список пациентов", model.getPatientsList());
 	{
