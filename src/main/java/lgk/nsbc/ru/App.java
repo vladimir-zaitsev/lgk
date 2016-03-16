@@ -10,9 +10,10 @@ import com.vaadin.ui.UI;
 import lgk.nsbc.ru.backend.ConsultationManager;
 import lgk.nsbc.ru.model.ConsultationModel;
 import lgk.nsbc.ru.presenter.CalendarPresenterImpl;
-import lgk.nsbc.ru.presenter.ConsultationPresenter;
+import lgk.nsbc.ru.presenter.EditFormPresenter;
+import lgk.nsbc.ru.presenter.Presenter;
+import lgk.nsbc.ru.view.CalendarView;
 import lgk.nsbc.ru.view.CalendarViewImpl;
-import lgk.nsbc.ru.view.CalendarViewOld;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -50,13 +51,13 @@ public class App extends UI {
 
 		ConsultationModel consultationModel = new ConsultationModel();
 		ConsultationManager consultationManager = new ConsultationManager();
-		CalendarPresenterImpl calendarPresenter = new CalendarPresenterImpl(consultationModel,consultationManager);
-		//calendarPresenter.start();
+		Presenter editFormPresenter = new EditFormPresenter(consultationModel,consultationManager);
+		CalendarView calendarView = new CalendarViewImpl(consultationModel,consultationManager);
+		calendarView.setEditFormPresenter(editFormPresenter);
 
-		//setContent(calendarView);
 		TabSheet tabSheet = new TabSheet();
 		tabSheet.setHeightUndefined();
-		tabSheet.addTab((CalendarViewImpl)calendarPresenter.getCalendarView(),"Радиохирургия");
+		tabSheet.addTab((CalendarViewImpl)calendarView,"Радиохирургия");
 		tabSheet.addTab(new Button("кнопка"),"Очные");
 		tabSheet.addTab(new Button("кнопка"),"Заочные");
 		tabSheet.addTab(new Button("кнопка"),"Онкология");

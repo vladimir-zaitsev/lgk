@@ -1,5 +1,7 @@
 package lgk.nsbc.ru.view;
 
+import lgk.nsbc.ru.presenter.Presenter;
+
 import java.util.Date;
 
 /**
@@ -15,4 +17,6 @@ public interface CalendarView {
 	void setLastVisibleHourOfDay(int lastHour);
 	String getFirstHourOfDay();
 	String getLastHourOfDay();
+	void setDateNewEvent(Date start, Date end);
+	void setEditFormPresenter(Presenter presenter);
 }

@@ -1,24 +1,29 @@
 package lgk.nsbc.ru.view;
 
+import lgk.nsbc.ru.backend.ConsultationManager;
+import lgk.nsbc.ru.model.ConsultationModel;
+import lgk.nsbc.ru.presenter.CalendarPresenter;
+import lgk.nsbc.ru.presenter.CalendarPresenterImpl;
+import lgk.nsbc.ru.presenter.EditFormPresenter;
+import lgk.nsbc.ru.presenter.Presenter;
 import com.vaadin.event.Action;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
 import com.vaadin.ui.*;
-import com.vaadin.ui.Calendar;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents;
-import com.vaadin.ui.components.calendar.CalendarComponentEvents.*;
 import com.vaadin.ui.components.calendar.CalendarDateRange;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import com.vaadin.ui.components.calendar.handler.BasicDateClickHandler;
 import com.vaadin.ui.components.calendar.handler.BasicWeekClickHandler;
-import lgk.nsbc.ru.model.ConsultationModel;
-import lgk.nsbc.ru.presenter.CalendarPresenter;
 
-import java.util.*;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Locale;
 
 /**
- * Created by Роман on 13.03.2016.
+ * Created by user on 16.03.2016.
  */
 public class CalendarViewImpl extends AbstractView<ConsultationModel> implements View,CalendarView {
 	// UI components
@@ -33,11 +38,14 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 	private CheckBox hideWeekendsButton = new CheckBox("Выходные");
 	private ComboBox firstHourOfDay = new ComboBox("Начало дня");
 	private ComboBox lastHourOfDay = new ComboBox("Конец дня");
-	private CalendarPresenter calendarPresenter;
+	CalendarPresenter calendarPresenter;
+	EditFormPresenter presenter;
+	final ConsultationManager consultationManager;
 
-	public CalendarViewImpl(ConsultationModel consultationModel, CalendarPresenter calendarPresenter) {
+	public CalendarViewImpl(ConsultationModel consultationModel, ConsultationManager consultationManager) {
 		super(consultationModel);
-		this.calendarPresenter = calendarPresenter;
+		this.consultationManager = consultationManager;
+		this.calendarPresenter = new CalendarPresenterImpl(this,consultationModel,consultationManager);
 		calendarComponent.setContainerDataSource(consultationModel.beanItemContainer);
 		calendarComponent.setLocale(Locale.getDefault());
 		calendarComponent.setFirstVisibleHourOfDay(9);
@@ -48,12 +56,12 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 		calendarComponent.setEndDate(calendarComponent.getEndDate());
 
 		// Запретить изменение размеров событий мышкой
-		calendarComponent.setHandler((EventResizeHandler)null);
+		calendarComponent.setHandler((CalendarComponentEvents.EventResizeHandler)null);
 		// Назначить действие при нажатии на событие
-		calendarComponent.setHandler((EventClick eventClick) ->
-			calendarPresenter.handleEventClick(eventClick.getCalendarEvent()));
+		calendarComponent.setHandler((CalendarComponentEvents.EventClick eventClick) ->
+			presenter.handleEventClick(eventClick.getCalendarEvent(),false));
 		// Назначить действие при создании событий внутри календаря
-		calendarComponent.setHandler((RangeSelectEvent event) -> {
+		calendarComponent.setHandler((CalendarComponentEvents.RangeSelectEvent event) -> {
 			calendarPresenter.handleRangeSelectEvent(event.getStart(),event.getEnd(),event.isMonthlyMode());
 		});
 		// Переопределяем нижеидущие handlars пока только для изменения currentViewMode
@@ -106,10 +114,10 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 						// Создаем событие +30 минут
 						GregorianCalendar start = new GregorianCalendar();
 						start.setTime(date);
-						GregorianCalendar end   = new GregorianCalendar();
+						GregorianCalendar end = new GregorianCalendar();
 						end.setTime(date);
 						end.add(java.util.Calendar.MINUTE, 30);
-						calendarPresenter.handleNewEvent(start.getTime(), end.getTime());
+						presenter.handleNewEvent(start.getTime(),end.getTime(),true);
 					} else
 						new Notification("Невозможно добавить событий",
 							"Возможно, вы не туда указали?").show(Page.getCurrent());
@@ -127,6 +135,12 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 
 		initButtons();
 		initLayoutContent();
+	}
+
+
+	public void setEditFormPresenter(Presenter presenter)
+	{
+		this.presenter = (EditFormPresenter) presenter;
 	}
 
 	/**
@@ -244,6 +258,11 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 	@Override
 	public String getLastHourOfDay() {
 		return (String)lastHourOfDay.getValue();
+	}
+
+	@Override
+	public void setDateNewEvent(Date start, Date end) {
+		presenter.handleNewEvent(start,end,true);
 	}
 
 	@Override

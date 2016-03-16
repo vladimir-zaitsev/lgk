@@ -1,24 +1,23 @@
 package lgk.nsbc.ru.presenter;
 
-import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import lgk.nsbc.ru.backend.ConsultationManager;
 import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 import lgk.nsbc.ru.backend.entity.Consultation;
 import lgk.nsbc.ru.model.ConsultationModel;
 import lgk.nsbc.ru.view.CalendarView;
-import lgk.nsbc.ru.view.CalendarViewImpl;
+import com.vaadin.ui.components.calendar.event.CalendarEvent;
 
 import java.util.*;
 
 /**
- * Created by Роман on 14.03.2016.
+ * Created by user on 16.03.2016.
  */
 public class CalendarPresenterImpl implements CalendarPresenter {
 
-	private final ConsultationModel consultationModel;
-	private final ConsultationManager consultationManager;
-	private final CalendarView calendarView;
 
+	private final CalendarView calendarView;
+	private  final ConsultationModel consultationModel;
+	private  final ConsultationManager consultationManager;
 	private static final ArrayList<String> PROCEDURES = new ArrayList<>(4);
 	private static final List<String> executor = new ArrayList<>(5);
 	private static ArrayList<String> hourOfDay = new ArrayList<>(24);
@@ -35,9 +34,13 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 	private Date currentMonthsFirstDate;
 	private Mode currentViewMode = Mode.WEEK;
 
-	public CalendarPresenterImpl(ConsultationModel consultationModel, ConsultationManager consultationManager) {
-		this.consultationModel = consultationModel;
+	public CalendarPresenterImpl(CalendarView calendarView,ConsultationModel consultationModel,
+								 ConsultationManager consultationManager)
+	{
+
 		this.consultationManager = consultationManager;
+		this.consultationModel = consultationModel;
+		this.calendarView = calendarView;
 		Date today = new Date();
 		gregorianCalendar = new GregorianCalendar(Locale.getDefault());
 		gregorianCalendar.setTime(today);
@@ -45,7 +48,6 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 		gregorianCalendar.add(GregorianCalendar.DAY_OF_MONTH, -rollAmount);
 		currentMonthsFirstDate = gregorianCalendar.getTime();
 		start();
-		calendarView = new CalendarViewImpl(consultationModel,this);
 	}
 
 	public void start() {
@@ -75,18 +77,6 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 		consultationModel.beanItemContainer.removeItem(calendarEvent);
 	}
 
-	@Override
-	public void handleEventClick(CalendarEvent calendarEvent) {
-
-	}
-
-	@Override
-	public void handleNewEvent(Date start, Date end) {
-		Consultation consultation = new Consultation(new Date(), 0, "", "", "", start, end, "");
-		ConsultationEvent event = new ConsultationEvent("Новая консультаций", "Здесь что-то будет", consultation);
-		event.setStyleName("color2");
-		consultationModel.beanItemContainer.addBean(event);
-	}
 
 	@Override
 	public void handleRangeSelectEvent(Date start, Date end,boolean isMonthlyMode) {
@@ -95,7 +85,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 			start = getStartOfDay(gregorianCalendar,start);
 			end = getEndOfDay(gregorianCalendar, end);
 		}
-		handleNewEvent(start,end);
+		calendarView.setDateNewEvent(start,end);
 	}
 
 	@Override
@@ -158,7 +148,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 
 	@Override
 	public void handleAddNewEventButtonClick() {
-		handleNewEvent(getStartOfDay(gregorianCalendar,new Date()),
+		calendarView.setDateNewEvent(getStartOfDay(gregorianCalendar,new Date()),
 			getEndOfDay(gregorianCalendar,new Date()));
 	}
 
@@ -219,10 +209,6 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 	@Override
 	public List getComboBoxValues() {
 		return hourOfDay;
-	}
-
-	public CalendarView getCalendarView() {
-		return calendarView;
 	}
 
 	private Date getEndOfDay(java.util.Calendar calendar, Date date) {
