@@ -17,7 +17,7 @@ import java.io.IOException;
  *
  */
 @Theme("mytheme")
-@Widgetset("lgk.nsbc.ru.MyAppWidgetset")
+//@Widgetset("lgk.nsbc.ru.MyAppWidgetset")
 public class App extends UI {
 
     @Override
