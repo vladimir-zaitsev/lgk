@@ -7,117 +7,130 @@ import java.util.Date;
  */
 public class Consultation
 {
-    private Date procbegintime;
-    private Date procendtime;
-    private String surname;
-    private String name;
-    private String patronymic;
-    private int case_history_num;
-    private String diagnosis;
-    private Date birthday;
-    private String executor;
+	private Date procbegintime;
+	private Date procendtime;
+	private String surname;
+	private String name;
+	private String patronymic;
+	private int case_history_num;
+	private String diagnosis;
+	private Date birthday;
+	private String executor;
 
-   public Consultation() {}
+	public Consultation() {}
 
-    public Consultation(Date birthday, int case_history_num, String diagnosis, String patronymic, String name,
+	public Consultation(Date birthday, int case_history_num, String diagnosis, String patronymic, String name,
 						Date procbegintime, Date procendtime, String surname) {
-        this.birthday = birthday;
-        this.case_history_num = case_history_num;
-        this.diagnosis = diagnosis;
-        this.patronymic = patronymic;
-        this.name = name;
-        this.procbegintime = procbegintime;
-        this.procendtime = procendtime;
-        this.surname = surname;
-    }
+		this.birthday = birthday;
+		this.case_history_num = case_history_num;
+		this.diagnosis = diagnosis;
+		this.patronymic = patronymic;
+		this.name = name;
+		this.procbegintime = procbegintime;
+		this.procendtime = procendtime;
+		this.surname = surname;
+	}
 
-    public Date getProcbegintime ( )
-    {
-        return procbegintime;
-    }
+	public Consultation(Patient patient,Date procbegintime,Date procendtime)
+	{
+		this.birthday = patient.getBirthday();
+		this.case_history_num = patient.getCase_history_num();
+		this.diagnosis = patient.getDiagnosis();
+		this.patronymic = patient.getPatronymic();
+		this.name = patient.getName();
+		this.procbegintime = procbegintime;
+		this.procendtime = procendtime;
+		this.surname = patient.getSurname();
 
-    public void setProcbegintime(Date procbegintime)
-    {
-        this.procbegintime = procbegintime;
-    }
+	}
 
-    public Date getProcendtime ( )
-    {
-        return procendtime;
-    }
+	public String getExecutor() {
+		return executor;
+	}
 
-    public void setProcendtime (Date procendtime)
-    {
-        this.procendtime = procendtime;
-    }
+	public void setExecutor(String executor) {
+		this.executor = executor;
+	}
 
-    public String getSurname() {
-        return surname;
-    }
+	public Date getProcbegintime ( )
+	{
+		return procbegintime;
+	}
 
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
+	public void setProcbegintime(Date procbegintime)
+	{
+		this.procbegintime = procbegintime;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public Date getProcendtime ( )
+	{
+		return procendtime;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setProcendtime (Date procendtime)
+	{
+		this.procendtime = procendtime;
+	}
 
-    public String getPatronymic() {
-        return patronymic;
-    }
+	public String getSurname() {
+		return surname;
+	}
 
-    public void setPatronymic(String patronymic) {
-        this.patronymic = patronymic;
-    }
+	public void setSurname(String surname) {
+		this.surname = surname;
+	}
 
-    public int getCase_history_num() {
-        return case_history_num;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setCase_history_num(int case_history_num) {
-        this.case_history_num = case_history_num;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getDiagnosis() {
-        return diagnosis;
-    }
+	public String getPatronymic() {
+		return patronymic;
+	}
 
-    public void setDiagnosis(String diagnosis) {
-        this.diagnosis = diagnosis;
-    }
+	public void setPatronymic(String patronymic) {
+		this.patronymic = patronymic;
+	}
 
-    public Date getBirthday() {
-        return birthday;
-    }
+	public int getCase_history_num() {
+		return case_history_num;
+	}
 
-    public void setBirthday(Date birthday) {
-        this.birthday = birthday;
-    }
+	public void setCase_history_num(int case_history_num) {
+		this.case_history_num = case_history_num;
+	}
 
-    public String getExecutor() {
-        return executor;
-    }
+	public String getDiagnosis() {
+		return diagnosis;
+	}
 
-    public void setExecutor(String executor) {
-        this.executor = executor;
-    }
+	public void setDiagnosis(String diagnosis) {
+		this.diagnosis = diagnosis;
+	}
 
-    @Override
-    public String toString() {
-        return "Consultation{" +
-                "procbegintime=" + procbegintime +
-                ", procendtime=" + procendtime +
-                ", surname='" + surname + '\'' +
-                ", name='" + name + '\'' +
-                ", patronymic='" + patronymic + '\'' +
-                ", cas_history_num='" + case_history_num + '\'' +
-                ", diagnosis='" + diagnosis + '\'' +
-                ", birthday=" + birthday +
-                '}';
-    }
+	public Date getBirthday() {
+		return birthday;
+	}
+
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
+	}
+
+	@Override
+	public String toString() {
+		return "Consultation{" +
+			"procbegintime=" + procbegintime +
+			", procendtime=" + procendtime +
+			", surname='" + surname + '\'' +
+			", name='" + name + '\'' +
+			", patronymic='" + patronymic + '\'' +
+			", cas_history_num='" + case_history_num + '\'' +
+			", diagnosis='" + diagnosis + '\'' +
+			", birthday=" + birthday +
+			'}';
+	}
 }
