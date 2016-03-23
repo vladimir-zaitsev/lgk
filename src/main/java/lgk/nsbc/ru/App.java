@@ -48,19 +48,24 @@ public class App extends UI {
 		ConsultationPresenter consultationPresenter = new ConsultationPresenter(consultationModel,consultationManager);
 		calendarView.setPresenter(consultationPresenter);
 		consultationPresenter.start();*/
-
 		ConsultationModel consultationModel = new ConsultationModel();
 		ConsultationManager consultationManager = new ConsultationManager();
 		Presenter editFormPresenter = new EditFormPresenter(consultationModel,consultationManager);
 		CalendarView calendarView = new CalendarViewImpl(consultationModel,consultationManager);
 		calendarView.setEditFormPresenter(editFormPresenter);
+		CalendarView calendarView1 = new CalendarViewImpl(consultationModel,consultationManager);
+		calendarView1.setEditFormPresenter(editFormPresenter);
+		CalendarView calendarView2 = new CalendarViewImpl(consultationModel,consultationManager);
+		calendarView2.setEditFormPresenter(editFormPresenter);
+		CalendarView calendarView3 = new CalendarViewImpl(consultationModel,consultationManager);
+		calendarView3.setEditFormPresenter(editFormPresenter);
 
 		TabSheet tabSheet = new TabSheet();
 		tabSheet.setHeightUndefined();
 		tabSheet.addTab((CalendarViewImpl)calendarView,"Радиохирургия");
-		tabSheet.addTab(new Button("кнопка"),"Очные");
-		tabSheet.addTab(new Button("кнопка"),"Заочные");
-		tabSheet.addTab(new Button("кнопка"),"Онкология");
+		tabSheet.addTab((CalendarViewImpl)calendarView1,"Очные");
+		tabSheet.addTab((CalendarViewImpl)calendarView2,"Заочные");
+		tabSheet.addTab((CalendarViewImpl)calendarView3,"Онкология");
 		setContent(tabSheet);
 		//ConsultationManager consultationManager = new ConsultationManager();
 		//ConsultationPresenter consultationPresenter = new ConsultationPresenter(consultationModel,consultationManager);

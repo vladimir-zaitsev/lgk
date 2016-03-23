@@ -34,6 +34,7 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 	private Button monthButton = new Button("Месяц");
 	private Button prevButton = new Button("Назад");
 	private Button nextButton = new Button("Вперед");
+	private Label currentDateLabel = new Label("");
 	private Button addNewEventButton = new Button("Новая консультация");
 	private CheckBox hideWeekendsButton = new CheckBox("Выходные");
 	private ComboBox firstHourOfDay = new ComboBox("Начало дня");
@@ -57,6 +58,10 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 
 		// Запретить изменение размеров событий мышкой
 		calendarComponent.setHandler((CalendarComponentEvents.EventResizeHandler)null);
+		// Во первых, уже есть кнопки, меняющие вид. Во вторых, они работают правильнее.
+		calendarComponent.setHandler((CalendarComponentEvents.ForwardHandler)null);
+		calendarComponent.setHandler((CalendarComponentEvents.BackwardHandler)null);
+
 		// Назначить действие при нажатии на событие
 		calendarComponent.setHandler((CalendarComponentEvents.EventClick eventClick) ->
 			presenter.handleEventClick(eventClick.getCalendarEvent(),false));
@@ -132,7 +137,10 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 				}
 			}
 		});
-
+		hideWeekendsButton.setValue(true);
+		calendarPresenter.handleHideWeekendsButton();
+		firstHourOfDay.setNullSelectionAllowed(false);
+		lastHourOfDay.setNullSelectionAllowed(false);
 		initButtons();
 		initLayoutContent();
 	}
@@ -192,14 +200,13 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 		HorizontalLayout hl = new HorizontalLayout();
 		hl.setWidth("100%");
 		hl.setHeightUndefined();
-		hl.addComponents(prevButton);
 
 		CssLayout group = new CssLayout();
 		group.addComponents(dayButton, weekButton, monthButton);
-		hl.addComponent(group);
 
-		hl.addComponent(nextButton);
+		hl.addComponents(prevButton,currentDateLabel,group,nextButton);
 		hl.setComponentAlignment(prevButton, Alignment.TOP_LEFT);
+		hl.setComponentAlignment(currentDateLabel,Alignment.TOP_CENTER);
 		hl.setComponentAlignment(group, Alignment.TOP_CENTER);
 		hl.setComponentAlignment(nextButton, Alignment.TOP_RIGHT);
 
@@ -263,6 +270,11 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 	@Override
 	public void setDateNewEvent(Date start, Date end) {
 		presenter.handleNewEvent(start,end,true);
+	}
+
+	@Override
+	public void setCurrentDateLabel(String caption) {
+		currentDateLabel.setValue(caption);
 	}
 
 	@Override

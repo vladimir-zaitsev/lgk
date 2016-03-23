@@ -7,6 +7,7 @@ import lgk.nsbc.ru.model.ConsultationModel;
 import lgk.nsbc.ru.view.CalendarView;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 
+import java.text.DateFormatSymbols;
 import java.util.*;
 
 /**
@@ -35,9 +36,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 	private Mode currentViewMode = Mode.WEEK;
 
 	public CalendarPresenterImpl(CalendarView calendarView,ConsultationModel consultationModel,
-								 ConsultationManager consultationManager)
-	{
-
+								 ConsultationManager consultationManager) {
 		this.consultationManager = consultationManager;
 		this.consultationModel = consultationModel;
 		this.calendarView = calendarView;
@@ -48,6 +47,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 		gregorianCalendar.add(GregorianCalendar.DAY_OF_MONTH, -rollAmount);
 		currentMonthsFirstDate = gregorianCalendar.getTime();
 		start();
+		updateCaptionLabel();
 	}
 
 	public void start() {
@@ -57,17 +57,19 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 		calendar.add(calendar.MONTH, 1);
 		Date endDay = calendar.getTime();
 
-
 		List<Consultation> consultations = new ArrayList<>(consultationManager.listConsultation(startDay, endDay));
 		System.out.println(consultations.size());
 		for (int i = 0; i < consultations.size(); i++) {
 			Random random = new Random();
 			int value = random.nextInt(executor.size());
-			ConsultationEvent event = new ConsultationEvent("Радиохирургия", "Some description.", consultations.get(i),
+			Consultation consultation = consultations.get(i);
+			String descr = consultation.getSurname();
+			ConsultationEvent event = new ConsultationEvent(descr, "Some description.", consultations.get(i),
 				executor.get(value));
 			event.setStyleName("color3");
-			event.getStart().setHours(9);
-			event.getEnd().setHours(18);
+			event.getStart().setHours(0);
+			event.getEnd().setHours(0);
+			event.setAllDay(true);
 			consultationModel.beanItemContainer.addBean(event);
 		}
 	}
@@ -129,6 +131,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 				rollDate(1);
 				break;
 		}
+		updateCaptionLabel();
 	}
 
 	@Override
@@ -144,6 +147,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 				rollDate(-1);
 				break;
 		}
+		updateCaptionLabel();
 	}
 
 	@Override
@@ -164,6 +168,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 		calendarView.setEndDate(gregorianCalendar.getTime());
 
 		gregorianCalendar.setTime(new Date());
+		updateCaptionLabel();
 	}
 
 	@Override
@@ -250,6 +255,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 		} else {
 			calendarView.setStartDate(gregorianCalendar.getTime());
 		}
+		updateCaptionLabel();
 	}
 
 	private void rollMonth(int direction) {
@@ -275,7 +281,20 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 
 	private void rollDate(int direction) {
 		gregorianCalendar.add(GregorianCalendar.DATE, direction);
+		if (gregorianCalendar.get(GregorianCalendar.DAY_OF_WEEK)==GregorianCalendar.SATURDAY) {
+			gregorianCalendar.add(GregorianCalendar.DATE, 2);
+		}
+		if (gregorianCalendar.get(GregorianCalendar.DAY_OF_WEEK)==GregorianCalendar.SUNDAY) {
+			gregorianCalendar.add(GregorianCalendar.DATE, -2);
+		}
 		resetCalendarTime(false);
 		resetCalendarTime(true);
+	}
+
+	private void updateCaptionLabel() {
+		DateFormatSymbols s = new DateFormatSymbols(Locale.getDefault());
+		String month = s.getShortMonths()[gregorianCalendar.get(GregorianCalendar.MONTH)];
+		calendarView.setCurrentDateLabel(month + " "
+			+ gregorianCalendar.get(GregorianCalendar.YEAR));
 	}
 }
