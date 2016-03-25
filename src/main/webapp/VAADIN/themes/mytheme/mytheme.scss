@@ -1,9 +1,9 @@
 // Global variable overrides. Must be declared before importing Valo.
 
 // Defines the plaintext font size, weight and family. Font size affects general component sizing.
-//$v-font-size: 16px;
-//$v-font-weight: 300;
-//$v-font-family: "Open Sans", sans-serif;
+$v-font-size: 13px;
+$v-font-weight: 300;
+$v-font-family: "Open Sans", sans-serif;
 
 // Defines the border used by all components.
 //$v-border: 1px solid (v-shade 0.7);
@@ -64,4 +64,176 @@
   .v-calendar-next.v-calendar-next-Hsized {
     visibility: hidden !important;
   }
+  .v-filterselect {
+    position: relative;
+  }
+
+
+
+  .v-filterselect-input{
+    @include appearance(none);
+    background: transparent;
+    border: none;
+    padding: 0 1.5em 0 0;
+    margin: 0;
+    font-size: inherit;
+    width: 100% !important;
+  }
+
+  .v-filterselect-input:focus {
+    outline: none;
+  }
+
+  .v-filterselect-button {
+    position: absolute;
+    right: 1.5em;
+    width: 0;
+    height: 0;
+    border: 1px solid;
+    border-width: .5em .45em;
+    border-color: #646E77 transparent transparent;
+    top: 0.8em;
+    background: transparent;
+  }
+
+  .v-filterselect-suggestpopup {
+    margin-top: .4em !important;
+  }
+
+  .v-filterselect-suggestmenu tr {
+    line-height: inherit;
+  }
+
+  .v-filterselect-prevpage-off,
+  .v-filterselect-prevpage,
+  .v-filterselect-nextpage-off,
+  .v-filterselect-nextpage {
+    background: transparent;
+  }
+
+  .v-filterselect-prevpage-off,
+  .v-filterselect-prevpage {
+    padding-bottom: 5px;
+  }
+
+  .v-filterselect-nextpage-off,
+  .v-filterselect-nextpage {
+    padding-top: 5px;
+  }
+
+  .v-filterselect-prevpage-off span,
+  .v-filterselect-prevpage span,
+  .v-filterselect-nextpage-off span,
+  .v-filterselect-nextpage span {
+    width: 0;
+    height: 0;
+    border: 1px solid;
+    border-width: .5em .45em;
+    border-color: transparent transparent #aaa;
+    overflow: hidden;
+    display: inline-block;
+  }
+
+  .v-filterselect-nextpage-off span,
+  .v-filterselect-nextpage span {
+    border-color: #aaa transparent transparent;
+  }
+
+  .v-filterselect-prevpage:hover span {
+    border-bottom-color: #fff;
+  }
+
+  .v-filterselect-nextpage:hover span {
+    border-top-color: #fff;
+  }
+
+  .v-filterselect-status {
+    color: #999;
+    font-size: 13px;
+  }
+
+
+  .v-window {
+    @include box-shadow(0 4px 20px rgba(0,0,0,.5));
+  }
+
+  .v-shadow-window {
+    display: none;
+  }
+
+  .v-ie8 & .v-shadow-window {
+    display: block;
+  }
+
+  .v-window-closebox:before {
+    font-family: arial, sans-serif;
+    content: "\00D7";
+  }
+
+  .v-window-closebox {
+    background: #343638;
+    color: #ddd;
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 20px;
+    text-align: center;
+    width: 20px;
+    height: 20px;
+    //  @include border-radius(2px);
+    top: 10px;
+    right: 10px;
+  }
+
+  .v-window-closebox:hover {
+    color: #fff;
+  }
+
+  .v-window-closebox:active {
+    color: #ddd;
+    background: #000;
+  }
+
+  .v-window-modalitycurtain {
+    opacity: 0.7;
+    filter: alpha(opacity=70);
+
+    background: #353637;
+
+    /* TODO mixin */
+    background: -moz-radial-gradient(center, ellipse cover, #4c4d4e 0%, #1b1c1c 100%);
+    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,#4c4d4e), color-stop(100%,#1b1c1c));
+    background: -webkit-radial-gradient(center, ellipse cover, #4c4d4e 0%,#1b1c1c 100%);
+    background: -o-radial-gradient(center, ellipse cover, #4c4d4e 0%,#1b1c1c 100%);
+    background: -ms-radial-gradient(center, ellipse cover, #4c4d4e 0%,#1b1c1c 100%);
+    /* 	background: radial-gradient(ellipse at center, #4c4d4e 0%,#1b1c1c 100%); */
+  }
+
+  .v-window-outerheader {
+    color: black;
+    text-align: center;
+    padding: 0.5em 20px;
+    height: 1.7em;
+    font-weight: 300;
+    font-size: 20px;
+  }
+
+  /*
+  .v-window-header {
+    font-weight: inherit;
+  }
+
+  .dialog.v-window {
+    color: #a6a9aa;
+    font-size: 13px;
+
+    .v-window-header {
+      text-align: center;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 400;
+    }
+  }
+
+*/
+
 }

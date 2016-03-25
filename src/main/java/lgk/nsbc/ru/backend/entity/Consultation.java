@@ -1,5 +1,6 @@
 package lgk.nsbc.ru.backend.entity;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -7,11 +8,20 @@ import java.util.Date;
  */
 public class Consultation
 {
+
 	private Date procbegintime;
+
 	private Date procendtime;
+	@NotNull
+	@javax.validation.constraints.Size(min = 2, max = 20)
 	private String surname;
+	@NotNull
+	@javax.validation.constraints.Size(min = 2, max = 20)
 	private String name;
+	@NotNull
+	@javax.validation.constraints.Size(min = 2, max = 20)
 	private String patronymic;
+
 	private int case_history_num;
 	private String diagnosis;
 	private Date birthday;

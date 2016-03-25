@@ -20,12 +20,7 @@ public class EditFormPresenter implements  Presenter {
     private final ConsultationManager consultationManager;
     private boolean newEvent;
 
-    // Presenter получает необходимые для работы метода данные о состоянии
-    // пользовательского интерфейса через интерфейс Представления
-    // и через него же передаёт в Представление данные из Модели и другие результаты своей работы.
-
     public EditFormPresenter(ConsultationModel model, ConsultationManager consultationManager) {
-        //	view = new EditFormViewImpl(this);
         this.model = model;
         this.consultationManager = consultationManager;
     }
@@ -40,12 +35,11 @@ public class EditFormPresenter implements  Presenter {
     {
         view = new EditFormViewImpl(this);
         Consultation consultation = new Consultation(new Date(), 0, "", "", "", start, end, "");
-        ConsultationEvent event = new ConsultationEvent("Новая консультаций", "Здесь что-то будет", consultation);
+        ConsultationEvent event = new ConsultationEvent("", "", consultation);
         event.setStyleName("color2");
         view.createEventPopup(event,newEvent);
     }
-
-    /*
+	/*
     * редактирование события
     *@param
     */
@@ -54,7 +48,6 @@ public class EditFormPresenter implements  Presenter {
         view = new EditFormViewImpl(this);
         view.createEventPopup((ConsultationEvent) calendarEvent,newEvent);
     }
-
     /*
     * в item cохраняем данные
     * если в модели нет его сохраняем в beanItemContainer
