@@ -39,14 +39,15 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 	private CheckBox hideWeekendsButton = new CheckBox("Выходные");
 	private ComboBox firstHourOfDay = new ComboBox("Начало дня");
 	private ComboBox lastHourOfDay = new ComboBox("Конец дня");
+
 	CalendarPresenter calendarPresenter;
 	EditFormPresenter presenter;
 	final ConsultationManager consultationManager;
 
-	public CalendarViewImpl(ConsultationModel consultationModel, ConsultationManager consultationManager) {
+	public CalendarViewImpl(ConsultationModel consultationModel, ConsultationManager consultationManager,String type) {
 		super(consultationModel);
 		this.consultationManager = consultationManager;
-		this.calendarPresenter = new CalendarPresenterImpl(this,consultationModel,consultationManager);
+		this.calendarPresenter = new CalendarPresenterImpl(this,consultationModel,consultationManager,type);
 		calendarComponent.setContainerDataSource(consultationModel.beanItemContainer);
 		calendarComponent.setLocale(Locale.getDefault());
 		calendarComponent.setFirstVisibleHourOfDay(9);

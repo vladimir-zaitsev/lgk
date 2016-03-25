@@ -34,12 +34,13 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 	private GregorianCalendar gregorianCalendar;
 	private Date currentMonthsFirstDate;
 	private Mode currentViewMode = Mode.WEEK;
-
+	private String currentProcedure;
 	public CalendarPresenterImpl(CalendarView calendarView,ConsultationModel consultationModel,
-								 ConsultationManager consultationManager) {
+								 ConsultationManager consultationManager,String type) {
 		this.consultationManager = consultationManager;
 		this.consultationModel = consultationModel;
 		this.calendarView = calendarView;
+		this.currentProcedure = type;
 		Date today = new Date();
 		gregorianCalendar = new GregorianCalendar(Locale.getDefault());
 		gregorianCalendar.setTime(today);
@@ -57,7 +58,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 		calendar.add(calendar.MONTH, 1);
 		Date endDay = calendar.getTime();
 
-		List<Consultation> consultations = new ArrayList<>(consultationManager.listConsultation(startDay, endDay));
+		List<Consultation> consultations = new ArrayList<>(consultationManager.listConsultation(startDay, endDay,currentProcedure));
 		System.out.println(consultations.size());
 		for (int i = 0; i < consultations.size(); i++) {
 			Random random = new Random();

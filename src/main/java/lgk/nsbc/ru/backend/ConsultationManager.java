@@ -21,7 +21,7 @@ public class ConsultationManager {
 
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
-	public Collection<? extends Consultation> listConsultation(Date fromDate, Date toDate) // дата будет браться от 01.01.2016 и 20.02.2016
+	public Collection<? extends Consultation> listConsultation(Date fromDate, Date toDate,String type) // дата будет браться от 01.01.2016 и 20.02.2016
 	{
 
 		try (
@@ -36,14 +36,14 @@ public class ConsultationManager {
 				" FROM bas_people\n" +
 				" JOIN nbc_patients  on  bas_people.n = nbc_patients.bas_people_n\n" +
 				" LEFT JOIN  nbc_proc on  nbc_proc.nbc_patients_n = nbc_patients.n\n" +
-				" WHERE nbc_proc.proc_type = 4\n" +
+				" WHERE nbc_proc.proc_type = %s\n" +
 				"\n" +
 				"AND  nbc_proc.procbegintime between '%s' and '%s'\n" +
 				"AND nbc_proc.procendtime is not NULL";
 
 			String to = formatter.format(toDate);
 			String from = formatter.format(fromDate);
-			sql = String.format(sql, from, to);
+			sql = String.format(sql,type ,from, to);
 			BeanListHandler<Consultation> handler = new BeanListHandler<>(Consultation.class); //
 			return qr.query(con, sql, handler);
 		} catch (SQLException e) {
