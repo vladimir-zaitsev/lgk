@@ -36,7 +36,7 @@ public class ConsultationPresenter {
         Date endDay = calendar.getTime();
 
 
-        consultations = new ArrayList<>(consultationManager.listConsultation(startDay, endDay));
+        consultations = new ArrayList<>(consultationManager.listConsultation(startDay, endDay,"4"));
 
         for (int i = 0; i < consultations.size(); i++) {
             Random random = new Random();

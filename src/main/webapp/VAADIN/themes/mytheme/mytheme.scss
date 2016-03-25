@@ -56,4 +56,12 @@
   .v-grid-cell {
      height: $v-table-row-height * 2 !important;
   }
+
+  .v-calendar-back.v-calendar-back-Hsized {
+    visibility: hidden !important;
+  }
+
+  .v-calendar-next.v-calendar-next-Hsized {
+    visibility: hidden !important;
+  }
 }

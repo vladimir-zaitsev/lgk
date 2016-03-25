@@ -19,4 +19,5 @@ public interface CalendarView {
 	String getLastHourOfDay();
 	void setDateNewEvent(Date start, Date end);
 	void setEditFormPresenter(Presenter presenter);
+	void setCurrentDateLabel(String caption);
 }
