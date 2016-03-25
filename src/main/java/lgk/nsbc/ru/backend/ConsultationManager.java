@@ -9,8 +9,8 @@ import org.apache.commons.dbutils.handlers.BeanListHandler;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by user on 20.02.2016.
@@ -21,31 +21,34 @@ public class ConsultationManager {
 
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
-	public Collection<? extends Consultation> listConsultation(Date fromDate, Date toDate,String type) // дата будет браться от 01.01.2016 и 20.02.2016
+	public List<Consultation> listConsultation(Date fromDate, Date toDate, String type) // дата будет браться от 01.01.2016 и 20.02.2016
 	{
 
 		try (
 			Connection con = DB.getConnection()
 		) {
 			QueryRunner qr = new QueryRunner();
-			String sql = "SELECT\n" +
-				"procbegintime, procendtime,\n" +
-				"surname,name,patronymic,\n" +
-				"case_history_num,\n" +
-				"diagnosis,birthday\n" +
-				" FROM bas_people\n" +
-				" JOIN nbc_patients  on  bas_people.n = nbc_patients.bas_people_n\n" +
-				" LEFT JOIN  nbc_proc on  nbc_proc.nbc_patients_n = nbc_patients.n\n" +
-				" WHERE nbc_proc.proc_type = %s\n" +
-				"\n" +
-				"AND  nbc_proc.procbegintime between '%s' and '%s'\n" +
-				"AND nbc_proc.procendtime is not NULL";
+			con.setAutoCommit(false);
+			String sql =
+				"SELECT\n" +
+				"	procbegintime, procendtime,\n" +
+				"	surname,name,patronymic,\n" +
+				"	case_history_num,\n" +
+				"	diagnosis,birthday\n" +
+				"FROM bas_people\n" +
+				"JOIN nbc_patients  on  bas_people.n = nbc_patients.bas_people_n\n" +
+				"LEFT JOIN  nbc_proc on  nbc_proc.nbc_patients_n = nbc_patients.n\n" +
+				"WHERE nbc_proc.proc_type = ?\n" +
+				"	AND nbc_proc.procbegintime between ? and ?\n" +
+				"	AND nbc_proc.procendtime is not NULL"
+			;
+			BeanListHandler<Consultation> handler = new BeanListHandler<>(Consultation.class);
 
-			String to = formatter.format(toDate);
-			String from = formatter.format(fromDate);
-			sql = String.format(sql,type ,from, to);
-			BeanListHandler<Consultation> handler = new BeanListHandler<>(Consultation.class); //
-			return qr.query(con, sql, handler);
+			return qr.query(con, sql, handler, type
+				, new java.sql.Timestamp(fromDate.toInstant().getEpochSecond())
+				, new java.sql.Timestamp(toDate.toInstant().getEpochSecond())
+			);
+
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}

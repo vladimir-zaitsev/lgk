@@ -11,7 +11,7 @@ import java.util.List;
 
 public class PatientsManager {
 
-	public Collection<? extends Patient> listPatients() {
+	public List<Patient> listPatients() {
 		try (
 			Connection con = DB.getConnection()
 		) {

@@ -8,4 +8,5 @@ public abstract class AbstractView<Model> extends CustomComponent {
 	public AbstractView(Model model) {
 		this.model = model;
 	}
+
 }
