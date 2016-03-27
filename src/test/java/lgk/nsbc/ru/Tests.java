@@ -37,14 +37,14 @@ public class Tests {
 		}
 	}
 
-	@Ignore
+	//@Ignore
 	@Test
 	public void patients(){
 		Collection<? extends Patient> patients = new PatientsManager().listPatients();
 		System.out.println(patients);
 	}
 
-	@Ignore
+	//@Ignore
 	@Test
 	public void caption(){
 		System.out.println(new I18nManager().getCaption(Patient.relationName, Patient.Props.birthday.toString()));

@@ -44,10 +44,10 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 	EditFormPresenter presenter;
 	final ConsultationManager consultationManager;
 
-	public CalendarViewImpl(ConsultationModel consultationModel, ConsultationManager consultationManager,String type) {
+	public CalendarViewImpl(ConsultationModel consultationModel, ConsultationManager consultationManager) {
 		super(consultationModel);
 		this.consultationManager = consultationManager;
-		this.calendarPresenter = new CalendarPresenterImpl(this,consultationModel,consultationManager,type);
+		this.calendarPresenter = new CalendarPresenterImpl(this,consultationModel,consultationManager);
 		calendarComponent.setContainerDataSource(consultationModel.beanItemContainer);
 		calendarComponent.setLocale(Locale.getDefault());
 		calendarComponent.setFirstVisibleHourOfDay(9);

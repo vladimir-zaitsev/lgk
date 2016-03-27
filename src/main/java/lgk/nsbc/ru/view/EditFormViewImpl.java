@@ -8,7 +8,7 @@ import lgk.nsbc.ru.backend.PatientContainer;
 import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 import lgk.nsbc.ru.backend.entity.Consultation;
 import lgk.nsbc.ru.backend.entity.Patient;
-import lgk.nsbc.ru.presenter.ConsultationPresenter;
+import lgk.nsbc.ru.presenter.CalendarPresenterImpl;
 import lgk.nsbc.ru.presenter.EditFormPresenter;
 import lgk.nsbc.ru.presenter.Presenter;
 import com.vaadin.data.Property;
@@ -184,7 +184,7 @@ public class EditFormViewImpl implements EditFormView {
 		allDayField = createCheckBox("Полный день");
 		allDayField.setImmediate(true);
 		allDayField.addValueChangeListener(event -> setFormDateResolution(allDayField.getValue() ? Resolution.DAY : Resolution.MINUTE));
-		NativeSelect selectProcedure = createNativeSelect(ConsultationPresenter.PROCEDURES, "Вид консультации");
+		NativeSelect selectProcedure = createNativeSelect(CalendarPresenterImpl.PROCEDURES, "Вид консультации");
 
 		captionField = createTextField("Заголовок");
 		captionField.setHeightUndefined();

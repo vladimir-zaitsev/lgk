@@ -32,29 +32,17 @@ public class App extends UI {
     protected void init(VaadinRequest vaadinRequest) {
 		String lgkSessionId = getPage().getUriFragment();
 		getPage().setUriFragment(null, false);
-		// Заполним реальными данными, рх = 4, очные = 3, заочные 2, онкология 1.
+
 		ConsultationModel consultationModel = new ConsultationModel();
 		ConsultationManager consultationManager = new ConsultationManager();
 		Presenter editFormPresenter = new EditFormPresenter(consultationModel,consultationManager);
-		CalendarView calendarView = new CalendarViewImpl(consultationModel,consultationManager,"4");
+		CalendarView calendarView = new CalendarViewImpl(consultationModel,consultationManager);
 		calendarView.setEditFormPresenter(editFormPresenter);
-		CalendarView calendarView1 = new CalendarViewImpl(consultationModel,consultationManager,"3");
-		calendarView1.setEditFormPresenter(editFormPresenter);
-		CalendarView calendarView2 = new CalendarViewImpl(consultationModel,consultationManager,"2");
-		calendarView2.setEditFormPresenter(editFormPresenter);
-		CalendarView calendarView3 = new CalendarViewImpl(consultationModel,consultationManager,"1");
-		calendarView3.setEditFormPresenter(editFormPresenter);
 
 		TabSheet tabSheet = new TabSheet();
 		tabSheet.setHeightUndefined();
 		tabSheet.addTab((CalendarViewImpl)calendarView,"Радиохирургия");
-		tabSheet.addTab((CalendarViewImpl)calendarView1,"Очные");
-		tabSheet.addTab((CalendarViewImpl)calendarView2,"Заочные");
-		tabSheet.addTab((CalendarViewImpl)calendarView3,"Онкология");
 		setContent(tabSheet);
-		//ConsultationManager consultationManager = new ConsultationManager();
-		//ConsultationPresenter consultationPresenter = new ConsultationPresenter(consultationModel,consultationManager);
-		//consultationPresenter.start();
 	}
 
 	@WebServlet(urlPatterns = "/*", name = "AppServlet", asyncSupported = true)
