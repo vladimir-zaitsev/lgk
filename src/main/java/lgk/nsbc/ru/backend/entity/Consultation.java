@@ -13,13 +13,13 @@ public class Consultation
 
 	private Date procendtime;
 	@NotNull
-	@javax.validation.constraints.Size(min = 2, max = 20)
+	@javax.validation.constraints.Size(min = 0, max = 20)
 	private String surname;
 	@NotNull
-	@javax.validation.constraints.Size(min = 2, max = 20)
+	@javax.validation.constraints.Size(min = 0, max = 20)
 	private String name;
 	@NotNull
-	@javax.validation.constraints.Size(min = 2, max = 20)
+	@javax.validation.constraints.Size(min = 0, max = 20)
 	private String patronymic;
 
 	private int case_history_num;

@@ -40,13 +40,12 @@ public class ConsultationManager {
 				"LEFT JOIN  nbc_proc on  nbc_proc.nbc_patients_n = nbc_patients.n\n" +
 				"WHERE nbc_proc.proc_type = 4\n" +
 				"	AND nbc_proc.procbegintime between ? and ?\n" +
-				"	AND nbc_proc.procendtime is not NULL"
-			;
+				"	AND nbc_proc.procendtime is not NULL";
 			BeanListHandler<Consultation> handler = new BeanListHandler<>(Consultation.class);
 
 			return qr.query(con, sql, handler
-				, new java.sql.Timestamp(fromDate.toInstant().getEpochSecond())
-				, new java.sql.Timestamp(toDate.toInstant().getEpochSecond())
+				, new java.sql.Timestamp(fromDate.getTime())
+				, new java.sql.Timestamp(toDate.getTime())
 			);
 
 		} catch (SQLException e) {

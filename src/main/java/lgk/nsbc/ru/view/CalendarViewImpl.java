@@ -100,7 +100,11 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 				CalendarDateRange dateRange = (CalendarDateRange) target;
 				Calendar calendar = (Calendar) sender;
 				// Все события за 30 минут (мы работаем с одним полем в 30 минут?)
-				List<CalendarEvent> events = calendar.getEvents(dateRange.getStart(), dateRange.getEnd());
+				Date start = dateRange.getStart();
+				start.setHours(0);
+				Date end = dateRange.getEnd();
+				end.setHours(23);
+				List<CalendarEvent> events = calendar.getEvents(start,end);
 				// Можно помозговать и придумать более умную логику
 				if (events.size() == 0)
 					return new Action[] {addEventAction};
@@ -138,10 +142,6 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 				}
 			}
 		});
-		hideWeekendsButton.setValue(true);
-		calendarPresenter.handleHideWeekendsButton();
-		firstHourOfDay.setNullSelectionAllowed(false);
-		lastHourOfDay.setNullSelectionAllowed(false);
 		initButtons();
 		initLayoutContent();
 	}
@@ -158,6 +158,10 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 	 * </p>
 	 */
 	private void initButtons() {
+		hideWeekendsButton.setValue(true);
+		calendarPresenter.handleHideWeekendsButton();
+		firstHourOfDay.setNullSelectionAllowed(false);
+		lastHourOfDay.setNullSelectionAllowed(false);
 		// TODO логику нажатия дня и недели придется менять
 		dayButton.addClickListener(clickEvent -> {
 			BasicDateClickHandler handler = (BasicDateClickHandler) calendarComponent
