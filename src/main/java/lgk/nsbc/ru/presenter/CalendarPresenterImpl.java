@@ -8,6 +8,8 @@ import lgk.nsbc.ru.view.CalendarView;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 
 import java.text.DateFormatSymbols;
+import java.time.*;
+import java.time.temporal.WeekFields;
 import java.util.*;
 
 /**
@@ -31,8 +33,9 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 		Collections.addAll(executor,"физик", "онколог", "планировщик", "врач", "лечащий врач");
 	}
 
-	private GregorianCalendar gregorianCalendar;
-	private Date currentMonthsFirstDate;
+	private LocalDateTime time = LocalDateTime.of(LocalDate.now(),LocalTime.MIDNIGHT);
+	//private GregorianCalendar gregorianCalendar;
+	//private Date currentMonthsFirstDate;
 	private Mode currentViewMode = Mode.WEEK;
 
 	public CalendarPresenterImpl(CalendarView calendarView,ConsultationModel consultationModel,
@@ -40,12 +43,11 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 		this.consultationManager = consultationManager;
 		this.consultationModel = consultationModel;
 		this.calendarView = calendarView;
-		Date today = new Date();
-		gregorianCalendar = new GregorianCalendar(Locale.getDefault());
-		gregorianCalendar.setTime(today);
-		int rollAmount = gregorianCalendar.get(GregorianCalendar.DAY_OF_MONTH) - 1;
-		gregorianCalendar.add(GregorianCalendar.DAY_OF_MONTH, -rollAmount);
-		currentMonthsFirstDate = gregorianCalendar.getTime();
+
+		// Starting from monday
+		time = time.minusDays(time.getDayOfWeek().getValue()-1);
+		calendarView.setStartDate(getTime());
+		calendarView.setEndDate(localDateTimeToDate(time.plusWeeks(1).minusSeconds(1)));
 		start();
 		updateCaptionLabel();
 	}
@@ -84,38 +86,10 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 	public void handleRangeSelectEvent(Date start, Date end,boolean isMonthlyMode) {
 		// В режиме месяца работаем с целыми сутками
 		if (isMonthlyMode) {
-			start = getStartOfDay(gregorianCalendar,start);
-			end = getEndOfDay(gregorianCalendar, end);
+			start = getStartOfDay(start);
+			end = getEndOfDay(end);
 		}
 		calendarView.setDateNewEvent(start,end);
-	}
-
-	@Override
-	public void setCurrentViewMode(Mode currentViewMode) {
-		this.currentViewMode = currentViewMode;
-	}
-
-	/*
-	 * Resets the calendar time (hour, minute second and millisecond) either to
-	 * zero or maximum value.
-	 */
-	@Override
-	public void resetTime(boolean max) {
-		if (max) {
-			gregorianCalendar.set(GregorianCalendar.HOUR_OF_DAY,
-				gregorianCalendar.getMaximum(GregorianCalendar.HOUR_OF_DAY));
-			gregorianCalendar.set(GregorianCalendar.MINUTE,
-				gregorianCalendar.getMaximum(GregorianCalendar.MINUTE));
-			gregorianCalendar.set(GregorianCalendar.SECOND,
-				gregorianCalendar.getMaximum(GregorianCalendar.SECOND));
-			gregorianCalendar.set(GregorianCalendar.MILLISECOND,
-				gregorianCalendar.getMaximum(GregorianCalendar.MILLISECOND));
-		} else {
-			gregorianCalendar.set(GregorianCalendar.HOUR_OF_DAY, 0);
-			gregorianCalendar.set(GregorianCalendar.MINUTE, 0);
-			gregorianCalendar.set(GregorianCalendar.SECOND, 0);
-			gregorianCalendar.set(GregorianCalendar.MILLISECOND, 0);
-		}
 	}
 
 	@Override
@@ -152,47 +126,98 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 
 	@Override
 	public void handleAddNewEventButtonClick() {
-		calendarView.setDateNewEvent(getStartOfDay(gregorianCalendar,new Date()),
-			getEndOfDay(gregorianCalendar,new Date()));
+		calendarView.setDateNewEvent(getStartOfDay(new Date()),
+			getEndOfDay(new Date()));
 	}
 
 	@Override
 	public void handleMonthButtonClick() {
 		currentViewMode = Mode.MONTH;
-		int rollAmount = gregorianCalendar.get(GregorianCalendar.DAY_OF_MONTH) - 1;
-		gregorianCalendar.add(GregorianCalendar.DAY_OF_MONTH, -rollAmount);
-		calendarView.setStartDate(gregorianCalendar.getTime());
+		time = time.minusDays(time.getDayOfMonth()-1);
+		calendarView.setStartDate(localDateTimeToDate(time));
+		calendarView.setEndDate(localDateTimeToDate(time.plusMonths(1).minusSeconds(1)));
+		updateCaptionLabel();
+	}
 
-		gregorianCalendar.add(GregorianCalendar.MONTH, 1);
-		gregorianCalendar.add(GregorianCalendar.DATE, -1);
-		calendarView.setEndDate(gregorianCalendar.getTime());
+	@Override
+	public void handleDayButtonClick() {
+		currentViewMode = Mode.DAY;
+		time = time.minusDays(time.getDayOfWeek().getValue()-1);
+		calendarView.setStartDate(localDateTimeToDate(time));
+		calendarView.setEndDate(localDateTimeToDate(time.plusDays(1).minusSeconds(1)));
+		updateCaptionLabel();
+	}
 
-		gregorianCalendar.setTime(new Date());
+	@Override
+	public void handleWeekButtonClick() {
+		currentViewMode = Mode.WEEK;
+		time = time.minusDays(time.getDayOfWeek().getValue()-1);
+		calendarView.setStartDate(localDateTimeToDate(time));
+		calendarView.setEndDate(localDateTimeToDate(time.plusWeeks(1).minusSeconds(1)));
+		updateCaptionLabel();
+	}
+
+	@Override
+	public void handleCalendarDateClick(Date date) {
+		currentViewMode = Mode.DAY;
+		time = dateToLocalDateTime(date);
+		calendarView.setStartDate(localDateTimeToDate(time));
+		calendarView.setEndDate(localDateTimeToDate(time.plusDays(1).minusSeconds(1)));
+		updateCaptionLabel();
+	}
+
+	@Override
+	public void handleCalendarWeekClick(int week, int year) {
+		currentViewMode = Mode.WEEK;
+		WeekFields weekFields = WeekFields.of(Locale.getDefault());
+		time = time.withYear(year)
+			.with(weekFields.weekOfYear(), week)
+			.with(weekFields.dayOfWeek(), 1);
+		calendarView.setStartDate(localDateTimeToDate(time));
+		calendarView.setEndDate(localDateTimeToDate(time.plusWeeks(1).minusSeconds(1)));
 		updateCaptionLabel();
 	}
 
 	@Override
 	public Date getTime() {
-		return gregorianCalendar.getTime();
+		return localDateTimeToDate(time);
 	}
 
-	@Override
-	public int getWeek() {
-		return gregorianCalendar.get(GregorianCalendar.WEEK_OF_YEAR);
+	private static Date localDateTimeToDate(LocalDateTime ldt) {
+		return Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
 	}
 
-	@Override
-	public int getYear() {
-		return gregorianCalendar.get(GregorianCalendar.YEAR);
+
+	private static Date getEndOfDay(Date date) {
+		java.util.Calendar calendar = java.util.Calendar.getInstance();
+		calendar.setTime(date);
+		int year = calendar.get(java.util.Calendar.YEAR);
+		int month = calendar.get(java.util.Calendar.MONTH);
+		int day = calendar.get(java.util.Calendar.DATE);
+		calendar.set(year, month, day, 23, 59, 59);
+		return calendar.getTime();
 	}
+
+	private static Date getStartOfDay(Date date) {
+		java.util.Calendar calendar = java.util.Calendar.getInstance();
+		calendar.setTime(date);
+		int year = calendar.get(java.util.Calendar.YEAR);
+		int month = calendar.get(java.util.Calendar.MONTH);
+		int day = calendar.get(java.util.Calendar.DATE);
+		calendar.set(year, month, day, 0, 0, 0);
+		return calendar.getTime();
+	}
+
+	private static LocalDateTime dateToLocalDateTime(Date date) {
+		return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+	}
+
 
 	@Override
 	public void handleHideWeekendsButton() {
 		if (calendarView.isHideWeekends()) {
-			int firstToShow = (GregorianCalendar.MONDAY - gregorianCalendar
-				.getFirstDayOfWeek()) % 7;
-			calendarView.setFirstVisibleDayOfWeek(firstToShow + 1);
-			calendarView.setLastVisibleDayOfWeek(firstToShow + 5);
+			calendarView.setFirstVisibleDayOfWeek(1);
+			calendarView.setLastVisibleDayOfWeek(5);
 		} else {
 			calendarView.setFirstVisibleDayOfWeek(1);
 			calendarView.setLastVisibleDayOfWeek(7);
@@ -216,85 +241,47 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 		return hourOfDay;
 	}
 
-	private Date getEndOfDay(java.util.Calendar calendar, Date date) {
-		java.util.Calendar calendarClone = (java.util.Calendar) calendar
-			.clone();
-
-		calendarClone.setTime(date);
-		calendarClone.set(java.util.Calendar.MILLISECOND,
-			calendarClone.getActualMaximum(java.util.Calendar.MILLISECOND));
-		calendarClone.set(java.util.Calendar.SECOND,
-			calendarClone.getActualMaximum(java.util.Calendar.SECOND));
-		calendarClone.set(java.util.Calendar.MINUTE,
-			calendarClone.getActualMaximum(java.util.Calendar.MINUTE));
-		calendarClone.set(java.util.Calendar.HOUR,
-			calendarClone.getActualMaximum(java.util.Calendar.HOUR));
-		calendarClone.set(java.util.Calendar.HOUR_OF_DAY,
-			calendarClone.getActualMaximum(java.util.Calendar.HOUR_OF_DAY));
-
-		return calendarClone.getTime();
-	}
-	private Date getStartOfDay(java.util.Calendar calendar, Date date) {
-		java.util.Calendar calendarClone = (java.util.Calendar) calendar
-			.clone();
-
-		calendarClone.setTime(date);
-		calendarClone.set(java.util.Calendar.MILLISECOND, 0);
-		calendarClone.set(java.util.Calendar.SECOND, 0);
-		calendarClone.set(java.util.Calendar.MINUTE, 0);
-		calendarClone.set(java.util.Calendar.HOUR, 0);
-		calendarClone.set(java.util.Calendar.HOUR_OF_DAY, 0);
-
-		return calendarClone.getTime();
-	}
-
-	private void resetCalendarTime(boolean resetEndTime) {
-		resetTime(resetEndTime);
-		if (resetEndTime) {
-			calendarView.setEndDate(gregorianCalendar.getTime());
-		} else {
-			calendarView.setStartDate(gregorianCalendar.getTime());
-		}
-		updateCaptionLabel();
-	}
-
 	private void rollMonth(int direction) {
-		gregorianCalendar.setTime(currentMonthsFirstDate);
-		gregorianCalendar.add(GregorianCalendar.MONTH, direction);
-		resetTime(false);
-		currentMonthsFirstDate = gregorianCalendar.getTime();
-		calendarView.setStartDate(currentMonthsFirstDate);
-		gregorianCalendar.add(GregorianCalendar.MONTH, 1);
-		gregorianCalendar.add(GregorianCalendar.DATE, -1);
-		resetCalendarTime(true);
+		if (direction<0) {
+			time = time.minusMonths(-direction);
+		} else {
+			time = time.plusMonths(direction);
+		}
+		calendarView.setStartDate(localDateTimeToDate(time));
+		calendarView.setEndDate(localDateTimeToDate(time.plusMonths(1).minusSeconds(1)));
 	}
 
 	private void rollWeek(int direction) {
-		gregorianCalendar.add(GregorianCalendar.WEEK_OF_YEAR, direction);
-		gregorianCalendar.set(GregorianCalendar.DAY_OF_WEEK,
-			gregorianCalendar.getFirstDayOfWeek());
-		resetCalendarTime(false);
-		resetTime(true);
-		gregorianCalendar.add(GregorianCalendar.DATE, 6);
-		calendarView.setEndDate(gregorianCalendar.getTime());
+		if (direction<0) {
+			time = time.minusWeeks(-direction);
+		} else {
+			time = time.plusWeeks(direction);
+		}
+		calendarView.setStartDate(localDateTimeToDate(time));
+		calendarView.setEndDate(localDateTimeToDate(time.plusWeeks(1).minusSeconds(1)));
 	}
 
 	private void rollDate(int direction) {
-		gregorianCalendar.add(GregorianCalendar.DATE, direction);
-		if (gregorianCalendar.get(GregorianCalendar.DAY_OF_WEEK)==GregorianCalendar.SATURDAY) {
-			gregorianCalendar.add(GregorianCalendar.DATE, 2);
+		if (direction<0) {
+			time = time.minusDays(-direction);
+		} else {
+			time = time.plusDays(direction);
 		}
-		if (gregorianCalendar.get(GregorianCalendar.DAY_OF_WEEK)==GregorianCalendar.SUNDAY) {
-			gregorianCalendar.add(GregorianCalendar.DATE, -2);
+		time.plusDays(direction);
+		if (time.getDayOfWeek()==DayOfWeek.SATURDAY) {
+			time = time.plusDays(2);
 		}
-		resetCalendarTime(false);
-		resetCalendarTime(true);
+		if (time.getDayOfWeek()==DayOfWeek.SUNDAY) {
+			time = time.minusDays(2);
+		}
+		calendarView.setStartDate(localDateTimeToDate(time));
+		calendarView.setEndDate(localDateTimeToDate(time.plusDays(1).minusSeconds(1)));
 	}
 
 	private void updateCaptionLabel() {
 		DateFormatSymbols s = new DateFormatSymbols(Locale.getDefault());
-		String month = s.getShortMonths()[gregorianCalendar.get(GregorianCalendar.MONTH)];
+		String month = s.getShortMonths()[time.getMonth().getValue()-1];
 		calendarView.setCurrentDateLabel(month + " "
-			+ gregorianCalendar.get(GregorianCalendar.YEAR));
+			+ time.getYear());
 	}
 }

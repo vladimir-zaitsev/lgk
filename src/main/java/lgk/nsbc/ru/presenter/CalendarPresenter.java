@@ -10,21 +10,29 @@ import java.util.List;
  * Created by Роман on 13.03.2016.
  */
 public interface CalendarPresenter {
+
 	enum Mode {
 		DAY, WEEK, MONTH
 	}
 	Date getTime();
-	int getWeek();
-	int getYear();
+
+	// Create/Delete/Edit event
 	void handleDeleteEvent(CalendarEvent calendarEvent);
 	void handleRangeSelectEvent(Date start, Date end,boolean isMonthlyMode);
-	void setCurrentViewMode(Mode currentViewMode);
-	void resetTime(boolean resetEndTime);
+	void handleAddNewEventButtonClick();
 
+	// Navigation
 	void handleNextButtonClick();
 	void handlePreviousButtonClick();
-	void handleAddNewEventButtonClick();
+
 	void handleMonthButtonClick();
+	void handleWeekButtonClick();
+	void handleDayButtonClick();
+
+	void handleCalendarWeekClick(int week,int year);
+	void handleCalendarDateClick(Date date);
+
+	// Calendar settings tuning
 	void handleHideWeekendsButton();
 	void handleFirstHourOfDayChange();
 	void handleLastHourOfDayChange();

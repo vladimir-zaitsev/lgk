@@ -67,25 +67,15 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 		calendarComponent.setHandler((CalendarComponentEvents.EventClick eventClick) ->
 			presenter.handleEventClick(eventClick.getCalendarEvent(),false));
 		// Назначить действие при создании событий внутри календаря
-		calendarComponent.setHandler((CalendarComponentEvents.RangeSelectEvent event) -> {
-			calendarPresenter.handleRangeSelectEvent(event.getStart(),event.getEnd(),event.isMonthlyMode());
-		});
-		// Переопределяем нижеидущие handlars пока только для изменения currentViewMode
-		// TODO проблема в логике super.weekClick() (Отображается текущая неделя)
-		calendarComponent.setHandler(new BasicWeekClickHandler() {
-			@Override
-			public void weekClick(CalendarComponentEvents.WeekClick event) {
-				super.weekClick(event);
-				calendarPresenter.setCurrentViewMode(CalendarPresenter.Mode.WEEK);
-			}
-		});
-		calendarComponent.setHandler(new BasicDateClickHandler() {
-			@Override
-			public void dateClick(CalendarComponentEvents.DateClickEvent event) {
-				super.dateClick(event);
-				calendarPresenter.setCurrentViewMode(CalendarPresenter.Mode.DAY);
-			}
-		});
+		calendarComponent.setHandler((CalendarComponentEvents.RangeSelectEvent event) ->
+			calendarPresenter.handleRangeSelectEvent(event.getStart(),event.getEnd(),event.isMonthlyMode()));
+
+		calendarComponent.setHandler((CalendarComponentEvents.WeekClick eventClick) ->
+			calendarPresenter.handleCalendarWeekClick(eventClick.getWeek(),eventClick.getYear()));
+
+		calendarComponent.setHandler((CalendarComponentEvents.DateClickEvent eventClick) ->
+			calendarPresenter.handleCalendarDateClick(eventClick.getDate()));
+
 		calendarComponent.addActionHandler(new Action.Handler() {
 			Action addEventAction    = new Action("Новая консультация");
 			Action deleteEventAction = new Action("Удалить консультацию");
@@ -146,7 +136,6 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 		initLayoutContent();
 	}
 
-
 	public void setEditFormPresenter(Presenter presenter)
 	{
 		this.presenter = (EditFormPresenter) presenter;
@@ -158,24 +147,10 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 	 * </p>
 	 */
 	private void initButtons() {
-		hideWeekendsButton.setValue(true);
-		calendarPresenter.handleHideWeekendsButton();
-		firstHourOfDay.setNullSelectionAllowed(false);
-		lastHourOfDay.setNullSelectionAllowed(false);
-		// TODO логику нажатия дня и недели придется менять
-		dayButton.addClickListener(clickEvent -> {
-			BasicDateClickHandler handler = (BasicDateClickHandler) calendarComponent
-				.getHandler(CalendarComponentEvents.DateClickEvent.EVENT_ID);
-			handler.dateClick(new CalendarComponentEvents.DateClickEvent(calendarComponent,
-				calendarPresenter.getTime()));
-		});
 
-		weekButton.addClickListener(clickEvent -> {
-			CalendarComponentEvents.WeekClickHandler handler = (CalendarComponentEvents.WeekClickHandler) calendarComponent
-				.getHandler(CalendarComponentEvents.WeekClick.EVENT_ID);
-			handler.weekClick(new CalendarComponentEvents.WeekClick(calendarComponent,
-				calendarPresenter.getWeek(), calendarPresenter.getYear()));
-		});
+		dayButton.addClickListener( clickEvent -> calendarPresenter.handleDayButtonClick());
+
+		weekButton.addClickListener( clickEvent -> calendarPresenter.handleWeekButtonClick());
 
 		monthButton.addClickListener( clickEvent -> calendarPresenter.handleMonthButtonClick());
 
@@ -186,12 +161,15 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 		addNewEventButton.addClickListener(clickEvent -> calendarPresenter.handleAddNewEventButtonClick());
 
 		hideWeekendsButton.addValueChangeListener(valueChangeEvent -> calendarPresenter.handleHideWeekendsButton());
+		hideWeekendsButton.setValue(true);
 
+		firstHourOfDay.setNullSelectionAllowed(false);
 		firstHourOfDay.setInputPrompt("Начало дня");
 		firstHourOfDay.setWidth(150,Unit.PIXELS);
 		firstHourOfDay.addValueChangeListener(valueChangeEvent -> calendarPresenter.handleFirstHourOfDayChange());
 		firstHourOfDay.addItems(calendarPresenter.getComboBoxValues());
 
+		lastHourOfDay.setNullSelectionAllowed(false);
 		lastHourOfDay.setInputPrompt("Конец дня");
 		lastHourOfDay.setWidth(150,Unit.PIXELS);
 		lastHourOfDay.addValueChangeListener(valueChangeEvent -> calendarPresenter.handleLastHourOfDayChange());
