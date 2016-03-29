@@ -1,11 +1,5 @@
 package lgk.nsbc.ru.view;
 
-import lgk.nsbc.ru.backend.ConsultationManager;
-import lgk.nsbc.ru.model.ConsultationModel;
-import lgk.nsbc.ru.presenter.CalendarPresenter;
-import lgk.nsbc.ru.presenter.CalendarPresenterImpl;
-import lgk.nsbc.ru.presenter.EditFormPresenter;
-import lgk.nsbc.ru.presenter.Presenter;
 import com.vaadin.event.Action;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -14,8 +8,12 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents;
 import com.vaadin.ui.components.calendar.CalendarDateRange;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
-import com.vaadin.ui.components.calendar.handler.BasicDateClickHandler;
-import com.vaadin.ui.components.calendar.handler.BasicWeekClickHandler;
+import lgk.nsbc.ru.backend.ConsultationManager;
+import lgk.nsbc.ru.model.ConsultationModel;
+import lgk.nsbc.ru.presenter.CalendarPresenter;
+import lgk.nsbc.ru.presenter.CalendarPresenterImpl;
+import lgk.nsbc.ru.presenter.EditFormPresenter;
+import lgk.nsbc.ru.presenter.Presenter;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -48,7 +46,7 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 		super(consultationModel);
 		this.consultationManager = consultationManager;
 		this.calendarPresenter = new CalendarPresenterImpl(this,consultationModel,consultationManager);
-		calendarComponent.setContainerDataSource(consultationModel.beanItemContainer);
+		calendarComponent.setContainerDataSource(consultationModel.getBeanItemContainer());
 		calendarComponent.setLocale(Locale.getDefault());
 		calendarComponent.setFirstVisibleHourOfDay(9);
 		calendarComponent.setLastVisibleHourOfDay(18);
@@ -93,7 +91,7 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 				Date start = dateRange.getStart();
 				start.setHours(0);
 				Date end = dateRange.getEnd();
-				end.setHours(23);
+				end.setHours(24);
 				List<CalendarEvent> events = calendar.getEvents(start,end);
 				// Можно помозговать и придумать более умную логику
 				if (events.size() == 0)

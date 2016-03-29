@@ -57,8 +57,8 @@ public class EditFormPresenter implements  Presenter {
     {
         view.commitEvent();
         ConsultationEvent event = view.getFormEvent();
-        if ( ! model.beanItemContainer.containsId(event)) {
-            model.beanItemContainer.addBean(event);
+        if ( ! model.getBeanItemContainer().containsId(event)) {
+            model.getBeanItemContainer().addBean(event);
         }
     }
     @Override
@@ -72,8 +72,8 @@ public class EditFormPresenter implements  Presenter {
     @Override
     public void deleteEvent() {
         ConsultationEvent event = view.getFormEvent();
-        if (model.beanItemContainer.containsId(event))
-            model.beanItemContainer.removeItem(event);
+        if (model.getBeanItemContainer().containsId(event))
+            model.getBeanItemContainer().removeItem(event);
     }
     @Override
     public ConsultationEvent selectedItem() {

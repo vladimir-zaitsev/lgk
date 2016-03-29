@@ -17,7 +17,6 @@ import java.util.*;
  */
 public class CalendarPresenterImpl implements CalendarPresenter {
 
-
 	private final CalendarView calendarView;
 	private  final ConsultationModel consultationModel;
 	private  final ConsultationManager consultationManager;
@@ -34,8 +33,6 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 	}
 
 	private LocalDateTime time = LocalDateTime.of(LocalDate.now(),LocalTime.MIDNIGHT);
-	//private GregorianCalendar gregorianCalendar;
-	//private Date currentMonthsFirstDate;
 	private Mode currentViewMode = Mode.WEEK;
 
 	public CalendarPresenterImpl(CalendarView calendarView,ConsultationModel consultationModel,
@@ -54,31 +51,28 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 
 	public void start() {
 
-		GregorianCalendar calendar = new GregorianCalendar(2016, 1, 1);
-		Date startDay = calendar.getTime();
-		calendar.add(calendar.MONTH, 1);
-		Date endDay = calendar.getTime();
-
-		List<Consultation> consultations = new ArrayList<>(consultationManager.listConsultation(startDay, endDay));
+		LocalDateTime consultationTimeRange = LocalDateTime.of(2016,1,1,0,0);
+		List<Consultation> consultations = new ArrayList<>(consultationManager.listConsultation(
+			localDateTimeToDate(consultationTimeRange), localDateTimeToDate(consultationTimeRange.plusMonths(2))));
 		System.out.println(consultations.size());
 		for (int i = 0; i < consultations.size(); i++) {
 			Random random = new Random();
 			int value = random.nextInt(executor.size());
 			Consultation consultation = consultations.get(i);
 			String descr = consultation.getSurname();
+
 			ConsultationEvent event = new ConsultationEvent(descr, "Some description.", consultations.get(i),
 				executor.get(value));
-			event.setStyleName("color3");
-			event.getStart().setHours(0);
-			event.getEnd().setHours(0);
+			event.setStart(getStartOfDay(event.getStart()));
+			event.setEnd(getEndOfDay(event.getEnd()));
 			event.setAllDay(true);
-			consultationModel.beanItemContainer.addBean(event);
+			consultationModel.getBeanItemContainer().addBean(event);
 		}
 	}
 
 	@Override
 	public void handleDeleteEvent(CalendarEvent calendarEvent) {
-		consultationModel.beanItemContainer.removeItem(calendarEvent);
+		consultationModel.getBeanItemContainer().removeItem(calendarEvent);
 	}
 
 
@@ -242,31 +236,19 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 	}
 
 	private void rollMonth(int direction) {
-		if (direction<0) {
-			time = time.minusMonths(-direction);
-		} else {
-			time = time.plusMonths(direction);
-		}
+		time = time.plusMonths(direction);
 		calendarView.setStartDate(localDateTimeToDate(time));
 		calendarView.setEndDate(localDateTimeToDate(time.plusMonths(1).minusSeconds(1)));
 	}
 
 	private void rollWeek(int direction) {
-		if (direction<0) {
-			time = time.minusWeeks(-direction);
-		} else {
-			time = time.plusWeeks(direction);
-		}
+		time = time.plusWeeks(direction);
 		calendarView.setStartDate(localDateTimeToDate(time));
 		calendarView.setEndDate(localDateTimeToDate(time.plusWeeks(1).minusSeconds(1)));
 	}
 
 	private void rollDate(int direction) {
-		if (direction<0) {
-			time = time.minusDays(-direction);
-		} else {
-			time = time.plusDays(direction);
-		}
+		time = time.plusDays(direction);
 		time.plusDays(direction);
 		if (time.getDayOfWeek()==DayOfWeek.SATURDAY) {
 			time = time.plusDays(2);
