@@ -13,4 +13,8 @@ public class ConsultationModel {
 	public BeanItemContainer<ConsultationEvent> getBeanItemContainer() {
 		return beanItemContainer;
 	}
+
+	public void sortContainer() {
+		beanItemContainer.sort(new Object[]{"start","caption"},new boolean[]{true,false});
+	}
 }

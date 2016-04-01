@@ -7,7 +7,9 @@ import com.vaadin.server.Page;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents;
 import com.vaadin.ui.components.calendar.CalendarDateRange;
+import com.vaadin.ui.components.calendar.ContainerEventProvider;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
+import com.vaadin.ui.components.calendar.event.CalendarEventProvider;
 import lgk.nsbc.ru.backend.ConsultationManager;
 import lgk.nsbc.ru.model.ConsultationModel;
 import lgk.nsbc.ru.presenter.CalendarPresenter;
@@ -46,7 +48,8 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 		super(consultationModel);
 		this.consultationManager = consultationManager;
 		this.calendarPresenter = new CalendarPresenterImpl(this,consultationModel,consultationManager);
-		calendarComponent.setContainerDataSource(consultationModel.getBeanItemContainer());
+		ContainerEventProvider eventProvider = new ContainerEventProvider(consultationModel.getBeanItemContainer());
+		calendarComponent.setEventProvider(eventProvider);
 		calendarComponent.setLocale(Locale.getDefault());
 		calendarComponent.setFirstVisibleHourOfDay(9);
 		calendarComponent.setLastVisibleHourOfDay(18);
@@ -54,6 +57,8 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 		calendarComponent.getInternalCalendar().setTime(calendarPresenter.getTime());
 		calendarComponent.setStartDate(calendarComponent.getStartDate());
 		calendarComponent.setEndDate(calendarComponent.getEndDate());
+
+
 
 		// Запретить изменение размеров событий мышкой
 		calendarComponent.setHandler((CalendarComponentEvents.EventResizeHandler)null);
@@ -73,6 +78,7 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 
 		calendarComponent.setHandler((CalendarComponentEvents.DateClickEvent eventClick) ->
 			calendarPresenter.handleCalendarDateClick(eventClick.getDate()));
+
 
 		calendarComponent.addActionHandler(new Action.Handler() {
 			Action addEventAction    = new Action("Новая консультация");

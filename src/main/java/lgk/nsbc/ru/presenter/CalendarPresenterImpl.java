@@ -51,7 +51,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 
 	public void start() {
 
-		LocalDateTime consultationTimeRange = LocalDateTime.of(2016,1,1,0,0);
+		LocalDateTime consultationTimeRange = LocalDateTime.of(2016,2,1,0,0);
 		List<Consultation> consultations = new ArrayList<>(consultationManager.listConsultation(
 			localDateTimeToDate(consultationTimeRange), localDateTimeToDate(consultationTimeRange.plusMonths(2))));
 		System.out.println(consultations.size());
@@ -68,6 +68,8 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 			event.setAllDay(true);
 			consultationModel.getBeanItemContainer().addBean(event);
 		}
+		// Сортируем по дате и фамилии (в будущем можно будет менять в интерфейсе)
+		consultationModel.sortContainer();
 	}
 
 	@Override
@@ -266,4 +268,6 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 		calendarView.setCurrentDateLabel(month + " "
 			+ time.getYear());
 	}
+
+
 }
