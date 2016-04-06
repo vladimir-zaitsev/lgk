@@ -1,7 +1,6 @@
 package lgk.nsbc.ru.view;
 
 import com.vaadin.event.Action;
-import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
 import com.vaadin.ui.*;
@@ -9,13 +8,11 @@ import com.vaadin.ui.components.calendar.CalendarComponentEvents;
 import com.vaadin.ui.components.calendar.CalendarDateRange;
 import com.vaadin.ui.components.calendar.ContainerEventProvider;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
-import com.vaadin.ui.components.calendar.event.CalendarEventProvider;
 import lgk.nsbc.ru.backend.ConsultationManager;
+import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 import lgk.nsbc.ru.model.ConsultationModel;
 import lgk.nsbc.ru.presenter.CalendarPresenter;
 import lgk.nsbc.ru.presenter.CalendarPresenterImpl;
-import lgk.nsbc.ru.presenter.EditFormPresenter;
-import lgk.nsbc.ru.presenter.Presenter;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -25,7 +22,7 @@ import java.util.Locale;
 /**
  * Created by user on 16.03.2016.
  */
-public class CalendarViewImpl extends AbstractView<ConsultationModel> implements View,CalendarView {
+public class CalendarViewImpl extends AbstractView<ConsultationModel> implements CalendarView {
 	// UI components
 	private GridLayout gridLayout = new GridLayout();
 	public Calendar calendarComponent = new Calendar();
@@ -41,12 +38,9 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 	private ComboBox lastHourOfDay = new ComboBox("Конец дня");
 
 	CalendarPresenter calendarPresenter;
-	EditFormPresenter presenter;
-	final ConsultationManager consultationManager;
 
 	public CalendarViewImpl(ConsultationModel consultationModel, ConsultationManager consultationManager) {
 		super(consultationModel);
-		this.consultationManager = consultationManager;
 		this.calendarPresenter = new CalendarPresenterImpl(this,consultationModel,consultationManager);
 		ContainerEventProvider eventProvider = new ContainerEventProvider(consultationModel.getBeanItemContainer());
 		calendarComponent.setEventProvider(eventProvider);
@@ -58,8 +52,6 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 		calendarComponent.setStartDate(calendarComponent.getStartDate());
 		calendarComponent.setEndDate(calendarComponent.getEndDate());
 
-
-
 		// Запретить изменение размеров событий мышкой
 		calendarComponent.setHandler((CalendarComponentEvents.EventResizeHandler)null);
 		// Во первых, уже есть кнопки, меняющие вид. Во вторых, они работают правильнее.
@@ -68,7 +60,7 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 
 		// Назначить действие при нажатии на событие
 		calendarComponent.setHandler((CalendarComponentEvents.EventClick eventClick) ->
-			presenter.handleEventClick(eventClick.getCalendarEvent(),false));
+			calendarPresenter.handleEventClick((ConsultationEvent)eventClick.getCalendarEvent()));
 		// Назначить действие при создании событий внутри календаря
 		calendarComponent.setHandler((CalendarComponentEvents.RangeSelectEvent event) ->
 			calendarPresenter.handleRangeSelectEvent(event.getStart(),event.getEnd(),event.isMonthlyMode()));
@@ -121,14 +113,14 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 						GregorianCalendar end = new GregorianCalendar();
 						end.setTime(date);
 						end.add(java.util.Calendar.MINUTE, 30);
-						presenter.handleNewEvent(start.getTime(),end.getTime(),true);
+						calendarPresenter.handleRangeSelectEvent(start.getTime(),end.getTime(),false);
 					} else
 						new Notification("Невозможно добавить событий",
 							"Возможно, вы не туда указали?").show(Page.getCurrent());
 				} else if (action == deleteEventAction) {
 					// Проверить, что выбрал именно удалить событие
-					if (target instanceof CalendarEvent) {
-						CalendarEvent event = (CalendarEvent) target;
+					if (target instanceof ConsultationEvent) {
+						ConsultationEvent event = (ConsultationEvent) target;
 						calendarPresenter.handleDeleteEvent(event);
 					} else
 						new Notification("Невозможно удалить событие",
@@ -138,11 +130,6 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 		});
 		initButtons();
 		initLayoutContent();
-	}
-
-	public void setEditFormPresenter(Presenter presenter)
-	{
-		this.presenter = (EditFormPresenter) presenter;
 	}
 
 	/**
@@ -158,9 +145,9 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 
 		monthButton.addClickListener( clickEvent -> calendarPresenter.handleMonthButtonClick());
 
-		prevButton.addClickListener(clickEvent -> calendarPresenter.handlePreviousButtonClick());
+		prevButton.addClickListener(clickEvent -> calendarPresenter.handleNavigationButtonClick(false));
 
-		nextButton.addClickListener(clickEvent -> calendarPresenter.handleNextButtonClick());
+		nextButton.addClickListener(clickEvent -> calendarPresenter.handleNavigationButtonClick(true));
 
 		addNewEventButton.addClickListener(clickEvent -> calendarPresenter.handleAddNewEventButtonClick());
 
@@ -252,11 +239,6 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 	@Override
 	public String getLastHourOfDay() {
 		return (String)lastHourOfDay.getValue();
-	}
-
-	@Override
-	public void setDateNewEvent(Date start, Date end) {
-		presenter.handleNewEvent(start,end,true);
 	}
 
 	@Override

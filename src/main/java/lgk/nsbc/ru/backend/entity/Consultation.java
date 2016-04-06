@@ -1,6 +1,5 @@
 package lgk.nsbc.ru.backend.entity;
 
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -10,26 +9,18 @@ public class Consultation
 {
 
 	private Date procbegintime;
-
 	private Date procendtime;
-	@NotNull
-	@javax.validation.constraints.Size(min = 0, max = 20)
 	private String surname;
-	@NotNull
-	@javax.validation.constraints.Size(min = 0, max = 20)
 	private String name;
-	@NotNull
-	@javax.validation.constraints.Size(min = 0, max = 20)
 	private String patronymic;
-
-	private int case_history_num;
+	private Integer case_history_num;
 	private String diagnosis;
 	private Date birthday;
 	private String executor;
 
 	public Consultation() {}
 
-	public Consultation(Date birthday, int case_history_num, String diagnosis, String patronymic, String name,
+	public Consultation(Date birthday, Integer case_history_num, String diagnosis, String patronymic, String name,
 						Date procbegintime, Date procendtime, String surname) {
 		this.birthday = birthday;
 		this.case_history_num = case_history_num;
@@ -41,8 +32,7 @@ public class Consultation
 		this.surname = surname;
 	}
 
-	public Consultation(Patient patient,Date procbegintime,Date procendtime)
-	{
+	public Consultation(Patient patient,Date procbegintime,Date procendtime) {
 		this.birthday = patient.getBirthday();
 		this.case_history_num = patient.getCase_history_num();
 		this.diagnosis = patient.getDiagnosis();
@@ -106,7 +96,7 @@ public class Consultation
 		this.patronymic = patronymic;
 	}
 
-	public int getCase_history_num() {
+	public Integer getCase_history_num() {
 		return case_history_num;
 	}
 

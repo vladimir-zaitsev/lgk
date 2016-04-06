@@ -1,13 +1,13 @@
 package lgk.nsbc.ru.view;
 
-import lgk.nsbc.ru.presenter.Presenter;
+import com.vaadin.navigator.View;
 
 import java.util.Date;
 
 /**
  * Created by Роман on 14.03.2016.
  */
-public interface CalendarView {
+public interface CalendarView extends View {
 	void setStartDate(Date start);
 	void setEndDate(Date end);
 	boolean isHideWeekends();
@@ -17,7 +17,5 @@ public interface CalendarView {
 	void setLastVisibleHourOfDay(int lastHour);
 	String getFirstHourOfDay();
 	String getLastHourOfDay();
-	void setDateNewEvent(Date start, Date end);
-	void setEditFormPresenter(Presenter presenter);
 	void setCurrentDateLabel(String caption);
 }

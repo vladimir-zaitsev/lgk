@@ -23,7 +23,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 	public static final ArrayList<String> PROCEDURES = new ArrayList<>(4);
 	private static final List<String> executor = new ArrayList<>(5);
 	private static ArrayList<String> hourOfDay = new ArrayList<>(24);
-
+	private final EditFormPresenter editFormPresenter;
 	static {
 		for (int i=0;i<24;i++) {
 			hourOfDay.add(String.format("%02d:00",i));
@@ -40,7 +40,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 		this.consultationManager = consultationManager;
 		this.consultationModel = consultationModel;
 		this.calendarView = calendarView;
-
+		editFormPresenter = new EditFormPresenterImpl(consultationModel,consultationManager);
 		// Starting from monday
 		time = time.minusDays(time.getDayOfWeek().getValue()-1);
 		calendarView.setStartDate(getTime());
@@ -50,7 +50,6 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 	}
 
 	public void start() {
-
 		LocalDateTime consultationTimeRange = LocalDateTime.of(2016,2,1,0,0);
 		List<Consultation> consultations = new ArrayList<>(consultationManager.listConsultation(
 			localDateTimeToDate(consultationTimeRange), localDateTimeToDate(consultationTimeRange.plusMonths(2))));
@@ -73,8 +72,8 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 	}
 
 	@Override
-	public void handleDeleteEvent(CalendarEvent calendarEvent) {
-		consultationModel.getBeanItemContainer().removeItem(calendarEvent);
+	public void handleDeleteEvent(ConsultationEvent consultationEvent) {
+		consultationModel.getBeanItemContainer().removeItem(consultationEvent);
 	}
 
 
@@ -85,45 +84,46 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 			start = getStartOfDay(start);
 			end = getEndOfDay(end);
 		}
-		calendarView.setDateNewEvent(start,end);
-	}
-
-	@Override
-	public void handleNextButtonClick() {
-		switch (currentViewMode) {
-			case MONTH:
-				rollMonth(1);
-				break;
-			case WEEK:
-				rollWeek(1);
-				break;
-			case DAY:
-				rollDate(1);
-				break;
-		}
-		updateCaptionLabel();
-	}
-
-	@Override
-	public void handlePreviousButtonClick() {
-		switch (currentViewMode) {
-			case MONTH:
-				rollMonth(-1);
-				break;
-			case WEEK:
-				rollWeek(-1);
-				break;
-			case DAY:
-				rollDate(-1);
-				break;
-		}
-		updateCaptionLabel();
+		Consultation consultation = new Consultation(null, null, "", "", "", start, end, "");
+		ConsultationEvent event = new ConsultationEvent("", "", consultation);
+		event.setStyleName("color1");
+		consultationModel.getBeanItemContainer().addBean(event);
+		editFormPresenter.handleNewEvent(event);
+		consultationModel.sortContainer();
 	}
 
 	@Override
 	public void handleAddNewEventButtonClick() {
-		calendarView.setDateNewEvent(getStartOfDay(new Date()),
-			getEndOfDay(new Date()));
+		Consultation consultation = new Consultation(null, null, "", "", "", localDateTimeToDate(time),
+			localDateTimeToDate(time), "");
+		ConsultationEvent event = new ConsultationEvent("", "", consultation);
+		event.setStyleName("color1");
+		consultationModel.sortContainer();
+		consultationModel.getBeanItemContainer().addBean(event);
+		editFormPresenter.handleNewEvent(event);
+	}
+
+	@Override
+	public void handleEventClick(ConsultationEvent consultationEvent) {
+		editFormPresenter.handleEventClick(consultationEvent);
+		consultationModel.sortContainer();
+	}
+
+	@Override
+	public void handleNavigationButtonClick(boolean isForward) {
+		int direction = isForward ? 1 : -1;
+		switch (currentViewMode) {
+			case MONTH:
+				rollMonth(direction);
+				break;
+			case WEEK:
+				rollWeek(direction);
+				break;
+			case DAY:
+				rollDate(direction);
+				break;
+		}
+		updateCaptionLabel();
 	}
 
 	@Override
@@ -179,36 +179,6 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 		return localDateTimeToDate(time);
 	}
 
-	private static Date localDateTimeToDate(LocalDateTime ldt) {
-		return Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
-	}
-
-
-	private static Date getEndOfDay(Date date) {
-		java.util.Calendar calendar = java.util.Calendar.getInstance();
-		calendar.setTime(date);
-		int year = calendar.get(java.util.Calendar.YEAR);
-		int month = calendar.get(java.util.Calendar.MONTH);
-		int day = calendar.get(java.util.Calendar.DATE);
-		calendar.set(year, month, day, 23, 59, 59);
-		return calendar.getTime();
-	}
-
-	private static Date getStartOfDay(Date date) {
-		java.util.Calendar calendar = java.util.Calendar.getInstance();
-		calendar.setTime(date);
-		int year = calendar.get(java.util.Calendar.YEAR);
-		int month = calendar.get(java.util.Calendar.MONTH);
-		int day = calendar.get(java.util.Calendar.DATE);
-		calendar.set(year, month, day, 0, 0, 0);
-		return calendar.getTime();
-	}
-
-	private static LocalDateTime dateToLocalDateTime(Date date) {
-		return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-	}
-
-
 	@Override
 	public void handleHideWeekendsButton() {
 		if (calendarView.isHideWeekends()) {
@@ -235,6 +205,34 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 	@Override
 	public List getComboBoxValues() {
 		return hourOfDay;
+	}
+
+	private static Date localDateTimeToDate(LocalDateTime ldt) {
+		return Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
+	}
+
+	private static Date getEndOfDay(Date date) {
+		java.util.Calendar calendar = java.util.Calendar.getInstance();
+		calendar.setTime(date);
+		int year = calendar.get(java.util.Calendar.YEAR);
+		int month = calendar.get(java.util.Calendar.MONTH);
+		int day = calendar.get(java.util.Calendar.DATE);
+		calendar.set(year, month, day, 23, 59, 59);
+		return calendar.getTime();
+	}
+
+	private static Date getStartOfDay(Date date) {
+		java.util.Calendar calendar = java.util.Calendar.getInstance();
+		calendar.setTime(date);
+		int year = calendar.get(java.util.Calendar.YEAR);
+		int month = calendar.get(java.util.Calendar.MONTH);
+		int day = calendar.get(java.util.Calendar.DATE);
+		calendar.set(year, month, day, 0, 0, 0);
+		return calendar.getTime();
+	}
+
+	private static LocalDateTime dateToLocalDateTime(Date date) {
+		return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
 	}
 
 	private void rollMonth(int direction) {
@@ -268,6 +266,4 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 		calendarView.setCurrentDateLabel(month + " "
 			+ time.getYear());
 	}
-
-
 }

@@ -2,15 +2,13 @@ package lgk.nsbc.ru.view;
 
 import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.util.converter.StringToDateConverter;
-import com.vaadin.data.validator.BeanValidator;
 import com.vaadin.server.Sizeable;
 import lgk.nsbc.ru.backend.PatientContainer;
 import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
-import lgk.nsbc.ru.backend.entity.Consultation;
 import lgk.nsbc.ru.backend.entity.Patient;
 import lgk.nsbc.ru.presenter.CalendarPresenterImpl;
+import lgk.nsbc.ru.presenter.EditFormPresenterImpl;
 import lgk.nsbc.ru.presenter.EditFormPresenter;
-import lgk.nsbc.ru.presenter.Presenter;
 import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItem;
@@ -19,212 +17,132 @@ import com.vaadin.ui.*;
 import org.vaadin.hene.expandingtextarea.ExpandingTextArea;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class EditFormViewImpl implements EditFormView {
 
-	EditFormPresenter presenter;
-
-	private Window eventPopup;
-
-	private FormLayout eventFormLayout;
-
-	private PatientCombobox combobox;
-
-	private PatientContainer patientContainer;
-
-	private FieldGroup fieldGroup;
-
-	private Button deleteEventButton;
-
-	private Button applyEventButton;
-
-	private Patient patient;
+	private Window eventPopup = new Window();
+	private FormLayout eventFormLayout = new FormLayout();
+	private PatientCombobox combobox = new PatientCombobox("Быстрый ввод");
+	private PatientContainer patientContainer = new PatientContainer();
+	private FieldGroup fieldGroup = new FieldGroup();
+	private Button deleteEventButton = new Button("Удалить");
+	private Button applyEventButton = new Button("Применить");
+	private Button cancelButton = new Button("Отмена");
+	private NativeSelect selectProcedure = new NativeSelect("Вид консультации",CalendarPresenterImpl.PROCEDURES);
+	private CheckBox allDayField = new CheckBox("Полный день");
 
 	@PropertyId("caption")
-	private TextField captionField;
+	private TextField captionField = new TextField("Заголовок");
 
 	@PropertyId("description")
-	private ExpandingTextArea descriptionField;
+	private ExpandingTextArea descriptionField = new ExpandingTextArea("Описание");
 
 	@PropertyId("executor")
-	private TextField executorField;
+	private TextField executorField = new TextField("Исполнитель");
 
 	@PropertyId("name")
-	private TextField nameField;
+	private TextField nameField = new TextField("Имя");
 
 	@PropertyId("surname")
-	private TextField surnameField;
+	private TextField surnameField = new TextField("Фамилия");
 
 	@PropertyId("patronymic")
-	private TextField patronymicField;
+	private TextField patronymicField = new TextField("Отчество");
 
 	@PropertyId("birthday")
-	private TextField birthdayField;
+	private TextField birthdayField = new TextField("Дата рождения");
 
 	@PropertyId("case_history_num")
-	private TextField casHisField;
+	private TextField caseHistoryNumTextField = new TextField("Номер истории");
 
 	@PropertyId("start")
-	private DateField startDateField;
+	private DateField startDateField = new DateField("Начало события");
 
 	@PropertyId("end")
-	private DateField endDateField;
+	private DateField endDateField = new DateField("Конец события");
 
-	private ConsultationEvent consulEvent;
+	EditFormPresenterImpl presenter;
+	private ConsultationEvent consultationEvent;
+	private Patient patient;
 
-	private CheckBox allDayField;
-
-	private boolean useSecondResolution;
-
-	public EditFormViewImpl(Presenter presenter) {
-		this.presenter = (EditFormPresenter) presenter;
-	}
-
-	@Override
-	public void createEventPopup(ConsultationEvent consultationEvent, boolean newEvent)
-	{
-		if (eventPopup == null) {
-			initForm(consultationEvent, newEvent);
-			bindConsultationEventForm(consulEvent);
-		}
-		if (newEvent)
-		{
-			eventPopup.setCaption("Новая консультация");
-		}
-		else
-		{
-			eventPopup.setCaption("Редактирование консультации");
-		}
+	public EditFormViewImpl(EditFormPresenter editFormPresenter,ConsultationEvent consultationEvent, boolean newEvent) {
+		this.presenter = (EditFormPresenterImpl) editFormPresenter;
+		this.consultationEvent = consultationEvent;
+		initForm(newEvent);
+		bindConsultationEventForm();
 		UI.getCurrent().addWindow(eventPopup);
 	}
-	private void initForm(ConsultationEvent consultationEvent, boolean newEvent) {
-		consulEvent = consultationEvent;
-		VerticalLayout layout = new VerticalLayout();
-		layout.setSpacing(true);
 
-		eventPopup = new Window(null, layout);
-		eventPopup.setSizeFull();
+	private void initForm(boolean newEvent) {
+		if (newEvent) {
+			eventPopup.setCaption("Новая консультация");
+		}
+		else {
+			eventPopup.setCaption("Редактирование консультации");
+		}
+		eventPopup.addCloseListener(closeEvent -> presenter.discardEvent());
 		eventPopup.setModal(true);
-		eventPopup.center();
-		eventPopup.setHeight("90%");
-		eventPopup.setWidth("100%");
-		eventPopup.setWidth(900.0f, Sizeable.Unit.PIXELS);
-		eventPopup.addStyleName("v-window");
 
-		eventFormLayout = new FormLayout();
-		eventFormLayout.setSpacing(true);
-		eventFormLayout.setSizeFull();
-		eventFormLayout.setMargin(false);
-		layout.addComponent(eventFormLayout);
-
-		combobox = new PatientCombobox("Быстрый ввод");
 		combobox.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
 		combobox.setItemCaptionPropertyId("surname,name,patronymic,birthday");
-		combobox.setWidth("400px");
-		combobox.addStyleName("v-filterselect");
 		combobox.setImmediate(true);
-		patientContainer = new PatientContainer();
-
 		if (!newEvent) {
 			combobox.setContainerDataSource(patientContainer);
 			Patient patient = new Patient();
-			patient.setName(consulEvent.getName());
-			patient.setSurname(consulEvent.getSurname());
-			patient.setPatronymic(consulEvent.getPatronymic());
+			patient.setName(consultationEvent.getName());
+			patient.setSurname(consultationEvent.getSurname());
+			patient.setPatronymic(consultationEvent.getPatronymic());
 			combobox.setValue(patient);
 		}
-		combobox.addValueChangeListener(new Property.ValueChangeListener() {
-			@Override
-			public void valueChange(Property.ValueChangeEvent event) {
-				Notification.show("Selected item: " + event.getProperty().getValue(), Notification.Type.HUMANIZED_MESSAGE);
-				Patient patient = (Patient) event.getProperty().getValue();
-				setSelectItem(patient);
-				patientContainer.setSelectedPatientBean(patient);
-				consulEvent = presenter.selectedItem();
-				bindConsultationEventForm(consulEvent);
-			}
+		combobox.addValueChangeListener((Property.ValueChangeListener) event -> {
+			Notification.show("Selected item: " + event.getProperty().getValue(), Notification.Type.HUMANIZED_MESSAGE);
+			Patient patient1 = (Patient) event.getProperty().getValue();
+			setSelectItem(patient1);
+			patientContainer.setSelectedPatientBean(patient1);
+			this.consultationEvent = presenter.selectedItem();
+			bindConsultationEventForm();
 		});
 		combobox.setContainerDataSource(patientContainer);
 
-		applyEventButton = new Button("Применить", clickEvent ->
-		{
+		applyEventButton.addClickListener(clickEvent -> {
 			presenter.commitEvent();
 			eventPopup.close();
 		});
-
 		applyEventButton.addStyleName("primary");
 
-		Button cancel = new Button("Отмена", clickEvent -> presenter.discardEvent());
-		cancel.addStyleName("primary");
-		deleteEventButton = new Button("Удалить", clickEvent -> {
+		cancelButton.addClickListener(clickEvent -> presenter.discardEvent());
+		cancelButton.addStyleName("primary");
+
+		deleteEventButton.addClickListener(clickEvent -> {
 			presenter.deleteEvent();
 			eventPopup.close();
 		});
 		deleteEventButton.addStyleName("primary");
 
-		eventPopup.addCloseListener(closeEvent -> presenter.discardEvent());
-
-		HorizontalLayout buttons = new HorizontalLayout();
-		buttons.addStyleName("v-window-bottom-toolbar");
-		buttons.setWidth("100%");
-		buttons.setSpacing(true);
-		buttons.addComponent(deleteEventButton);
-		buttons.addComponent(applyEventButton);
-		buttons.setExpandRatio(applyEventButton, 1);
-		buttons.setComponentAlignment(applyEventButton, Alignment.TOP_RIGHT);
-		buttons.addComponent(cancel);
-
-		layout.addComponent(buttons);
-
-		startDateField = createDateField("Конец события");
-		endDateField = createDateField("Начало события");
-		allDayField = createCheckBox("Полный день");
+		startDateField.setResolution(Resolution.MINUTE);
+		endDateField.setResolution(Resolution.MINUTE);
 		allDayField.setImmediate(true);
 		allDayField.addValueChangeListener(event -> setFormDateResolution(allDayField.getValue() ? Resolution.DAY : Resolution.MINUTE));
-		NativeSelect selectProcedure = createNativeSelect(CalendarPresenterImpl.PROCEDURES, "Вид консультации");
 
-		captionField = createTextField("Заголовок");
-		captionField.setHeightUndefined();
 		captionField.setInputPrompt("Название события");
-		executorField = createTextField("Исполнитель");
+
 		executorField.setInputPrompt("человек,отвественный за процедуру");
-		executorField.setWidth("300px");
+		executorField.setNullRepresentation("");
 
-
-		// Не работает addon-ExpandingTextArea!
-		descriptionField = new ExpandingTextArea("Описание");
-		descriptionField.setImmediate(true);
-		descriptionField.setWidth("300px");
-		final NativeSelect maxRows = new NativeSelect("Максимальное количество строк");
-		maxRows.addValueChangeListener(new Property.ValueChangeListener() {
-			@Override
-			public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-				descriptionField.setMaxRows((Integer) maxRows.getValue());
-			}
-		});
-		maxRows.addItem(2);
-		maxRows.addItem(5);
-		maxRows.addItem(10);
-
-		nameField = createTextField("Имя");
 		nameField.setInputPrompt("имя пациента");
-		nameField.addValidator(new BeanValidator(Consultation.class,"name"));
 
-		surnameField = createTextField("Фамилия");
 		surnameField.setInputPrompt("фамилия пациента");
-		surnameField.addValidator(new BeanValidator(Consultation.class,"surname"));
 
-
-		patronymicField = createTextField("Отчество");
 		patronymicField.setInputPrompt("отчество пациента");
-		patronymicField.addValidator(new BeanValidator(Consultation.class,"patronymic"));
 
-		casHisField = new TextField("Номер истории");
+		caseHistoryNumTextField = new TextField("Номер истории");
+		caseHistoryNumTextField.setNullRepresentation("");
 
-		birthdayField = new TextField("Дата рождения");
+		birthdayField.setNullRepresentation("");
 		StringToDateConverter dateConverter = new StringToDateConverter(){
 			@Override
 			protected DateFormat getFormat(Locale locale) {
@@ -233,27 +151,43 @@ public class EditFormViewImpl implements EditFormView {
 		};
 		birthdayField.setConverter(dateConverter);
 
-		HorizontalLayout hlLayout = new HorizontalLayout(startDateField, endDateField);
-		hlLayout.setSpacing(true);
-		hlLayout.setHeightUndefined();
-		HorizontalLayout horizontalLayout = new HorizontalLayout(nameField, surnameField,
-			patronymicField, birthdayField, casHisField);
-		horizontalLayout.setSpacing(true);
-		horizontalLayout.setHeightUndefined();
-		HorizontalLayout layout1 = new HorizontalLayout(descriptionField,maxRows);
-		layout1.setSpacing(true);
-		layout1.setHeightUndefined();
-		VerticalLayout verticalLayout = new VerticalLayout();
-		verticalLayout.addComponents(captionField,hlLayout,
-			selectProcedure,combobox,horizontalLayout,executorField,layout1);
-		eventFormLayout.addComponent(verticalLayout);
-
+		initLayout();
 	}
 
-	private void bindConsultationEventForm(ConsultationEvent event) {
+	private void initLayout() {
+		// Window требует контент, который будет гридом
+		GridLayout allComponents = new GridLayout();
+		allComponents.setSpacing(true);
+		allComponents.setMargin(true);
 
-		fieldGroup = new FieldGroup();
-		BeanItem<ConsultationEvent> item = new BeanItem<ConsultationEvent>(consulEvent);
+		HorizontalLayout eventDateRange = new HorizontalLayout(startDateField, endDateField,allDayField);
+		eventDateRange.setComponentAlignment(allDayField,Alignment.MIDDLE_LEFT);
+		eventDateRange.setSpacing(true);
+
+		HorizontalLayout patientName = new HorizontalLayout(nameField, surnameField,
+			patronymicField, birthdayField, caseHistoryNumTextField);
+		patientName.setSpacing(true);
+
+		HorizontalLayout patientData = new HorizontalLayout(birthdayField, caseHistoryNumTextField);
+		patientData.setSpacing(true);
+
+		combobox.setWidth("400px");
+		VerticalLayout properties = new VerticalLayout(captionField,eventDateRange,
+			selectProcedure,combobox,patientName,executorField,descriptionField);
+
+		eventFormLayout.addComponent(properties);
+		eventFormLayout.setSpacing(true);
+
+		HorizontalLayout buttons = new HorizontalLayout(deleteEventButton,applyEventButton,cancelButton);
+		patientName.setWidthUndefined();
+		buttons.setSpacing(true);
+
+		allComponents.addComponents(eventDateRange,patientName,patientData,properties,buttons);
+		eventPopup.setContent(allComponents);
+	}
+
+	private void bindConsultationEventForm() {
+		BeanItem<ConsultationEvent> item = new BeanItem<>(consultationEvent);
 		fieldGroup.setBuffered(true);
 		fieldGroup.setItemDataSource(item);
 		fieldGroup.bindMemberFields(this);
@@ -266,36 +200,6 @@ public class EditFormViewImpl implements EditFormView {
 		}
 	}
 
-	private TextField createTextField(String caption)
-	{
-		TextField f = new TextField(caption);
-		f.setNullRepresentation("");
-		return f;
-	}
-
-	private NativeSelect createNativeSelect(ArrayList<String> strings, String caption) {
-		NativeSelect nativeSelect = new NativeSelect(caption, strings);
-		nativeSelect.setRequired(true);
-		nativeSelect.setBuffered(true);
-		return nativeSelect;
-	}
-
-	private CheckBox createCheckBox(String caption) {
-		CheckBox cb = new CheckBox(caption);
-		cb.setImmediate(true);
-		return cb;
-
-	}
-
-	private DateField createDateField(String caption) {
-		DateField f = new DateField(caption);
-		if (useSecondResolution) {
-			f.setResolution(Resolution.SECOND);
-		} else {
-			f.setResolution(Resolution.MINUTE);
-		}
-		return f;
-	}
 	@Override
 	public void setSelectItem(Patient patient)
 	{
@@ -309,26 +213,20 @@ public class EditFormViewImpl implements EditFormView {
 
 	@Override
 	public ConsultationEvent getConsultationEvent() {
-		return consulEvent;
+		return consultationEvent;
 	}
 
-
 	@Override
-	public void commitEvent()
-	{
+	public void commitEvent() {
 		try {
 			fieldGroup.commit();
-
-
-		} catch (FieldGroup.CommitException e)
-		{
-			// Какое исключение кидать
+		} catch (FieldGroup.CommitException ex) {
+			Logger.getGlobal().log(Level.SEVERE,"Problems with commit",ex);
 		}
 	}
 
 	@Override
-	public void discardEvent()
-	{
+	public void discardEvent() {
 		fieldGroup.discard();
 		eventPopup.close();
 	}
