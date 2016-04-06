@@ -1,7 +1,6 @@
 package lgk.nsbc.ru.presenter;
 
-import com.vaadin.ui.components.calendar.CalendarComponentEvents.RangeSelectEvent;
-import com.vaadin.ui.components.calendar.event.CalendarEvent;
+import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 
 import java.util.Date;
 import java.util.List;
@@ -17,14 +16,13 @@ public interface CalendarPresenter {
 	Date getTime();
 
 	// Create/Delete/Edit event
-	void handleDeleteEvent(CalendarEvent calendarEvent);
+	void handleDeleteEvent(ConsultationEvent consultationEvent);
 	void handleRangeSelectEvent(Date start, Date end,boolean isMonthlyMode);
 	void handleAddNewEventButtonClick();
+	void handleEventClick(ConsultationEvent consultationEvent);
 
 	// Navigation
-	void handleNextButtonClick();
-	void handlePreviousButtonClick();
-
+	void handleNavigationButtonClick(boolean isForward);
 	void handleMonthButtonClick();
 	void handleWeekButtonClick();
 	void handleDayButtonClick();

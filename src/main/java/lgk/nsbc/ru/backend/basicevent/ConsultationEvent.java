@@ -14,7 +14,7 @@ public class ConsultationEvent extends BasicEvent {
 	private String name;
 	private String patronymic;
 	private String styleName;
-	private int case_history_num;
+	private Integer case_history_num;
 	private String diagnosis;
 	private Date birthday;
 
@@ -41,7 +41,7 @@ public class ConsultationEvent extends BasicEvent {
 		this.birthday = consultation.getBirthday();
 	}
 
-	public ConsultationEvent(String executor, String name, String patronymic, String surname, Date birthday, int case_history_num, String diagnosis) {
+	public ConsultationEvent(String executor, String name, String patronymic, String surname, Date birthday, Integer case_history_num, String diagnosis) {
 		this.executor = executor;
 		this.name = name;
 		this.case_history_num = case_history_num;
@@ -59,11 +59,11 @@ public class ConsultationEvent extends BasicEvent {
 		this.birthday = birthday;
 	}
 
-	public int getCase_history_num() {
+	public Integer getCase_history_num() {
 		return case_history_num;
 	}
 
-	public void setCase_history_num(int cas_history_num) {
+	public void setCase_history_num(Integer cas_history_num) {
 		this.case_history_num = cas_history_num;
 		fireEventChange();
 	}
@@ -98,7 +98,6 @@ public class ConsultationEvent extends BasicEvent {
 
 	public String getSurname() {
 		return surname;
-
 	}
 
 	public void setSurname(String surname) {
@@ -115,7 +114,6 @@ public class ConsultationEvent extends BasicEvent {
 		fireEventChange();
 	}
 
-
 	public String getExecutor() {
 		return executor;
 	}
@@ -124,5 +122,4 @@ public class ConsultationEvent extends BasicEvent {
 		this.executor = executor;
 		fireEventChange();
 	}
-
 }

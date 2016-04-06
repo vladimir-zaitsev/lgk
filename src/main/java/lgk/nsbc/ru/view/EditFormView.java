@@ -11,7 +11,6 @@ public interface EditFormView {
     void commitEvent();
     void discardEvent();
     ConsultationEvent getFormEvent();
-    void createEventPopup(ConsultationEvent consultationEvent, boolean newEvent);
     ConsultationEvent getConsultationEvent();
 	void setSelectItem(Patient patient);
 }
