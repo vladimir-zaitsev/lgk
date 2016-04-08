@@ -2,7 +2,6 @@ package lgk.nsbc.ru.view;
 
 import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.util.converter.StringToDateConverter;
-import com.vaadin.server.Sizeable;
 import lgk.nsbc.ru.backend.PatientContainer;
 import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 import lgk.nsbc.ru.backend.entity.Patient;
@@ -34,9 +33,6 @@ public class EditFormViewImpl implements EditFormView {
 	private Button cancelButton = new Button("Отмена");
 	private NativeSelect selectProcedure = new NativeSelect("Вид консультации",CalendarPresenterImpl.PROCEDURES);
 	private CheckBox allDayField = new CheckBox("Полный день");
-
-	@PropertyId("caption")
-	private TextField captionField = new TextField("Заголовок");
 
 	@PropertyId("description")
 	private ExpandingTextArea descriptionField = new ExpandingTextArea("Описание");
@@ -107,6 +103,7 @@ public class EditFormViewImpl implements EditFormView {
 			bindConsultationEventForm();
 		});
 		combobox.setContainerDataSource(patientContainer);
+		combobox.focus();
 
 		applyEventButton.addClickListener(clickEvent -> {
 			presenter.commitEvent();
@@ -127,8 +124,6 @@ public class EditFormViewImpl implements EditFormView {
 		endDateField.setResolution(Resolution.MINUTE);
 		allDayField.setImmediate(true);
 		allDayField.addValueChangeListener(event -> setFormDateResolution(allDayField.getValue() ? Resolution.DAY : Resolution.MINUTE));
-
-		captionField.setInputPrompt("Название события");
 
 		executorField.setInputPrompt("человек,отвественный за процедуру");
 		executorField.setNullRepresentation("");
@@ -155,7 +150,6 @@ public class EditFormViewImpl implements EditFormView {
 	}
 
 	private void initLayout() {
-		// Window требует контент, который будет гридом
 		GridLayout allComponents = new GridLayout();
 		allComponents.setSpacing(true);
 		allComponents.setMargin(true);
@@ -172,7 +166,7 @@ public class EditFormViewImpl implements EditFormView {
 		patientData.setSpacing(true);
 
 		combobox.setWidth("400px");
-		VerticalLayout properties = new VerticalLayout(captionField,eventDateRange,
+		VerticalLayout properties = new VerticalLayout(eventDateRange,
 			selectProcedure,combobox,patientName,executorField,descriptionField);
 
 		eventFormLayout.addComponent(properties);

@@ -5,9 +5,7 @@ import java.util.Date;
 /**
  * Created by user on 20.02.2016.
  */
-public class Consultation
-{
-
+public class Consultation {
 	private Date procbegintime;
 	private Date procendtime;
 	private String surname;
@@ -18,7 +16,8 @@ public class Consultation
 	private Date birthday;
 	private String executor;
 
-	public Consultation() {}
+	public Consultation() {
+	}
 
 	public Consultation(Date birthday, Integer case_history_num, String diagnosis, String patronymic, String name,
 						Date procbegintime, Date procendtime, String surname) {
@@ -32,16 +31,15 @@ public class Consultation
 		this.surname = surname;
 	}
 
-	public Consultation(Patient patient,Date procbegintime,Date procendtime) {
+	public Consultation(Patient patient, Date procbegintime, Date procendtime) {
 		this.birthday = patient.getBirthday();
 		this.case_history_num = patient.getCase_history_num();
 		this.diagnosis = patient.getDiagnosis();
 		this.patronymic = patient.getPatronymic();
 		this.name = patient.getName();
+		this.surname = patient.getSurname();
 		this.procbegintime = procbegintime;
 		this.procendtime = procendtime;
-		this.surname = patient.getSurname();
-
 	}
 
 	public String getExecutor() {
@@ -52,23 +50,19 @@ public class Consultation
 		this.executor = executor;
 	}
 
-	public Date getProcbegintime ( )
-	{
+	public Date getProcbegintime() {
 		return procbegintime;
 	}
 
-	public void setProcbegintime(Date procbegintime)
-	{
+	public void setProcbegintime(Date procbegintime) {
 		this.procbegintime = procbegintime;
 	}
 
-	public Date getProcendtime ( )
-	{
+	public Date getProcendtime() {
 		return procendtime;
 	}
 
-	public void setProcendtime (Date procendtime)
-	{
+	public void setProcendtime(Date procendtime) {
 		this.procendtime = procendtime;
 	}
 

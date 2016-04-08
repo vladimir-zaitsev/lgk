@@ -70,6 +70,8 @@ public class EditFormPresenterImpl implements EditFormPresenter {
         Consultation consultation = new Consultation(patientBean,consultationEvent.getStart(),consultationEvent.getEnd());
         ConsultationEvent basicEvent = new ConsultationEvent
                 (consultationEvent.getCaption(),consultationEvent.getDescription(),consultation,"");
+		deleteEvent();
+		model.getBeanItemContainer().addBean(basicEvent);
         return basicEvent;
     }
 

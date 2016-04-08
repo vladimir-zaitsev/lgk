@@ -29,8 +29,7 @@ public class ConsultationEvent extends BasicEvent {
 		this.birthday = consultation.getBirthday();
 	}
 
-	public ConsultationEvent(String caption, String description, Consultation consultation)
-	{
+	public ConsultationEvent(String caption, String description, Consultation consultation) {
 		super(caption,description,consultation.getProcbegintime(),consultation.getProcendtime());
 		this.executor = consultation.getExecutor();
 		this.name = consultation.getName();
@@ -102,6 +101,7 @@ public class ConsultationEvent extends BasicEvent {
 
 	public void setSurname(String surname) {
 		this.surname = surname;
+		setCaption(surname);
 		fireEventChange();
 	}
 
