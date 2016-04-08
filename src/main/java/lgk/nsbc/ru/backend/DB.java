@@ -13,7 +13,7 @@ public class DB {
 			throw new RuntimeException(e);
 		}
 	}
-	static final String url ="jdbc:firebirdsql://localhost:3050/lgknew?encoding=WIN1251";
+	static final String url = "jdbc:firebirdsql://localhost:3050/lgknew?encoding=WIN1251";
 	static final String user_name = "SYSDBA";
 	static final String user_password = "masterkey";
 

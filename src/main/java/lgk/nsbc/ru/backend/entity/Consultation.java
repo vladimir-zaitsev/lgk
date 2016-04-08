@@ -19,8 +19,9 @@ public class Consultation {
 	public Consultation() {
 	}
 
-	public Consultation(Date birthday, Integer case_history_num, String diagnosis, String patronymic, String name,
-						Date procbegintime, Date procendtime, String surname) {
+	public Consultation( Date procbegintime, Date procendtime, String name,String surname,
+						 String patronymic,Date birthday, Integer case_history_num,String sex)
+	{
 		this.birthday = birthday;
 		this.case_history_num = case_history_num;
 		this.diagnosis = diagnosis;
@@ -41,6 +42,8 @@ public class Consultation {
 		this.procbegintime = procbegintime;
 		this.procendtime = procendtime;
 	}
+
+
 
 	public String getExecutor() {
 		return executor;

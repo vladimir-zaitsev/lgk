@@ -3,6 +3,8 @@ package lgk.nsbc.ru.view;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
 import lgk.nsbc.ru.backend.ConsultationManager;
+import lgk.nsbc.ru.backend.PatientsManager;
+import lgk.nsbc.ru.backend.PeopleManager;
 import lgk.nsbc.ru.model.ConsultationModel;
 
 /**
@@ -11,7 +13,9 @@ import lgk.nsbc.ru.model.ConsultationModel;
 public class CalendarMainPage {
 	public CalendarMainPage(UI ui) {
 		ConsultationModel consultationModel = new ConsultationModel();
-		ConsultationManager consultationManager = new ConsultationManager();
+		PeopleManager peopleManager = new PeopleManager();
+		PatientsManager patientsManager = new PatientsManager(peopleManager);
+		ConsultationManager consultationManager = new ConsultationManager(patientsManager);
 		CalendarView calendarView = new CalendarViewImpl(consultationModel,consultationManager);
 
 		TabSheet tabSheet = new TabSheet();

@@ -16,7 +16,8 @@ public class PatientContainer extends BeanItemContainer<Patient> {
 	protected Object missingBoxValue;
 	private List<Patient> patients = new ArrayList<>();
 
-	private PatientsManager patientManager = new PatientsManager();
+	private  PeopleManager peopleManager = new PeopleManager();
+	private PatientsManager patientManager = new PatientsManager(peopleManager);
 
 	public PatientContainer() throws IllegalArgumentException {
 		super(Patient.class);

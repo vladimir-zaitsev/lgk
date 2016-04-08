@@ -25,6 +25,7 @@ public class App extends UI {
 		String lgkSessionId = getPage().getUriFragment();
 		getPage().setUriFragment(null, false);
 		new CalendarMainPage(this);
+		System.out.println(lgkSessionId);
 	}
 
 	@WebServlet(urlPatterns = "/*", name = "AppServlet", asyncSupported = true)

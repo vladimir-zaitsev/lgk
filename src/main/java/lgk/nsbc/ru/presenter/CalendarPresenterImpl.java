@@ -84,7 +84,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 			start = getStartOfDay(start);
 			end = getEndOfDay(end);
 		}
-		Consultation consultation = new Consultation(null, null, "", "", "", start, end, "");
+		Consultation consultation = new Consultation(start,end, "", "", "",null, null, "");
 		ConsultationEvent event = new ConsultationEvent("", "", consultation);
 		event.setStyleName("color1");
 		consultationModel.getBeanItemContainer().addBean(event);
@@ -94,8 +94,8 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 
 	@Override
 	public void handleAddNewEventButtonClick() {
-		Consultation consultation = new Consultation(null, null, "", "", "", localDateTimeToDate(time),
-			localDateTimeToDate(time), "");
+		Consultation consultation = new Consultation( localDateTimeToDate(time),
+			localDateTimeToDate(time),"","","",null,null,"");
 		ConsultationEvent event = new ConsultationEvent("", "", consultation);
 		event.setStyleName("color1");
 		consultationModel.sortContainer();
