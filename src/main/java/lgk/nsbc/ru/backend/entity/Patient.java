@@ -12,21 +12,32 @@ public class Patient {
 		,birthday
 	}
 
-	Long n;
-	String name; //(255)
-	String surname; //(255)
-	String patronymic; //(255)
-	String sex;
-	Date birthday;
-	Integer case_history_num;
-	String diagnosis;
+	private People people = new People();
+	private String name; //(255)
+	private String surname; //(255)
+	private String patronymic; //(255)
+	private String sex;
+	private Date birthday;
+	private Integer case_history_num;
+	private String diagnosis;
+
+	public Patient() {}
+
+	public Patient(String name, String surname, String patronymic, Date birthday, Integer case_history_num, String sex) {
+		this.name = name;
+		this.surname = surname;
+		this.patronymic = patronymic;
+		this.birthday = birthday;
+		this.case_history_num = case_history_num;
+		this.sex = sex;
+	}
 
 	public Long getN() {
-		return n;
+		return people.getN();
 	}
 
 	public void setN(Long n) {
-		this.n = n;
+		people.setN(n);
 	}
 
 	public String getName() {
@@ -88,12 +99,12 @@ public class Patient {
 	@Override
 	public String toString() {
 		return "Patient{" +
-			"n=" + n +
-			", name='" + name + '\'' +
-			", surname='" + surname + '\'' +
-			", patronymic='" + patronymic + '\'' +
-			", sex='" + sex + '\'' +
-			", birthday=" + birthday +
+			"n=" + getN() +
+			", name='" + getName() + '\'' +
+			", surname='" + getSurname() + '\'' +
+			", patronymic='" + getPatronymic() + '\'' +
+			", sex='" + getSex() + '\'' +
+			", birthday=" + getBirthday() +
 			"}\n";
 	}
 

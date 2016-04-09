@@ -6,44 +6,22 @@ import java.util.Date;
  * Created by user on 20.02.2016.
  */
 public class Consultation {
+	private Patient patient = new Patient();
+	/** Оставлю тут заметочку о том, что в ConsultaionEvent будут другие даты. По всей
+	 * видимости будут нужны два набора дат, те, которые будут в календаре, и те, что
+	 * вытянуты из базы.
+	 * */
 	private Date procbegintime;
 	private Date procendtime;
-	private String surname;
-	private String name;
-	private String patronymic;
-	private Integer case_history_num;
-	private String diagnosis;
-	private Date birthday;
 	private String executor;
 
-	public Consultation() {
-	}
-
-	public Consultation( Date procbegintime, Date procendtime, String name,String surname,
-						 String patronymic,Date birthday, Integer case_history_num,String sex)
-	{
-		this.birthday = birthday;
-		this.case_history_num = case_history_num;
-		this.diagnosis = diagnosis;
-		this.patronymic = patronymic;
-		this.name = name;
-		this.procbegintime = procbegintime;
-		this.procendtime = procendtime;
-		this.surname = surname;
-	}
+	public Consultation() {}
 
 	public Consultation(Patient patient, Date procbegintime, Date procendtime) {
-		this.birthday = patient.getBirthday();
-		this.case_history_num = patient.getCase_history_num();
-		this.diagnosis = patient.getDiagnosis();
-		this.patronymic = patient.getPatronymic();
-		this.name = patient.getName();
-		this.surname = patient.getSurname();
+		this.patient = patient;
 		this.procbegintime = procbegintime;
 		this.procendtime = procendtime;
 	}
-
-
 
 	public String getExecutor() {
 		return executor;
@@ -70,64 +48,68 @@ public class Consultation {
 	}
 
 	public String getSurname() {
-		return surname;
+		return patient.getSurname();
 	}
 
 	public void setSurname(String surname) {
-		this.surname = surname;
+		patient.setSurname(surname);
 	}
 
 	public String getName() {
-		return name;
+		return patient.getName();
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		patient.setName(name);
 	}
 
 	public String getPatronymic() {
-		return patronymic;
+		return patient.getPatronymic();
 	}
 
 	public void setPatronymic(String patronymic) {
-		this.patronymic = patronymic;
+		patient.setPatronymic(patronymic);
 	}
 
 	public Integer getCase_history_num() {
-		return case_history_num;
+		return patient.getCase_history_num();
 	}
 
-	public void setCase_history_num(int case_history_num) {
-		this.case_history_num = case_history_num;
+	public void setCase_history_num(Integer case_history_num) {
+		patient.setCase_history_num(case_history_num);
 	}
 
 	public String getDiagnosis() {
-		return diagnosis;
+		return patient.getDiagnosis();
 	}
 
 	public void setDiagnosis(String diagnosis) {
-		this.diagnosis = diagnosis;
+		patient.setDiagnosis(diagnosis);
 	}
 
-	public Date getBirthday() {
-		return birthday;
+	public Date getBirthday() {return patient.getBirthday();}
+
+	public void setBirthday(Date birthday) { patient.setBirthday(birthday);}
+
+	public void setNewPatient(Patient patient) {
+		this.patient = patient;
 	}
 
-	public void setBirthday(Date birthday) {
-		this.birthday = birthday;
+	public Patient getCurrentPatient() {
+		return patient;
 	}
 
 	@Override
 	public String toString() {
 		return "Consultation{" +
-			"procbegintime=" + procbegintime +
-			", procendtime=" + procendtime +
-			", surname='" + surname + '\'' +
-			", name='" + name + '\'' +
-			", patronymic='" + patronymic + '\'' +
-			", cas_history_num='" + case_history_num + '\'' +
-			", diagnosis='" + diagnosis + '\'' +
-			", birthday=" + birthday +
+			"procbegintime=" + getProcbegintime() +
+			", procendtime=" + getProcendtime() +
+			", surname='" + getSurname() + '\'' +
+			", name='" + getName() + '\'' +
+			", patronymic='" + getPatronymic() + '\'' +
+			", cas_history_num='" + getCase_history_num() + '\'' +
+			", diagnosis='" + getDiagnosis() + '\'' +
+			", birthday=" + getBirthday() +
 			'}';
 	}
 }

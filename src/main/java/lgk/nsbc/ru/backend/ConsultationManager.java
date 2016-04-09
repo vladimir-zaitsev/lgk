@@ -61,19 +61,16 @@ public class ConsultationManager {
 		}
 
 	}
-	/*
-   * вытаскивает данные уже существующего пациента из базы
-   *@param параметры пациента, которого нашли ФИО, дата рождения
-   *@return
-  */
-	// Метод изменен
-	public Patient selectPatient(String name, String surname, String patronymic, Date birthday)
-	{
+
+   //вытаскивает данные уже существующего пациента из базы
+	public Patient selectPatient(Patient patient) {
 		try (Connection con = DB.getConnection()) {
 			QueryRunner qr = new QueryRunner();
 			StringBuilder sql =  new StringBuilder();
 			sql.append("SELECT\n")
+				.append("bas_people.n,\n")
 				.append("name,\n")
+				.append("sex,\n")
 				.append("surname,\n")
 				.append("patronymic,\n")
 				.append("birthday,\n")
@@ -81,17 +78,8 @@ public class ConsultationManager {
 				.append("case_history_num\n")
 				.append("FROM bas_people\n")
 				.append("JOIN nbc_patients on bas_people.n = nbc_patients.bas_people_n\n")
-				.append("WHERE name = ?\n")
-				.append("AND surname = ?\n")
-				.append("AND patronymic = ?\n");
-			Object[] params;
-			if (birthday != null) {
-				String birthdayPatient = formatter.format(birthday);
-				sql.append("AND birthday = ?\n");
-				params = new Object[]{name,surname,patronymic,birthdayPatient};
-			} else {
-				params = new Object[]{name,surname,patronymic};
-			}
+				.append("WHERE nbc_patients.bas_people_n = ?\n");
+			Object[] params = new Object[]{patient.getN()};
 			BeanHandler<Patient> handler = new BeanHandler<>(Patient.class);
 			return qr.query(con,sql.toString(),handler,params);
 		} catch (SQLException e) {

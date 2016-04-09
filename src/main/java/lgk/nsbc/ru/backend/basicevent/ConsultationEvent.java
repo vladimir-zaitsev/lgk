@@ -2,6 +2,7 @@ package lgk.nsbc.ru.backend.basicevent;
 
 import lgk.nsbc.ru.backend.entity.Consultation;
 import com.vaadin.ui.components.calendar.event.BasicEvent;
+import lgk.nsbc.ru.backend.entity.Patient;
 
 import java.util.Date;
 
@@ -9,117 +10,89 @@ import java.util.Date;
  * Created by user on 20.02.2016.
  */
 public class ConsultationEvent extends BasicEvent {
-	private String executor;
-	private String surname;
-	private String name;
-	private String patronymic;
-	private String styleName;
-	private Integer case_history_num;
-	private String diagnosis;
-	private Date birthday;
 
-	public ConsultationEvent(String caption, String description, Consultation consultation, String executor) {
-		super(caption, description, consultation.getProcbegintime(), consultation.getProcendtime());
-		this.executor = executor;
-		this.name = consultation.getName();
-		this.case_history_num = consultation.getCase_history_num();
-		this.surname = consultation.getSurname();
-		this.diagnosis = consultation.getDiagnosis();
-		this.patronymic = consultation.getPatronymic();
-		this.birthday = consultation.getBirthday();
+	private Consultation consultation = new Consultation();
+
+	public ConsultationEvent() {}
+
+	public ConsultationEvent(Consultation consultation, String description) {
+		super(consultation.getSurname(),description, consultation.getProcbegintime(), consultation.getProcendtime());
+		this.consultation = consultation;
 	}
 
-	public ConsultationEvent(String caption, String description, Consultation consultation) {
-		super(caption,description,consultation.getProcbegintime(),consultation.getProcendtime());
-		this.executor = consultation.getExecutor();
-		this.name = consultation.getName();
-		this.case_history_num = consultation.getCase_history_num();
-		this.surname = consultation.getSurname();
-		this.diagnosis = consultation.getDiagnosis();
-		this.patronymic = consultation.getPatronymic();
-		this.birthday = consultation.getBirthday();
-	}
-
-	public ConsultationEvent(String executor, String name, String patronymic, String surname, Date birthday, Integer case_history_num, String diagnosis) {
-		this.executor = executor;
-		this.name = name;
-		this.case_history_num = case_history_num;
-		this.surname = surname;
-		this.diagnosis = diagnosis;
-		this.patronymic = patronymic;
-		this.birthday = birthday;
+	public ConsultationEvent(Consultation consultation) {
+		super(consultation.getSurname(),"", consultation.getProcbegintime(), consultation.getProcendtime());
+		this.consultation = consultation;
 	}
 
 	public Date getBirthday() {
-		return birthday;
+		return consultation.getBirthday();
 	}
 
 	public void setBirthday(Date birthday) {
-		this.birthday = birthday;
+		consultation.setBirthday(birthday);
 	}
 
 	public Integer getCase_history_num() {
-		return case_history_num;
+		return consultation.getCase_history_num();
 	}
 
 	public void setCase_history_num(Integer cas_history_num) {
-		this.case_history_num = cas_history_num;
+		consultation.setCase_history_num(cas_history_num);
 		fireEventChange();
 	}
 
 	public String getDiagnosis() {
-		return diagnosis;
+		return consultation.getDiagnosis();
 	}
 
 	public void setDiagnosis(String diagnosis) {
-		this.diagnosis = diagnosis;
+		consultation.setDiagnosis(diagnosis);
 		fireEventChange();
 	}
 
 	public String getName() {
-		return name;
+		return consultation.getName();
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		consultation.setName(name);
 		fireEventChange();
 	}
 
 	public String getPatronymic() {
-		return patronymic;
+		return consultation.getPatronymic();
 	}
 
 	public void setPatronymic(String patronymic) {
-		this.patronymic = patronymic;
+		consultation.setPatronymic(patronymic);
 		fireEventChange();
 	}
 
 
-	public String getSurname() {
-		return surname;
-	}
+	public String getSurname() {return consultation.getSurname();}
 
 	public void setSurname(String surname) {
-		this.surname = surname;
+		consultation.setSurname(surname);
+		// Пусть в качестве caption будет фамилия
 		setCaption(surname);
 		fireEventChange();
 	}
 
-	public String getStyleName() {
-		return styleName;
-	}
-
-	public void setStyleName(String styleName) {
-		this.styleName = styleName;
-		fireEventChange();
-	}
-
 	public String getExecutor() {
-		return executor;
+		return consultation.getExecutor();
 	}
 
 	public void setExecutor(String executor) {
-		this.executor = executor;
+		consultation.setExecutor(executor);
 		fireEventChange();
+	}
+
+	public void setNewPatient(Patient patient) {
+		consultation.setNewPatient(patient);
+	}
+
+	public Patient getCurrentPatient() {
+		return consultation.getCurrentPatient();
 	}
 }

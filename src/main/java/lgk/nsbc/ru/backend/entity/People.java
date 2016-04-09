@@ -5,7 +5,9 @@ package lgk.nsbc.ru.backend.entity;
  */
 public class People {
 
-	Long n;
+	private Long n;
+
+	public People() {}
 
 	public Long getN() {
 		return n;
@@ -14,5 +16,4 @@ public class People {
 	public void setN(Long n) {
 		this.n = n;
 	}
-
 }

@@ -21,7 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class EditFormViewImpl implements EditFormView {
+public class EditFormViewImpl extends AbstractView<ConsultationEvent> implements EditFormView{
 
 	private Window eventPopup = new Window();
 	private FormLayout eventFormLayout = new FormLayout();
@@ -62,12 +62,10 @@ public class EditFormViewImpl implements EditFormView {
 	private DateField endDateField = new DateField("Конец события");
 
 	EditFormPresenterImpl presenter;
-	private ConsultationEvent consultationEvent;
-	private Patient patient;
 
 	public EditFormViewImpl(EditFormPresenter editFormPresenter,ConsultationEvent consultationEvent, boolean newEvent) {
+		super(consultationEvent);
 		this.presenter = (EditFormPresenterImpl) editFormPresenter;
-		this.consultationEvent = consultationEvent;
 		initForm(newEvent);
 		bindConsultationEventForm();
 		UI.getCurrent().addWindow(eventPopup);
@@ -88,18 +86,14 @@ public class EditFormViewImpl implements EditFormView {
 		combobox.setImmediate(true);
 		if (!newEvent) {
 			combobox.setContainerDataSource(patientContainer);
-			Patient patient = new Patient();
-			patient.setName(consultationEvent.getName());
-			patient.setSurname(consultationEvent.getSurname());
-			patient.setPatronymic(consultationEvent.getPatronymic());
-			combobox.setValue(patient);
+			combobox.setValue(model.getCurrentPatient());
 		}
 		combobox.addValueChangeListener((Property.ValueChangeListener) event -> {
 			Notification.show("Selected item: " + event.getProperty().getValue(), Notification.Type.HUMANIZED_MESSAGE);
 			Patient patient1 = (Patient) event.getProperty().getValue();
 			setSelectItem(patient1);
 			patientContainer.setSelectedPatientBean(patient1);
-			this.consultationEvent = presenter.selectedItem();
+			presenter.selectedItem();
 			bindConsultationEventForm();
 		});
 		combobox.setContainerDataSource(patientContainer);
@@ -181,7 +175,7 @@ public class EditFormViewImpl implements EditFormView {
 	}
 
 	private void bindConsultationEventForm() {
-		BeanItem<ConsultationEvent> item = new BeanItem<>(consultationEvent);
+		BeanItem<ConsultationEvent> item = new BeanItem<>(model);
 		fieldGroup.setBuffered(true);
 		fieldGroup.setItemDataSource(item);
 		fieldGroup.bindMemberFields(this);
@@ -197,17 +191,17 @@ public class EditFormViewImpl implements EditFormView {
 	@Override
 	public void setSelectItem(Patient patient)
 	{
-		this.patient = patient;
+		model.setNewPatient(patient);
 	}
 
 	@Override
 	public Patient getSelectItem() {
-		return patient;
+		return model.getCurrentPatient();
 	}
 
 	@Override
 	public ConsultationEvent getConsultationEvent() {
-		return consultationEvent;
+		return model;
 	}
 
 	@Override

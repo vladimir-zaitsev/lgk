@@ -45,7 +45,7 @@ public class PatientsManager {
 		) {
 
 			String sql =
-				"SELECT name, patronymic, surname,birthday\n" +
+				"SELECT n,name, patronymic, surname,birthday\n" +
 					"FROM bas_people\n" +
 					"WHERE UPPER(surname) LIKE ?\n"
 				;

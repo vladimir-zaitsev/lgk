@@ -61,18 +61,10 @@ public class EditFormPresenterImpl implements EditFormPresenter {
             model.getBeanItemContainer().removeItem(event);
     }
     @Override
-    public ConsultationEvent selectedItem() {
-        Patient patient = editFormView.getSelectItem();
-        ConsultationEvent consultationEvent= editFormView.getConsultationEvent();
-        Patient patientBean =
-                consultationManager.selectPatient(patient.getName(),patient.getSurname(),patient.getPatronymic(),
-                        patient.getBirthday());
-        Consultation consultation = new Consultation(patientBean,consultationEvent.getStart(),consultationEvent.getEnd());
-        ConsultationEvent basicEvent = new ConsultationEvent
-                (consultationEvent.getCaption(),consultationEvent.getDescription(),consultation,"");
-		deleteEvent();
-		model.getBeanItemContainer().addBean(basicEvent);
-        return basicEvent;
+    public void selectedItem() {
+        Patient selectedPatient = editFormView.getSelectItem();
+        ConsultationEvent consultationEvent = editFormView.getConsultationEvent();
+        Patient fromDBPatient = consultationManager.selectPatient(selectedPatient);
+		consultationEvent.setNewPatient(fromDBPatient);
     }
-
 }

@@ -12,7 +12,7 @@ public interface EditFormPresenter {
     void commitEvent();
     void discardEvent();
     void deleteEvent();
-    ConsultationEvent selectedItem();
+    void selectedItem();
 	void handleNewEvent(ConsultationEvent consultationEvent);
     void handleEventClick(ConsultationEvent consultationEvent);
 }

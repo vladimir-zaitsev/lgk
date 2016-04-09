@@ -77,8 +77,8 @@ public class Tests {
 
 		GregorianCalendar calendar = new GregorianCalendar(1953, 11, 21);
 		Date birthday = calendar.getTime();
-		Consultation consultation = new Consultation(new Date(), new Date(), "Андрей", "Маншев",
-			"Васильевич", birthday, 0, "М");
+		Consultation consultation = new Consultation(new Patient("Андрей", "Маншев",
+			"Васильевич", birthday, 0, "М"),new Date(), new Date());
 
 		System.out.println(peopleManager.searchId(consultation));
 
@@ -92,8 +92,8 @@ public class Tests {
 		PatientsManager patientsManager = new PatientsManager(peopleManager);
 		GregorianCalendar calendar = new GregorianCalendar(1945, 8, 21);
 		Date birthday = calendar.getTime();
-		Consultation consultation = new Consultation(new Date(), new Date(), "Вячеслав", "Слесаренко",
-			"Васильевич", birthday, 0, "");
+		Consultation consultation = new Consultation(new Patient("Вячеслав", "Слесаренко",
+			"Васильевич", birthday, 0, ""),new Date(), new Date());
 		System.out.println(patientsManager.searchId(consultation));
 
 	}
@@ -106,8 +106,8 @@ public class Tests {
 		ConsultationManager consultationManager = new ConsultationManager(patientsManager);
 		GregorianCalendar calendar = new GregorianCalendar(1945, 8, 21);
 		Date birthday = calendar.getTime();
-		Consultation consultation = new Consultation(new Date(), new Date(), "Вячеслав", "Слесаренко",
-			"Васильевич", birthday, 0,"M");
+		Consultation consultation = new Consultation(new Patient("Вячеслав", "Слесаренко",
+			"Васильевич", birthday, 0,"M"),new Date(), new Date());
 
 		System.out.println(consultationManager.searchConsultation(consultation));
 
@@ -119,8 +119,8 @@ public class Tests {
 	public void insertPeople() {
 		GregorianCalendar calendar = new GregorianCalendar(1953, 11, 21);
 		Date birthday = calendar.getTime();
-		Consultation consultation = new Consultation(new Date(), new Date(), "Андрей", "Маншев",
-			"Васильевич", birthday, 0, "М");
+		Consultation consultation = new Consultation(new Patient("Андрей", "Маншев",
+			"Васильевич", birthday, 0, "М"),new Date(), new Date());
 		PeopleManager peopleManager = new PeopleManager();
 		System.out.println(peopleManager.insertPeople(consultation));
 

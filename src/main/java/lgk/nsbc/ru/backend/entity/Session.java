@@ -4,11 +4,12 @@ package lgk.nsbc.ru.backend.entity;
  * Сессия (авторизация)
  */
 public class Session {
-	String n;
-	String login;
-	Long DeafultOrgN;
-	String name;
-	String surname;
+
+	private String n;
+	private String login;
+	private Long DeafultOrgN;
+	private String name;
+	private String surname;
 
 	public String getN() {
 		return n;

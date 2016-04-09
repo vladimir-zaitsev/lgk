@@ -3,6 +3,7 @@ package lgk.nsbc.ru.presenter;
 import lgk.nsbc.ru.backend.ConsultationManager;
 import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 import lgk.nsbc.ru.backend.entity.Consultation;
+import lgk.nsbc.ru.backend.entity.Patient;
 import lgk.nsbc.ru.model.ConsultationModel;
 import lgk.nsbc.ru.view.CalendarView;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
@@ -58,10 +59,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 			Random random = new Random();
 			int value = random.nextInt(executor.size());
 			Consultation consultation = consultations.get(i);
-			String descr = consultation.getSurname();
-
-			ConsultationEvent event = new ConsultationEvent(descr, "Some description.", consultations.get(i),
-				executor.get(value));
+			ConsultationEvent event = new ConsultationEvent(consultation);
 			event.setStart(getStartOfDay(event.getStart()));
 			event.setEnd(getEndOfDay(event.getEnd()));
 			event.setAllDay(true);
@@ -84,8 +82,8 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 			start = getStartOfDay(start);
 			end = getEndOfDay(end);
 		}
-		Consultation consultation = new Consultation(start,end, "", "", "",null, null, "");
-		ConsultationEvent event = new ConsultationEvent("", "", consultation);
+		Consultation consultation = new Consultation(new Patient(),start,end);
+		ConsultationEvent event = new ConsultationEvent(consultation);
 		event.setStyleName("color1");
 		consultationModel.getBeanItemContainer().addBean(event);
 		editFormPresenter.handleNewEvent(event);
@@ -94,9 +92,9 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 
 	@Override
 	public void handleAddNewEventButtonClick() {
-		Consultation consultation = new Consultation( localDateTimeToDate(time),
-			localDateTimeToDate(time),"","","",null,null,"");
-		ConsultationEvent event = new ConsultationEvent("", "", consultation);
+		Consultation consultation = new Consultation(new Patient(), localDateTimeToDate(time),
+			localDateTimeToDate(time));
+		ConsultationEvent event = new ConsultationEvent(consultation);
 		event.setStyleName("color1");
 		consultationModel.sortContainer();
 		consultationModel.getBeanItemContainer().addBean(event);
