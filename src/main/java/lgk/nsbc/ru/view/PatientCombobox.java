@@ -6,8 +6,10 @@ import com.vaadin.data.Property;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.ComboBox;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,24 +34,22 @@ public class PatientCombobox  extends ComboBox {
     @Override
     public String getItemCaption( Object itemId ) {
         StringBuilder sb = new StringBuilder();
-        String delimiter = "";
+        String delimiter = " ";
         for (String propId : myPropIds) {
             Property<?> p = getContainerProperty(itemId, propId);
-            sb.append(delimiter).append(getMyCaption(p));
-            delimiter = " ";
+			if (p!=null&&p.getValue()!=null) {
+				Object propertyValue =  p.getValue();
+				String stringValue;
+				if (propId.equals("birthday")&&propertyValue instanceof Date) {
+					SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-dd-MM");
+					stringValue = simpleDateFormat.format((Date)propertyValue);
+				} else {
+					stringValue = p.getValue().toString();
+				}
+				sb.append(stringValue).append(delimiter);
+			}
         }
-        return sb.toString();
-    }
-
-    private String getMyCaption(Property<?> p) {
-        String caption = null;
-        if (p != null) {
-            Object value = p.getValue();
-            if (value != null) {
-                caption = value.toString();
-            }
-        }
-        return caption != null ? caption : "";
+		return sb.toString();
     }
 
     @Override

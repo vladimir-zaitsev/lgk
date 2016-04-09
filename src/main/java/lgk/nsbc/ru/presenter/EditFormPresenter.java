@@ -2,6 +2,7 @@ package lgk.nsbc.ru.presenter;
 
 import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
+import lgk.nsbc.ru.backend.entity.Patient;
 
 import java.util.Date;
 
@@ -12,7 +13,7 @@ public interface EditFormPresenter {
     void commitEvent();
     void discardEvent();
     void deleteEvent();
-    void selectedItem();
+	void handleSelectPatient(Patient patient);
 	void handleNewEvent(ConsultationEvent consultationEvent);
     void handleEventClick(ConsultationEvent consultationEvent);
 }

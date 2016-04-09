@@ -41,7 +41,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 		this.consultationManager = consultationManager;
 		this.consultationModel = consultationModel;
 		this.calendarView = calendarView;
-		editFormPresenter = new EditFormPresenterImpl(consultationModel,consultationManager);
+		editFormPresenter = new EditFormPresenterImpl(consultationManager,consultationEvent -> handleDeleteEvent(consultationEvent));
 		// Starting from monday
 		time = time.minusDays(time.getDayOfWeek().getValue()-1);
 		calendarView.setStartDate(getTime());
@@ -96,9 +96,9 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 			localDateTimeToDate(time));
 		ConsultationEvent event = new ConsultationEvent(consultation);
 		event.setStyleName("color1");
-		consultationModel.sortContainer();
 		consultationModel.getBeanItemContainer().addBean(event);
 		editFormPresenter.handleNewEvent(event);
+		consultationModel.sortContainer();
 	}
 
 	@Override
