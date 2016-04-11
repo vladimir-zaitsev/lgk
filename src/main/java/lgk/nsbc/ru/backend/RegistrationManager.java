@@ -23,8 +23,8 @@ public class RegistrationManager
 	}
 	/**
 	 * Добавить данные регистрации операции в таблицу sys_operations
-	 * @param con,genIdOperation : 1) полученное соединение,
-	 * из метода добавления человека 2) Id созданной операции
+	 * @param con,genIdOperation : 1) полученное соединение
+	 * 2) Id созданной операции
 	 * @return Успешность добавления операции
 	 **/
 	public boolean  registrOperPeople(Connection con, Long genIdOperation) {
@@ -50,8 +50,8 @@ public class RegistrationManager
 
 	/**
 	 * Добавить данные регистрации операции  в таблицу sys_operations
-	 * @param con,genIdOperation : 1) полученное соединение,
-	 * из метода добавления пациента 2) Id - созданной операции
+	 * @param con,genIdOperation : 1) полученное соединение
+	 * 2) Id - созданной операции
 	 * @return Успешность добавления операции
 	 **/
 	public boolean  registrOperPatients(Connection con,Long genIdOperation) {
@@ -75,8 +75,8 @@ public class RegistrationManager
 	}
 	/**
 	 * Добавить данные регистрации операции  в таблицу sys_operations
-	 * @param con,genIdOperation : 1) полученное соединение,
-	 * из метода добавления консультации 2)Id - созданной операции
+	 * @param con,genIdOperation : 1)полученное соединение
+	 * 2)Id - созданной операции
 	 * @return Успешность добавления операции
 	 **/
 	public boolean registrOperConsultation(Connection con, Long genIdOperation) {
