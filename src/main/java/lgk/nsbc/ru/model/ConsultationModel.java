@@ -15,6 +15,7 @@ public class ConsultationModel {
 	}
 
 	public void sortContainer() {
+
 		beanItemContainer.sort(new Object[]{"start","caption"},new boolean[]{true,false});
 	}
 }

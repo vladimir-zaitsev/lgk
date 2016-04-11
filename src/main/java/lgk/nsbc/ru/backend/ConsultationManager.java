@@ -8,212 +8,84 @@ import org.apache.commons.dbutils.handlers.BeanListHandler;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by user on 20.02.2016.
- */
 
-
-public class ConsultationManager {
-
+public class ConsultationManager
+{
 	private  final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-	private  final PatientsManager patientsManager;
 	private final QueryRunner qr = new QueryRunner();
 
-	public ConsultationManager(PatientsManager patientsManager)
-	{
-		this.patientsManager = patientsManager;
-
-	}
-
-	// Метод, позволяющий вытаскивать даты по заданным датам
 	public List<Consultation> listConsultation(Date fromDate, Date toDate) // дата будет браться от 01.01.2016 и 20.02.2016
 	{
-
 		try (
 			Connection con = DB.getConnection()
 		) {
 			con.setAutoCommit(false);
 			String sql =
 				"SELECT\n" +
-					"	procbegintime, procendtime,\n" +
-					"	surname,name,patronymic,\n" +
-					"	case_history_num,\n" +
-					"	diagnosis,birthday\n" +
+					"procbegintime," +
+					"procendtime,\n" +
+					"surname," +
+					"name," +
+					"patronymic,\n" +
+					"case_history_num,\n" +
+					"diagnosis,"+
+					"birthday\n" +
 					"FROM bas_people\n" +
 					"JOIN nbc_patients  on  bas_people.n = nbc_patients.bas_people_n\n" +
 					"LEFT JOIN  nbc_proc on  nbc_proc.nbc_patients_n = nbc_patients.n\n" +
 					"WHERE nbc_proc.proc_type = 4\n" +
-					"	AND nbc_proc.procbegintime between ? and ?\n" +
-					"	AND nbc_proc.procendtime is not NULL";
+					"AND nbc_proc.procbegintime between ? and ?\n" +
+					"AND nbc_proc.procendtime is not NULL";
 			BeanListHandler<Consultation> handler = new BeanListHandler<>(Consultation.class);
-
 			return qr.query(con, sql, handler
 				, new java.sql.Timestamp(fromDate.getTime())
 				, new java.sql.Timestamp(toDate.getTime())
 			);
-
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-
-	}
-
-   //вытаскивает данные уже существующего пациента из базы
-	public Patient selectPatient(Patient patient) {
-		try (Connection con = DB.getConnection()) {
-			QueryRunner qr = new QueryRunner();
-			StringBuilder sql =  new StringBuilder();
-			sql.append("SELECT\n")
-				.append("bas_people.n,\n")
-				.append("name,\n")
-				.append("sex,\n")
-				.append("surname,\n")
-				.append("patronymic,\n")
-				.append("birthday,\n")
-				.append("diagnosis,\n")
-				.append("case_history_num\n")
-				.append("FROM bas_people\n")
-				.append("JOIN nbc_patients on bas_people.n = nbc_patients.bas_people_n\n")
-				.append("WHERE nbc_patients.bas_people_n = ?\n");
-			Object[] params = new Object[]{patient.getN()};
-			BeanHandler<Patient> handler = new BeanHandler<>(Patient.class);
-			return qr.query(con,sql.toString(),handler,params);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
-
-	// Сгенерируем ключ (primary key) для консультации
-	public Long consultationId() {
-
-		String sql =
-			"SELECT gen_id(nbc_proc_n, 1) as ID\n" +
-				"FROM rdb$database\n";
-
-		try (
-			Connection con = DB.getConnection()
-		) {
-			final QueryRunner qr = new QueryRunner();
-			return qr.query(con, sql, result -> {
-				result.next(); // вернется значение из первой строки
-				return result.getLong("ID");
-			});
-		} catch (SQLException e)
-		{
-			throw new IllegalStateException(e);
-		}
-	}
-
-	// Создание OP_N
-	public long operCreateСonsul()
-	{
-		String sql =
-			"SELECT gen_id(sys_operation_n, 1) as IdOp\n" +
-				"FROM rdb$database\n";
-		try (
-			Connection con = DB.getConnection()
-		) {
-			return qr.query(con, sql, result -> {
-				result.next();
-				return result.getLong("IdOp");
-			});
-		} catch (SQLException e) {
-			throw new IllegalStateException(e);
-		}
-	}
-	public boolean insertConsultation(Consultation consultation)
+	/**
+	 * Добавление консультации в таблицу nbc_proc
+	 * @param consultation - консультация
+	 * @return Успешность добавления
+	 **/
+	public boolean insertConsultation(Connection con, Consultation consultation,Long genIdConsultation,
+									    Long genIdOperation, Long genIdPatient)
 	{
 		String sql = "INSERT into NBC_PROC\n" +
 			"(N, OP_CREATE, NBC_PATIENTS_N, PROC_TYPE, PROCBEGINTIME, PROCENDTIME, TIME_APPROX,\n" +
-			"COMMENT, RECOMMENDATION, NBC_STUD_N, STUD_COMMENT, RT_DEVICE, RT_TECH,\n" +
+			"COMMENT, RECOMMENDATION, NBC_STUD_N, STUD_COMMENT,RT_DEVICE,RT_TECH,\n" +
 			"PARENT_PROC, NBC_ORGANIZATIONS_N)\n" +
 			"VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n";
-		try (
-			Connection con = DB.getConnection()
-		) {
-			Object[] params = new Object[]{consultationId(),operCreateСonsul(),
-				patientsManager.searchId(consultation),null,consultation.getProcbegintime(),
-				consultation.getProcendtime(),null,null,null,null,null,null,null,null,null};
-			int updateRows = qr.update(con, sql, params); // количество обновленных строчек
+		try
+		{
+			Object[] params = new Object[]{genIdConsultation,genIdOperation,genIdPatient,
+				null, new java.sql.Timestamp(consultation.getProcbegintime().getTime()),
+				new java.sql.Timestamp(consultation.getProcendtime().getTime()),
+				null,null,null,null,null,null,null,null,null};
+			int updateRows = qr.update(con, sql, params);
 			if (updateRows == 0)
 			{
 				con.rollback();
 				return false;
 			}
-			con.commit();
 			return true;
 		} catch (SQLException e) {
 			throw new IllegalStateException(e);
 		}
 	}
 
-	/*
-	// Регистрация операции
-	public boolean operInsertConsultation(String lgkSessId) {
-		String sql = "INSERT into SYS_OPERATIONS\n" +
-			"(N, SESSION_N, COMMAND_NAME, MOMENT)\n" +
-			"VALUES (?,?,?,?)\n";
-		try (
-			Connection con = DB.getConnection()
-		) {
-			con.setAutoCommit(false);
-			String command = "NBC_PROC_PUT";
-			String moment = "NOW";
-			Object[] params = new Object[]{operationN, sessionManager.checkSession(lgkSessId),
-				command,moment};
-			int updateRows = qr.update(con, sql, params);
-			if (updateRows == 0) {
-				con.rollback();
-				return false;
-			}
-			con.commit();
-			return true;
-		} catch (SQLException e) {
-			throw new IllegalStateException(e);
-		}
-	}
-
- */
-
-	//  Удаление и редактирование консультации
-
-	// TODO как искать номер процедуры ?
-	// Тут много нюансов которые нужно выяснять
-	public long searchConsultation(Consultation consultation)
-	{
-
-		try (Connection con = DB.getConnection()) {
-			QueryRunner qr = new QueryRunner();
-			StringBuilder sql =  new StringBuilder();
-			sql.append("SELECT nbc_proc.n as idProc \n")
-				.append("FROM nbc_proc\n")
-				.append("JOIN nbc_patients ON nbc_patients.n = nbc_proc.nbc_patients_n\n")
-				.append("JOIN bas_people ON bas_people.n = nbc_patients.bas_people_n\n")
-				.append("WHERE name = ?\n")
-				.append("AND surname = ?\n")
-				.append("AND patronymic = ?\n");
-			Object[] params;
-			if (consultation.getBirthday()!= null) {
-				String birthday = formatter.format(consultation.getBirthday());
-				sql.append("AND birthday = ?\n");
-				params = new Object[]{consultation.getName(),consultation.getSurname(),
-					consultation.getPatronymic(),birthday};
-			} else {
-				params = new Object[]{consultation.getName(),consultation.getSurname(),
-					consultation.getPatronymic()};
-			}
-			return  qr.query(con, sql.toString(), result -> {
-				result.next();
-				return result.getLong("idProc");},params);
-
-		} catch (SQLException e) {
-			throw new IllegalStateException(e);
-		}
-	}
+	/**
+	 * Удалить консультацию из таблицы nbc_proc
+	 * @param  consultation - консультация
+	 * @return Успешность удаления
+	 **/
 	public boolean deleteConsultation(Consultation consultation)
 	{
 		String sql = "DELETE FROM nbc_proc\n" +
@@ -221,8 +93,8 @@ public class ConsultationManager {
 		try (
 			Connection con = DB.getConnection()
 		) {
-			Object[] params = new Object[]{searchConsultation(consultation)};
-			int updateRows = qr.update(con, sql, params); // количество удаленных строчек
+			Object[] params = new Object[]{consultation.getN()};
+			int updateRows = qr.update(con, sql, params);
 			if(updateRows == 0)
 			{
 				con.rollback();
@@ -236,8 +108,11 @@ public class ConsultationManager {
 		}
 	}
 
-
-	// TODO Как обноовлять данные в процедуре
+	 /**
+	 * Обновить данные о консультации  в таблице nbc_proc
+	 * @param consultation - консультация
+	 * @return Успешность обновления
+	 **/
 	public boolean updateConsultation(Consultation consultation)
 	{
 		String sql = "UPDATE nbc_proc SET\n" +
@@ -260,8 +135,8 @@ public class ConsultationManager {
 			Connection con = DB.getConnection()
 		)
 		{
-			// Изенить параметры
-			Object[] params = new Object[]{null,searchConsultation(consultation)};
+			// TODO изменить параметры????
+			Object[] params = new Object[]{consultation.getN(),null};
 			int updateRows = qr.update(con, sql, params);
 			if(updateRows == 0)
 			{
@@ -270,13 +145,10 @@ public class ConsultationManager {
 			}
 			con.commit();
 			return true;
-
-
 		}
-		catch (SQLException e) {
+		catch (SQLException e)
+		{
 			throw new IllegalStateException(e);
 		}
 	}
-
-
 }

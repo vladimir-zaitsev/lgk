@@ -2,10 +2,9 @@ package lgk.nsbc.ru.backend.entity;
 
 import java.util.Date;
 
-/**
- * Created by user on 20.02.2016.
- */
-public class Consultation {
+
+public class Consultation
+{
 	private Patient patient = new Patient();
 	/** Оставлю тут заметочку о том, что в ConsultaionEvent будут другие даты. По всей
 	 * видимости будут нужны два набора дат, те, которые будут в календаре, и те, что
@@ -13,8 +12,7 @@ public class Consultation {
 	 * */
 	private Date procbegintime;
 	private Date procendtime;
-	private String executor;
-
+	private Long n;
 	public Consultation() {}
 
 	public Consultation(Patient patient, Date procbegintime, Date procendtime) {
@@ -23,14 +21,15 @@ public class Consultation {
 		this.procendtime = procendtime;
 	}
 
-	public String getExecutor() {
-		return executor;
+	public void setN (Long n)
+	{
+		this.n = n;
 	}
 
-	public void setExecutor(String executor) {
-		this.executor = executor;
+	public Long getN()
+	{
+		return n;
 	}
-
 	public Date getProcbegintime() {
 		return procbegintime;
 	}
@@ -79,11 +78,11 @@ public class Consultation {
 		patient.setCase_history_num(case_history_num);
 	}
 
-	public String getDiagnosis() {
+	public int getDiagnosis() {
 		return patient.getDiagnosis();
 	}
 
-	public void setDiagnosis(String diagnosis) {
+	public void setDiagnosis(int diagnosis) {
 		patient.setDiagnosis(diagnosis);
 	}
 
@@ -112,4 +111,5 @@ public class Consultation {
 			", birthday=" + getBirthday() +
 			'}';
 	}
+
 }

@@ -69,11 +69,7 @@
 			<!--<artifactId>vaadin-client</artifactId>-->
 			<!--<scope>provided</scope>-->
 		</dependency>
-		<dependency>
-			<groupId>org.vaadin.addons</groupId>
-			<artifactId>expandingtextarea</artifactId>
-			<version>1.2.0</version>
-		</dependency>
+
 		<!--
 		  Needed when using the widgetset optimizer (custom ConnectorBundleLoaderFactory).
 		  

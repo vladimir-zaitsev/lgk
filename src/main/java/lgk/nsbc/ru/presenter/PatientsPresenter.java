@@ -19,7 +19,7 @@ public class PatientsPresenter {
 	}
 
 	public void start() {
-		model.session = sessionManager.loadSession(lgkSessionId);
+	//	model.session = sessionManager.loadSession(lgkSessionId);
 
 		model.patientsList.removeAllItems();
 		model.patientsList.addAll(manager.listPatients());

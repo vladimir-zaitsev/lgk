@@ -1,6 +1,7 @@
 package lgk.nsbc.ru.presenter;
 
 import lgk.nsbc.ru.backend.ConsultationManager;
+import lgk.nsbc.ru.backend.HeadManager;
 import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 import lgk.nsbc.ru.backend.entity.Consultation;
 import lgk.nsbc.ru.backend.entity.Patient;
@@ -20,7 +21,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 
 	private final CalendarView calendarView;
 	private  final ConsultationModel consultationModel;
-	private  final ConsultationManager consultationManager;
+	private  final HeadManager headManager;
 	public static final ArrayList<String> PROCEDURES = new ArrayList<>(4);
 	private static final List<String> executor = new ArrayList<>(5);
 	private static ArrayList<String> hourOfDay = new ArrayList<>(24);
@@ -36,12 +37,12 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 	private LocalDateTime time = LocalDateTime.of(LocalDate.now(),LocalTime.MIDNIGHT);
 	private Mode currentViewMode = Mode.WEEK;
 
-	public CalendarPresenterImpl(CalendarView calendarView,ConsultationModel consultationModel,
-								 ConsultationManager consultationManager) {
-		this.consultationManager = consultationManager;
+	public CalendarPresenterImpl(CalendarView calendarView, ConsultationModel consultationModel,
+								 HeadManager headManager) {
+		this.headManager = headManager;
 		this.consultationModel = consultationModel;
 		this.calendarView = calendarView;
-		editFormPresenter = new EditFormPresenterImpl(consultationManager,consultationEvent -> handleDeleteEvent(consultationEvent));
+		editFormPresenter = new EditFormPresenterImpl(headManager,consultationEvent -> handleDeleteEvent(consultationEvent));
 		// Starting from monday
 		time = time.minusDays(time.getDayOfWeek().getValue()-1);
 		calendarView.setStartDate(getTime());
@@ -52,7 +53,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 
 	public void start() {
 		LocalDateTime consultationTimeRange = LocalDateTime.of(2016,2,1,0,0);
-		List<Consultation> consultations = new ArrayList<>(consultationManager.listConsultation(
+		List<Consultation> consultations = new ArrayList<>(headManager.getConsultationManager().listConsultation(
 			localDateTimeToDate(consultationTimeRange), localDateTimeToDate(consultationTimeRange.plusMonths(2))));
 		System.out.println(consultations.size());
 		for (int i = 0; i < consultations.size(); i++) {
@@ -92,7 +93,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 
 	@Override
 	public void handleAddNewEventButtonClick() {
-		Consultation consultation = new Consultation(new Patient(), localDateTimeToDate(time),
+		Consultation consultation = new Consultation( new Patient(),localDateTimeToDate(time),
 			localDateTimeToDate(time));
 		ConsultationEvent event = new ConsultationEvent(consultation);
 		event.setStyleName("color1");

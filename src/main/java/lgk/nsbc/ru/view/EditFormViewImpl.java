@@ -3,6 +3,7 @@ package lgk.nsbc.ru.view;
 import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.util.converter.StringToDateConverter;
 import com.vaadin.shared.ui.MarginInfo;
+import lgk.nsbc.ru.backend.HeadManager;
 import lgk.nsbc.ru.backend.PatientContainer;
 import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 import lgk.nsbc.ru.backend.entity.Patient;
@@ -14,8 +15,6 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
-import org.vaadin.hene.expandingtextarea.ExpandingTextArea;
-
 import java.text.DateFormat;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -27,7 +26,6 @@ public class EditFormViewImpl implements EditFormView{
 	private Window eventPopup = new Window();
 	private FormLayout eventFormLayout = new FormLayout();
 	private PatientCombobox combobox = new PatientCombobox("Быстрый ввод");
-	private PatientContainer patientContainer = new PatientContainer();
 	private FieldGroup fieldGroup = new FieldGroup();
 	private Button deleteEventButton = new Button("Удалить");
 	private Button applyEventButton = new Button("Применить");
@@ -36,7 +34,7 @@ public class EditFormViewImpl implements EditFormView{
 	private CheckBox allDayField = new CheckBox("Полный день");
 
 	@PropertyId("description")
-	private ExpandingTextArea descriptionField = new ExpandingTextArea("Описание");
+	private TextArea descriptionField = new TextArea("Описание");
 
 	@PropertyId("executor")
 	private TextField executorField = new TextField("Исполнитель");
@@ -64,10 +62,13 @@ public class EditFormViewImpl implements EditFormView{
 
 	EditFormPresenter presenter;
 	ConsultationEvent consultationEvent;
+	HeadManager headManager;
 
-	public EditFormViewImpl(EditFormPresenter editFormPresenter,ConsultationEvent consultationEvent, boolean newEvent) {
+	public EditFormViewImpl(EditFormPresenter editFormPresenter,
+							ConsultationEvent consultationEvent, HeadManager headManager, boolean newEvent) {
 		this.consultationEvent = consultationEvent;
 		this.presenter = editFormPresenter;
+		this.headManager = headManager;
 		initForm(newEvent);
 		bindConsultationEvent();
 		UI.getCurrent().addWindow(eventPopup);
@@ -86,6 +87,7 @@ public class EditFormViewImpl implements EditFormView{
 		combobox.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
 		combobox.setItemCaptionPropertyId("surname,name,patronymic,birthday");
 		combobox.setImmediate(true);
+	    PatientContainer patientContainer = new PatientContainer(headManager.getPatientsManager());
 		if (!newEvent) {
 			combobox.setContainerDataSource(patientContainer);
 			combobox.setValue(consultationEvent.getCurrentPatient());
@@ -181,6 +183,8 @@ public class EditFormViewImpl implements EditFormView{
 		eventPopup.setContent(allComponents);
 	}
 
+
+
 	@Override
 	public void bindConsultationEvent() {
 		BeanItem<ConsultationEvent> item = new BeanItem<>(consultationEvent);
@@ -193,6 +197,8 @@ public class EditFormViewImpl implements EditFormView{
 	public void commitEvent() {
 		try {
 			fieldGroup.commit();
+
+
 		} catch (FieldGroup.CommitException ex) {
 			Logger.getGlobal().log(Level.SEVERE,"Problems with commit",ex);
 		}

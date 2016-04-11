@@ -3,82 +3,39 @@ package lgk.nsbc.ru.backend.entity;
 import java.util.Date;
 
 public class Patient {
-	public enum Props{
-		n
-		,name
-		,surname
-		,patronymic
-		,sex
-		,birthday
-	}
 
+
+	public enum Props
+	{
+		n
+		,case_history_num
+		,diagnosis
+		,nbc_organizations_n
+
+	}
 	private People people = new People();
-	private String name; //(255)
-	private String surname; //(255)
-	private String patronymic; //(255)
-	private String sex;
-	private Date birthday;
+	private Long n;
 	private Integer case_history_num;
-	private String diagnosis;
+	private int diagnosis;
+	private int nbc_organizations_n;
+
 
 	public Patient() {}
 
-	public Patient(String name, String surname, String patronymic, Date birthday, Integer case_history_num, String sex) {
-		this.name = name;
-		this.surname = surname;
-		this.patronymic = patronymic;
-		this.birthday = birthday;
+	public Patient(People people,Integer case_history_num,int nbc_organizations_n)
+	{
+		this.people = people;
 		this.case_history_num = case_history_num;
-		this.sex = sex;
+		this. nbc_organizations_n = nbc_organizations_n;
+
+
 	}
 
 	public Long getN() {
-		return people.getN();
+		return n;
 	}
 
-	public void setN(Long n) {
-		people.setN(n);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getSurname() {
-		return surname;
-	}
-
-	public void setSurname(String surname) {
-		this.surname = surname;
-	}
-
-	public String getPatronymic() {
-		return patronymic;
-	}
-
-	public void setPatronymic(String patronymic) {
-		this.patronymic = patronymic;
-	}
-
-	public String getSex() {
-		return sex;
-	}
-
-	public void setSex(String sex) {
-		this.sex = sex;
-	}
-
-	public Date getBirthday() {
-		return birthday;
-	}
-
-	public void setBirthday(Date birthday) {
-		this.birthday = birthday;
-	}
+	public void setN(Long n) { this.n = n; }
 
 	public Integer getCase_history_num() {
 		return case_history_num;
@@ -88,25 +45,72 @@ public class Patient {
 		this.case_history_num = case_history_num;
 	}
 
-	public String getDiagnosis() {
+	public int  getDiagnosis() {
 		return diagnosis;
 	}
 
-	public void setDiagnosis(String diagnosis) {
+	public void setDiagnosis(int diagnosis) {
 		this.diagnosis = diagnosis;
 	}
 
-	@Override
-	public String toString() {
-		return "Patient{" +
-			"n=" + getN() +
-			", name='" + getName() + '\'' +
-			", surname='" + getSurname() + '\'' +
-			", patronymic='" + getPatronymic() + '\'' +
-			", sex='" + getSex() + '\'' +
-			", birthday=" + getBirthday() +
-			"}\n";
+	public int getNbc_organizations_n() {
+		return nbc_organizations_n;
 	}
+
+	public void setNbc_organizations_n(int nbc_organizations_n) {
+		this.nbc_organizations_n = nbc_organizations_n;
+	}
+
+	public String getName() {
+		return people.getName();
+	}
+
+	public void setName(String name) {
+		people.setName(name);
+	}
+
+	public String getSurname() {
+		return people.getSurname();
+	}
+
+	public void setSurname(String surname) {
+		people.setSurname(surname);
+	}
+
+	public String getPatronymic() {
+		return people.getPatronymic();
+	}
+
+	public void setPatronymic(String patronymic) {
+		people.setPatronymic(patronymic);
+	}
+
+	public String getSex() {
+		return people.getSex();
+	}
+
+	public void setSex(String sex) {
+		people.setSex(sex);
+	}
+
+	public Date getBirthday() {
+		return people.getBirthday();
+	}
+
+	public void setBirthday(Date birthday) {
+		people.setBirthday(birthday);
+	}
+
+	public People getCurrentPeople()
+	{
+		return  people;
+	}
+	public static String getRelationName() {
+		return relationName;
+	}
+
+
+
 
 	public static final String relationName = "BAS_PEOPLE";
 }

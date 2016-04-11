@@ -23,8 +23,9 @@ public class App extends UI {
     @Override
     protected void init(VaadinRequest vaadinRequest) {
 		String lgkSessionId = getPage().getUriFragment();
+		System.out.println(lgkSessionId);
 		getPage().setUriFragment(null, false);
-		new CalendarMainPage(this);
+		new CalendarMainPage(this,lgkSessionId);
 	}
 
 	@WebServlet(urlPatterns = "/*", name = "AppServlet", asyncSupported = true)

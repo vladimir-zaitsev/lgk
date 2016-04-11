@@ -9,6 +9,7 @@ import com.vaadin.ui.components.calendar.CalendarDateRange;
 import com.vaadin.ui.components.calendar.ContainerEventProvider;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import lgk.nsbc.ru.backend.ConsultationManager;
+import lgk.nsbc.ru.backend.HeadManager;
 import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 import lgk.nsbc.ru.model.ConsultationModel;
 import lgk.nsbc.ru.presenter.CalendarPresenter;
@@ -39,9 +40,10 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 
 	CalendarPresenter calendarPresenter;
 
-	public CalendarViewImpl(ConsultationModel consultationModel, ConsultationManager consultationManager) {
+	public CalendarViewImpl(ConsultationModel consultationModel, HeadManager headManager) {
 		super(consultationModel);
-		this.calendarPresenter = new CalendarPresenterImpl(this,consultationModel,consultationManager);
+		// Создадим в начале
+		this.calendarPresenter = new CalendarPresenterImpl(this,consultationModel,headManager);
 		ContainerEventProvider eventProvider = new ContainerEventProvider(consultationModel.getBeanItemContainer());
 		calendarComponent.setEventProvider(eventProvider);
 		calendarComponent.setLocale(Locale.getDefault());

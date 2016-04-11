@@ -25,6 +25,17 @@ public class ConsultationEvent extends BasicEvent {
 		this.consultation = consultation;
 	}
 
+
+	public Long getN()
+	{
+		return consultation.getN();
+	}
+
+	public void  setN (Long n)
+	{
+		consultation.setN(n);
+		fireEventChange();
+	}
 	public Date getBirthday() {
 		return consultation.getBirthday();
 	}
@@ -42,11 +53,11 @@ public class ConsultationEvent extends BasicEvent {
 		fireEventChange();
 	}
 
-	public String getDiagnosis() {
+	public int getDiagnosis() {
 		return consultation.getDiagnosis();
 	}
 
-	public void setDiagnosis(String diagnosis) {
+	public void setDiagnosis(int diagnosis) {
 		consultation.setDiagnosis(diagnosis);
 		fireEventChange();
 	}
@@ -59,6 +70,7 @@ public class ConsultationEvent extends BasicEvent {
 		consultation.setName(name);
 		fireEventChange();
 	}
+
 
 	public String getPatronymic() {
 		return consultation.getPatronymic();
@@ -79,14 +91,6 @@ public class ConsultationEvent extends BasicEvent {
 		fireEventChange();
 	}
 
-	public String getExecutor() {
-		return consultation.getExecutor();
-	}
-
-	public void setExecutor(String executor) {
-		consultation.setExecutor(executor);
-		fireEventChange();
-	}
 
 	public void setNewPatient(Patient patient) {
 		consultation.setNewPatient(patient);
@@ -94,5 +98,9 @@ public class ConsultationEvent extends BasicEvent {
 
 	public Patient getCurrentPatient() {
 		return consultation.getCurrentPatient();
+	}
+
+	public Consultation getConsultation() {
+		return consultation;
 	}
 }

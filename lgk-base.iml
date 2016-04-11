@@ -49,7 +49,6 @@
     <orderEntry type="library" name="Maven: com.vaadin.external.atmosphere:atmosphere-runtime:2.2.7.vaadin1" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin.external.slf4j:vaadin-slf4j-jdk14:1.6.1" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-client-compiled:7.6.4" level="project" />
-    <orderEntry type="library" name="Maven: org.vaadin.addons:expandingtextarea:1.2.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.vaadin:vaadin-client-compiler:7.6.4" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.vaadin:vaadin-client:7.6.4" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.validation:validation-api:1.0.0.GA" level="project" />

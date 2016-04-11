@@ -1,8 +1,10 @@
 package lgk.nsbc.ru.presenter;
 
-import lgk.nsbc.ru.backend.ConsultationManager;
+import lgk.nsbc.ru.backend.*;
 import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 import lgk.nsbc.ru.backend.entity.Patient;
+import lgk.nsbc.ru.backend.entity.People;
+import lgk.nsbc.ru.model.ConsultationModel;
 import lgk.nsbc.ru.view.EditFormView;
 import lgk.nsbc.ru.view.EditFormViewImpl;
 
@@ -14,33 +16,41 @@ import java.util.function.Consumer;
 public class EditFormPresenterImpl implements EditFormPresenter {
 	private EditFormView editFormView;
 	private ConsultationEvent consultationEvent;
-	private ConsultationManager consultationManager;
+	private InsertManager insertManager;
+	private HeadManager headManager;
 	private Consumer<ConsultationEvent> deleteEvent;
+	private boolean newEvent;
 
-	public EditFormPresenterImpl(ConsultationManager consultationManager, Consumer<ConsultationEvent> deleteEvent) {
-		this.consultationManager = consultationManager;
+	public EditFormPresenterImpl( HeadManager headManager,
+								 Consumer<ConsultationEvent> deleteEvent )
+	{
+		this.headManager = headManager;
 		this.deleteEvent = deleteEvent;
 	}
 
 	@Override
 	public void handleNewEvent(ConsultationEvent consultationEvent) {
 		this.consultationEvent = consultationEvent;
-		editFormView = new EditFormViewImpl(this, consultationEvent, true);
+		editFormView = new EditFormViewImpl(this, consultationEvent,headManager,true);
 	}
 
 	@Override
 	public void handleEventClick(ConsultationEvent consultationEvent) {
 		this.consultationEvent = consultationEvent;
-		editFormView = new EditFormViewImpl(this, consultationEvent, false);
+		newEvent = false;
+		editFormView = new EditFormViewImpl(this,consultationEvent,headManager,false);
+
 	}
 
 	@Override
 	public void commitEvent() {
 		editFormView.commitEvent();
+	    saveData();
 	}
 
 	@Override
-	public void discardEvent() {
+	public void discardEvent()
+	{
 		editFormView.discardEvent();
 	}
 
@@ -51,7 +61,18 @@ public class EditFormPresenterImpl implements EditFormPresenter {
 
 	@Override
 	public void handleSelectPatient(Patient patient) {
-		consultationEvent.setNewPatient(consultationManager.selectPatient(patient));
+		consultationEvent.setNewPatient(headManager.getPatientsManager().selectPatient(patient));
 		editFormView.bindConsultationEvent();
 	}
+	@Override
+	public void saveData()
+	{
+		Patient patient = consultationEvent.getCurrentPatient();
+		if (patient.getN() == null)
+		{
+			insertManager = new InsertManager(consultationEvent,headManager);
+			insertManager.insertData();
+		}
+	}
+
 }

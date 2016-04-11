@@ -15,13 +15,11 @@ public class PatientContainer extends BeanItemContainer<Patient> {
 
 	protected Object missingBoxValue;
 	private List<Patient> patients = new ArrayList<>();
+	private PatientsManager patientsManager;
 
-	private  PeopleManager peopleManager = new PeopleManager();
-	private PatientsManager patientManager = new PatientsManager(peopleManager);
-
-	public PatientContainer() throws IllegalArgumentException {
+	public PatientContainer(PatientsManager patientsManager) throws IllegalArgumentException {
 		super(Patient.class);
-
+		this.patientsManager = patientsManager;
 	}
 
 	@Override
@@ -34,7 +32,7 @@ public class PatientContainer extends BeanItemContainer<Patient> {
 	{
 		removeAllItems();
 		if (filterString.length() >= 3) {
-			patients = patientManager.listPatients(filterString);
+			patients = patientsManager.listPatients(filterString);
 		}
 		addAll(patients);
 	}

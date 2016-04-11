@@ -1,6 +1,8 @@
 package lgk.nsbc.ru.backend;
 
 import lgk.nsbc.ru.backend.entity.Consultation;
+import lgk.nsbc.ru.backend.entity.Patient;
+import lgk.nsbc.ru.backend.entity.People;
 import org.apache.commons.dbutils.QueryRunner;
 
 import java.sql.Connection;
@@ -15,46 +17,30 @@ public class PeopleManager
 	private final QueryRunner qr = new QueryRunner();
 	private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
-	// Получаем сгенерируемое id
-	public Long peopleId()
+	/**
+	 * Добавить данные о человеке в таблицу bas_people
+	 * @param people - человек
+	 * @return Успешность добавления
+	 **/
+	public boolean insertPeople( Connection con,People people,Long genIdPeople,Long genIdOperation)
 	{
 		String sql =
-			"SELECT gen_id(bas_people_n, 1) as IdPeople\n" +
-				"FROM rdb$database\n";
-		try (
-			Connection con = DB.getConnection()
-		) {
-			return qr.query(con, sql, result -> {
-				result.next(); // вернется значение из первой строки
-				return result.getLong("IdPeople");
-			});
-		} catch (SQLException e) {
-			throw new IllegalStateException(e);
-		}
-	}
-	// Заносим новую запись человека  в базу с полученным id
-	public boolean insertPeople(Consultation consultation)
-	{
-		String sql = "INSERT INTO bas_people\n" +
-			"(N, OP_CREATE, SURNAME, NAME, PATRONYMIC, BIRTHDAY, SEX,\n" +
-			"CITIZENSHIP, JOB, OBIT)\n" +
-			"VALUES (?,?,?,?,?,?,?,?,?,?)\n";
-		try (
-			Connection con = DB.getConnection()
-		)
+			"INSERT INTO bas_people\n" +
+				"(N, OP_CREATE, NAME, SURNAME,PATRONYMIC, BIRTHDAY, SEX,\n" +
+				"CITIZENSHIP, JOB, OBIT)\n" +
+				"VALUES (?,?,?,?,?,?,?,?,?,?)\n";
+		try
 		{
-			con.setAutoCommit(false);
-			String birthdayPeople =  formatter.format(consultation.getBirthday());
-			Object[] params = new Object[]{peopleId(),operCreatePeople(),consultation.getName(),
-				consultation.getSurname(), consultation.getPatronymic(),birthdayPeople,
+			String birthdayPeople =  formatter.format(people.getBirthday());
+			Object[] params = new Object[]{genIdPeople,genIdOperation,people.getName(),
+				people.getSurname(), people.getPatronymic(),birthdayPeople,
 				null,null,null,null};
-			int updateRows = qr.update(con, sql, params); // количество обновленных строчек
+			int updateRows = qr.update(con, sql, params);
 			if (updateRows == 0)
 			{
 				con.rollback();
 				return false;
 			}
-			con.commit();
 			return true;
 		}
 		catch (SQLException e) {
@@ -62,89 +48,12 @@ public class PeopleManager
 		}
 	}
 
-
-
-	/*
-    //  Регистрация операции
-	public boolean operInsertPeople() {
-		String sql = "INSERT INTO sys_operations\n" +
-			"(N, SESSION_N, COMMAND_NAME, MOMENT)\n" +
-			"VALUES (?,?,?,?)\n";
-		try (
-			Connection con = DB.getConnection()
-		) {
-			con.setAutoCommit(false);
-
-			String command = "BAS_PEOPLE_PUT";
-			String moment = "NOW";
-			Object[] params = new Object[]{},
-			command,moment};
-			int updateRows = qr.update(con, sql, params);
-			if (updateRows == 0) {
-				con.rollback();
-				return false;
-			}
-			con.commit();
-			return true;
-		} catch (SQLException e) {
-			throw new IllegalStateException(e);
-		}
-	}
-
-    */
-	// Создание OP_N
-	public long operCreatePeople()
-	{
-		String sql =
-			"SELECT gen_id(sys_operation_n, 1) as Id\n" +
-				"FROM rdb$database\n";
-		try (
-			Connection con = DB.getConnection()
-		) {
-			return qr.query(con, sql, result -> {
-				result.next();
-				return result.getLong("Id");
-			});
-		} catch (SQLException e) {
-			throw new IllegalStateException(e);
-		}
-	}
-
-	// Ищем id для удаления и обновления и поиска данных о человеке в таблице
-	// TODO каким образом находить BAS_PEOPLE_N для inserta в таблицу NBC_PATIENTS
-	public Long searchId (Consultation consultation)
-	{
-		try (Connection con = DB.getConnection())
-		{
-			StringBuilder sql =  new StringBuilder();
-			sql.append("SELECT n as ID\n")
-				.append("FROM bas_people\n")
-				.append("WHERE name = ?\n")
-				.append("AND surname = ?\n")
-				.append("AND patronymic = ?\n");
-
-			Object[] params;
-			if (consultation.getBirthday()!= null) {
-				String birthday = formatter.format(consultation.getBirthday());
-				sql.append("AND birthday = ?\n");
-				params = new Object[]{consultation.getName(),consultation.getSurname(),
-					consultation.getPatronymic(),birthday};
-			} else {
-				params = new Object[]{consultation.getName(), consultation.getSurname(),
-					consultation.getPatronymic()};
-			}
-
-			return qr.query(con, sql.toString(), result -> {
-				result.next();
-				return result.getLong("ID");
-			},params);
-		} catch (SQLException e)
-		{
-			throw new IllegalStateException(e);
-		}
-	}
-
-	public boolean deletePeople(Consultation consultation)
+	/**
+	 * Удалить человека из  таблицы bas_people
+	 * @param patient - пациент
+	 * @return Успешность удаления
+	 **/
+	public boolean deletePeople(Patient patient)
 	{
 		String sql =
 			"DELETE FROM bas_people\n" +
@@ -152,7 +61,7 @@ public class PeopleManager
 		try (
 			Connection con = DB.getConnection()
 		) {
-			Object[] params = new Object[]{searchId(consultation)};
+			Object[] params = new Object[]{patient.getN()};
 			int updateRows = qr.update(con, sql, params); // количество удаленных строчек
 			if(updateRows == 0)
 			{
@@ -166,10 +75,12 @@ public class PeopleManager
 			throw new IllegalStateException(e);
 		}
 	}
-
-	// Обновление данных
-	// TODO Непонятно какие данные будут обновляться, так как еще не продумано что будет в форме редактирования
-	public boolean updatePeople(Consultation consultation)
+	/**
+	 * Обновить данные человека в таблице bas_people
+	 * @param patient - пациент
+	 * @return Успешность обновления
+	 **/
+	public boolean updatePeople(Patient patient)
 	{
 		String sql =
 			"UPDATE bas_people SET\n" +
@@ -187,10 +98,10 @@ public class PeopleManager
 			Connection con = DB.getConnection()
 		)
 		{
-			String birthdayPeople = formatter.format(consultation.getBirthday());
-			Object[] params = new Object[]{consultation.getName(), consultation.getSurname(),
-				consultation.getPatronymic(), birthdayPeople,null,null,null,null,
-				searchId(consultation)};
+			String birthdayPeople = formatter.format(patient.getBirthday());
+			Object[] params = new Object[]{patient.getName(), patient.getSurname(),
+				patient.getPatronymic(), birthdayPeople,null,null,null,null,
+				patient.getN()};
 			int updateRows = qr.update(con, sql, params);
 			if(updateRows == 0)
 			{
@@ -200,9 +111,10 @@ public class PeopleManager
 			con.commit();
 			return true;
 		}
-		catch (SQLException e) {
+		catch (SQLException e)
+		{
 			throw new IllegalStateException(e);
 		}
-
 	}
+
 }

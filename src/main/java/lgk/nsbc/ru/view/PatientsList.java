@@ -16,7 +16,7 @@ public class PatientsList extends AbstractView<PatientsModel> {
 	public final Grid listGrid = new Grid("Список пациентов", model.getPatientsList());
 	{
 		listGrid.setSizeFull();
-		listGrid.setColumnOrder(n.toString(), surname.toString(), name.toString(), patronymic.toString(), sex.toString(), birthday.toString());
+	//	listGrid.setColumnOrder(n.toString(), surname.toString(), name.toString(), patronymic.toString(), sex.toString(), birthday.toString());
 
 		for (Patient.Props prop: Patient.Props.values()) {
 			Grid.Column col = listGrid.getColumn(prop.toString());
@@ -32,8 +32,8 @@ public class PatientsList extends AbstractView<PatientsModel> {
 				return DateFormat.getDateInstance();
 			}
 		};
-		Grid.Column birthdayCol = listGrid.getColumn(birthday.toString());
-		birthdayCol.setConverter(dateConverter);
+	//	Grid.Column birthdayCol = listGrid.getColumn(birthday.toString());
+	//	birthdayCol.setConverter(dateConverter);
 	}
 
 	public PatientsList(PatientsModelImpl patientsModel) {
