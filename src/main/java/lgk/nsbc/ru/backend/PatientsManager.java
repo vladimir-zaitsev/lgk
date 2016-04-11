@@ -91,7 +91,7 @@ public class PatientsManager {
 
 	/**
 	 * Добавить данные о пациенте в таблицу nbc_patients
-	 * @param patient - пациент
+	 * @param con,patient,genIdPatient,genIdOperation
 	 * @return Успешность добавления
 	 **/
 	public boolean insertPatient(Connection con,Patient patient,Long genIdPeople,Long genIdPatient,

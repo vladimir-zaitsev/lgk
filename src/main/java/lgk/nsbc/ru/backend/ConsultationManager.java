@@ -52,7 +52,7 @@ public class ConsultationManager
 	}
 	/**
 	 * Добавление консультации в таблицу nbc_proc
-	 * @param consultation - консультация
+	 * @param con,consultation,genIdConsultation,genIdOperation,genIdPatient
 	 * @return Успешность добавления
 	 **/
 	public boolean insertConsultation(Connection con, Consultation consultation,Long genIdConsultation,

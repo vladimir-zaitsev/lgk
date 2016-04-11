@@ -21,7 +21,7 @@ public class InsertManager {
 		this.consultationEvent = consultationEvent;
 		this.headManager = headManager;
 	}
-	/* Добавить данные  в таблицы (nbc_patients, nbc_proc, bas_people)
+	/* Добавить данные  в таблицы (nbc_patients, nbc_proc, bas_people) для пациента, который не существует в базе
 	* в течении одной транзакции
 	*/
 	public void insertData() {
@@ -47,6 +47,29 @@ public class InsertManager {
 			Long genIdOperConsult =headManager.getGeneratorManager().genIdOperation();
 			headManager.getConsultationManager().insertConsultation(con, consultation, genIdConsultation,
 				genIdOperConsult,genIdPatient);
+			headManager.getRegistrationManager().registrOperConsultation(con,genIdOperConsult);
+
+			con.commit();
+		} catch (SQLException e)
+		{
+			throw new IllegalStateException(e);
+		}
+	}
+
+	/*
+	* Добавление данных в таблицу nbc_proc для существующего пациента в базе
+	 */
+	public void insertConsultation()
+	{
+		try (Connection con = DB.getConnection())
+		{
+			con.setAutoCommit(false);
+
+			Consultation consultation = consultationEvent.getConsultation();
+			Long genIdConsultation = headManager.getGeneratorManager().genIdConsultation();
+			Long genIdOperConsult =headManager.getGeneratorManager().genIdOperation();
+			headManager.getConsultationManager().insertConsultation(con, consultation, genIdConsultation,
+				genIdOperConsult,consultationEvent.getCurrentPatient().getN());
 			headManager.getRegistrationManager().registrOperConsultation(con,genIdOperConsult);
 
 			con.commit();

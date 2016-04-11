@@ -19,7 +19,7 @@ public class PeopleManager
 
 	/**
 	 * Добавить данные о человеке в таблицу bas_people
-	 * @param people - человек
+	 * @param con,people,genIdPeople,genIdOperation
 	 * @return Успешность добавления
 	 **/
 	public boolean insertPeople( Connection con,People people,Long genIdPeople,Long genIdOperation)

@@ -68,10 +68,16 @@ public class EditFormPresenterImpl implements EditFormPresenter {
 	public void saveData()
 	{
 		Patient patient = consultationEvent.getCurrentPatient();
+		// Выполняются данные действия, если пациент не существует в базе
+		insertManager = new InsertManager(consultationEvent,headManager);
 		if (patient.getN() == null)
 		{
-			insertManager = new InsertManager(consultationEvent,headManager);
 			insertManager.insertData();
+		}
+		// Выполняются данные действия, если пациент  существует в базе
+		if (patient.getN() != null)
+		{
+			insertManager.insertConsultation();
 		}
 	}
 
