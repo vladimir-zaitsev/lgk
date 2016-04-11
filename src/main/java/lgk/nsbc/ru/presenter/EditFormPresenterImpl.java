@@ -21,8 +21,7 @@ public class EditFormPresenterImpl implements EditFormPresenter {
 	private Consumer<ConsultationEvent> deleteEvent;
 	private boolean newEvent;
 
-	public EditFormPresenterImpl( HeadManager headManager,
-								 Consumer<ConsultationEvent> deleteEvent )
+	public EditFormPresenterImpl(HeadManager headManager,Consumer<ConsultationEvent> deleteEvent )
 	{
 		this.headManager = headManager;
 		this.deleteEvent = deleteEvent;
@@ -37,7 +36,6 @@ public class EditFormPresenterImpl implements EditFormPresenter {
 	@Override
 	public void handleEventClick(ConsultationEvent consultationEvent) {
 		this.consultationEvent = consultationEvent;
-		newEvent = false;
 		editFormView = new EditFormViewImpl(this,consultationEvent,headManager,false);
 
 	}
