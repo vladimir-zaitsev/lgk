@@ -86,7 +86,6 @@ public class RegistrationManager
 		try
 		{
 			String command = "NBC_PROC_PUT";
-			String moment = "NOW";
 			Object[] params = new Object[]{genIdOperation,sessionManager.IdSession(con),
 				command,Timestamp.valueOf(LocalDateTime.now())};
 			int updateRows = qr.update(con, sql, params);
