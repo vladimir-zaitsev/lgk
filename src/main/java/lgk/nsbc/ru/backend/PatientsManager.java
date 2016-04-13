@@ -46,12 +46,15 @@ public class PatientsManager {
 					"name,\n"+
 					"patronymic,\n" +
 					"surname," +
-					"birthday\n" +
+					"birthday,\n" +
+					"nbc_organizations_n\n" +
 					"FROM nbc_patients\n" +
 					"JOIN bas_people ON bas_people.n = nbc_patients.bas_people_n\n" +
-					"WHERE UPPER(surname) LIKE ?\n";
+					"WHERE UPPER(surname) LIKE ?\n" +
+				    "AND nbc_organizations_n = ?";
+			Object[] params = new Object[]{filterPrefix.toUpperCase() + "%",selectOrganization(con)};
 			BeanListHandler<Patient> handler = new BeanListHandler<>(Patient.class);
-			return qr.query(con, sql, handler, filterPrefix.toUpperCase() + "%");
+			return qr.query(con, sql, handler,params);
 		} catch (SQLException e) {
 			throw new IllegalStateException(e);
 		}
@@ -74,12 +77,12 @@ public class PatientsManager {
 				.append("patronymic,\n")
 				.append("birthday,\n")
 				.append("diagnosis,\n")
-				.append("case_history_num,\n")
-				.append("nbc_organizations_n\n")
+				.append("case_history_num\n")
 				.append("FROM nbc_patients\n")
 				.append("JOIN bas_people on bas_people.n = nbc_patients.bas_people_n\n")
-				.append("WHERE nbc_patients.n = ?\n");
-			Object[] params = new Object[]{patient.getN()};
+				.append("WHERE nbc_patients.n = ?\n")
+			    .append("AND nbc_organizations_n = ?\n");
+			Object[] params = new Object[]{patient.getN(),selectOrganization(con)};
 			BeanHandler<Patient> handler = new BeanHandler<>(Patient.class);
 			return qr.query(con,sql.toString(),handler,params);
 		}
@@ -97,7 +100,6 @@ public class PatientsManager {
 	public boolean insertPatient(Connection con,Patient patient,Long genIdPeople,Long genIdPatient,
 								 Long genIdOperation)
 	{
-		// TODO подумать про enum
 		String sql = "INSERT into nbc_patients\n" +
 			"(N, OP_CREATE, NBC_ORGANIZATIONS_N, NBC_STAFF_N,CASE_HISTORY_NUM,CASE_HISTORY_DATE,\n" +
 			"BAS_PEOPLE_N, REPRESENT,REPRESENT_TELEPHONE, DIAGNOSIS, NBC_DIAGNOSIS_N,\n"+
@@ -106,9 +108,26 @@ public class PatientsManager {
 			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n";
 		try
 		{
-			Object[] params = new Object[]{genIdPatient,genIdOperation,null,null,
-				null,null,genIdPeople,null,null,null,null,null,
-				null,null,null,null,null,null,null};
+			Object[] params = new Object[]{
+				genIdPatient,
+				genIdOperation,
+				selectOrganization(con),
+				null,
+				null,
+				null,
+				genIdPeople,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null};
 			int updateRows = qr.update(con, sql, params);
 			if (updateRows == 0)
 			{
@@ -121,6 +140,8 @@ public class PatientsManager {
 			throw new IllegalStateException(e);
 		}
 	}
+
+	// В каком случае надо удалять пациента, пока непонятно
 	/**
 	 * Удалить данные о пациенте из таблицы nbc_patients
 	 * @param patient - пациент
@@ -190,6 +211,26 @@ public class PatientsManager {
 			}
 			con.commit();
 			return true;
+		} catch (SQLException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	// Нахождение организации
+	public Long selectOrganization(Connection con)
+	{
+		String sql = "SELECT SYS_CONST.data_bigint as n\n"+
+			"FROM sys_const\n"+
+			"LEFT JOIN nbc_organizations on nbc_organizations.n = sys_const.data_bigint\n"+
+			"WHERE sys_const.name = ?";
+		try
+		{
+		    String name = "NBC_ORGANIZATIONS_MAIN_N";
+			Object[] params = new Object[]{name};
+			return qr.query(con, sql, result -> {
+				result.next();
+				return result.getLong("n");
+			},params);
 		} catch (SQLException e) {
 			throw new IllegalStateException(e);
 		}

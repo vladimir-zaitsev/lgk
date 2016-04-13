@@ -29,14 +29,20 @@ public class InsertManager {
 		{
 			con.setAutoCommit(false);
 
+
 			People people = consultationEvent.getCurrentPatient().getCurrentPeople();
 			Long genIdPeople = headManager.getGeneratorManager().genIdPeople();
+			// Устанавливаем ID человеку
+			consultationEvent.getConsultation().getCurrentPatient().getCurrentPeople().setN(genIdPeople);
+			// Генерируем ID операции
 			Long genIdOperPeople = headManager.getGeneratorManager().genIdOperation();
 			headManager.getPeopleManager().insertPeople(con, people, genIdPeople,genIdOperPeople);
 			headManager.getRegistrationManager().registrOperPeople(con,genIdOperPeople);
 
 			Patient patient = consultationEvent.getCurrentPatient();
 			Long genIdPatient = headManager.getGeneratorManager().genIdPatient();
+			// Устанавливаем ID для пациента
+			consultationEvent.getConsultation().getCurrentPatient().setN(genIdPatient);
 			Long genIdOperPatient = headManager.getGeneratorManager().genIdOperation();
 			headManager.getPatientsManager().insertPatient(con, patient, genIdPeople, genIdPatient,
 				genIdOperPatient);
@@ -44,7 +50,10 @@ public class InsertManager {
 
 			Consultation consultation = consultationEvent.getConsultation();
 			Long genIdConsultation = headManager.getGeneratorManager().genIdConsultation();
-			Long genIdOperConsult =headManager.getGeneratorManager().genIdOperation();
+			// Устанавливаем ID для консультации
+			consultationEvent.getConsultation().setN(genIdConsultation);
+
+			Long genIdOperConsult = headManager.getGeneratorManager().genIdOperation();
 			headManager.getConsultationManager().insertConsultation(con, consultation, genIdConsultation,
 				genIdOperConsult,genIdPatient);
 			headManager.getRegistrationManager().registrOperConsultation(con,genIdOperConsult);
@@ -67,6 +76,9 @@ public class InsertManager {
 
 			Consultation consultation = consultationEvent.getConsultation();
 			Long genIdConsultation = headManager.getGeneratorManager().genIdConsultation();
+			// Устанавливаем ID для консультации
+			 consultationEvent.getConsultation().setN(genIdConsultation);
+
 			Long genIdOperConsult =headManager.getGeneratorManager().genIdOperation();
 			headManager.getConsultationManager().insertConsultation(con, consultation, genIdConsultation,
 				genIdOperConsult,consultationEvent.getCurrentPatient().getN());

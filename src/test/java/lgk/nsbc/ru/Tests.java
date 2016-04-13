@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -53,7 +54,28 @@ public class Tests {
 	//	System.out.println(new I18nManager().getCaption(Patient.relationName, Patient.Props.birthday.toString()));
 	}
 
+	@Ignore
+	@Test
+	public void consult()
+	{
+		LocalDateTime consultationTimeRange = LocalDateTime.of(2016,2,1,0,0);
+		ConsultationManager consultationManager = new ConsultationManager();
+		GregorianCalendar calendar = new GregorianCalendar(2016, 1, 1);
+		Date startDay = calendar.getTime();
+		calendar.add(calendar.MONTH, 1);
+		Date endDay = calendar.getTime();
+		System.out.println( consultationManager.listConsultation(startDay, endDay));
+	}
 
 
+	@Test
+	public void findPatient()
+	{
+		PatientsManager patientsManager = new PatientsManager();
+		String filter =  "Кос";
+		System.out.println(patientsManager.listPatients(filter));
+
+
+	}
 
 }

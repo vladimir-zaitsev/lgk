@@ -32,9 +32,17 @@ public class PeopleManager
 		try
 		{
 			String birthdayPeople =  formatter.format(people.getBirthday());
-			Object[] params = new Object[]{genIdPeople,genIdOperation,people.getName(),
-				people.getSurname(), people.getPatronymic(),birthdayPeople,
-				null,null,null,null};
+			Object[] params = new Object[]{
+				genIdPeople,
+				genIdOperation,
+				people.getName(),
+				people.getSurname(),
+				people.getPatronymic(),
+				birthdayPeople,
+				null,
+				null,
+				null,
+				null};
 			int updateRows = qr.update(con, sql, params);
 			if (updateRows == 0)
 			{
@@ -48,12 +56,14 @@ public class PeopleManager
 		}
 	}
 
+
+	// Когда удалять человека????
 	/**
 	 * Удалить человека из  таблицы bas_people
-	 * @param patient - пациент
+	 * @param people - человек
 	 * @return Успешность удаления
 	 **/
-	public boolean deletePeople(Patient patient)
+	public boolean deletePeople(People people)
 	{
 		String sql =
 			"DELETE FROM bas_people\n" +
@@ -61,7 +71,7 @@ public class PeopleManager
 		try (
 			Connection con = DB.getConnection()
 		) {
-			Object[] params = new Object[]{patient.getN()};
+			Object[] params = new Object[]{};
 			int updateRows = qr.update(con, sql, params); // количество удаленных строчек
 			if(updateRows == 0)
 			{
@@ -77,10 +87,10 @@ public class PeopleManager
 	}
 	/**
 	 * Обновить данные человека в таблице bas_people
-	 * @param patient - пациент
+	 * @param people - человек
 	 * @return Успешность обновления
 	 **/
-	public boolean updatePeople(Patient patient)
+	public boolean updatePeople(People people)
 	{
 		String sql =
 			"UPDATE bas_people SET\n" +
@@ -98,10 +108,10 @@ public class PeopleManager
 			Connection con = DB.getConnection()
 		)
 		{
-			String birthdayPeople = formatter.format(patient.getBirthday());
-			Object[] params = new Object[]{patient.getName(), patient.getSurname(),
-				patient.getPatronymic(), birthdayPeople,null,null,null,null,
-				patient.getN()};
+			String birthdayPeople = formatter.format(people.getBirthday());
+			Object[] params = new Object[]{people.getName(), people.getSurname(),
+				people.getPatronymic(), birthdayPeople,null,null,null,null,
+				people.getN()};
 			int updateRows = qr.update(con, sql, params);
 			if(updateRows == 0)
 			{
@@ -116,5 +126,7 @@ public class PeopleManager
 			throw new IllegalStateException(e);
 		}
 	}
+
+
 
 }

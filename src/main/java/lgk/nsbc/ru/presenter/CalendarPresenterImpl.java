@@ -1,6 +1,7 @@
 package lgk.nsbc.ru.presenter;
 
 import lgk.nsbc.ru.backend.ConsultationManager;
+import lgk.nsbc.ru.backend.DeleteManager;
 import lgk.nsbc.ru.backend.HeadManager;
 import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 import lgk.nsbc.ru.backend.entity.Consultation;
@@ -26,6 +27,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 	private static final List<String> executor = new ArrayList<>(5);
 	private static ArrayList<String> hourOfDay = new ArrayList<>(24);
 	private final EditFormPresenter editFormPresenter;
+	private DeleteManager deleteManager;
 	static {
 		for (int i=0;i<24;i++) {
 			hourOfDay.add(String.format("%02d:00",i));
@@ -54,7 +56,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 	public void start() {
 		LocalDateTime consultationTimeRange = LocalDateTime.of(2016,2,1,0,0);
 		List<Consultation> consultations = new ArrayList<>(headManager.getConsultationManager().listConsultation(
-			localDateTimeToDate(consultationTimeRange), localDateTimeToDate(consultationTimeRange.plusMonths(2))));
+			localDateTimeToDate(consultationTimeRange), localDateTimeToDate(consultationTimeRange.plusMonths(6))));
 		System.out.println(consultations.size());
 		for (int i = 0; i < consultations.size(); i++) {
 			Random random = new Random();
@@ -73,6 +75,9 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 	@Override
 	public void handleDeleteEvent(ConsultationEvent consultationEvent) {
 		consultationModel.getBeanItemContainer().removeItem(consultationEvent);
+		deleteManager = new DeleteManager(consultationEvent,headManager);
+		deleteManager.deleteConsul();
+
 	}
 
 

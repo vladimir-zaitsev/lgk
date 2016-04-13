@@ -93,6 +93,7 @@ public class Patient {
 		people.setSex(sex);
 	}
 
+
 	public Date getBirthday() {
 		return people.getBirthday();
 	}
@@ -110,7 +111,19 @@ public class Patient {
 	}
 
 
-
+	@Override
+	public String toString() {
+		return "Patient{" +
+			"n=" + n +
+			", surname='" + getSurname() + '\'' +
+			", name='" + getName() + '\'' +
+			", patronymic='" + getPatronymic() + '\'' +
+			", cas_history_num='" + getCase_history_num() + '\'' +
+			", diagnosis='" + getDiagnosis() + '\'' +
+			", birthday='" + getBirthday() + '\''+
+			", nbc_organizations_n=" + nbc_organizations_n +
+			'}';
+	}
 
 	public static final String relationName = "BAS_PEOPLE";
 }

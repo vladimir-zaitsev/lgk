@@ -24,9 +24,8 @@ public class ConsultationManager
 		try (
 			Connection con = DB.getConnection()
 		) {
-			con.setAutoCommit(false);
 			String sql =
-				"SELECT\n" +
+				"SELECT nbc_proc.n,\n" +
 					"procbegintime," +
 					"procendtime,\n" +
 					"surname," +
@@ -41,6 +40,7 @@ public class ConsultationManager
 					"WHERE nbc_proc.proc_type = 4\n" +
 					"AND nbc_proc.procbegintime between ? and ?\n" +
 					"AND nbc_proc.procendtime is not NULL";
+
 			BeanListHandler<Consultation> handler = new BeanListHandler<>(Consultation.class);
 			return qr.query(con, sql, handler
 				, new java.sql.Timestamp(fromDate.getTime())
@@ -65,10 +65,24 @@ public class ConsultationManager
 			"VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n";
 		try
 		{
-			Object[] params = new Object[]{genIdConsultation,genIdOperation,genIdPatient,
-				null, new java.sql.Timestamp(consultation.getProcbegintime().getTime()),
+			Object[] params = new Object[]
+				{
+				genIdConsultation,
+				genIdOperation,
+				genIdPatient,
+				4,
+				new java.sql.Timestamp(consultation.getProcbegintime().getTime()),
 				new java.sql.Timestamp(consultation.getProcendtime().getTime()),
-				null,null,null,null,null,null,null,null,null};
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null
+				};
 			int updateRows = qr.update(con, sql, params);
 			if (updateRows == 0)
 			{
@@ -86,21 +100,21 @@ public class ConsultationManager
 	 * @param  consultation - консультация
 	 * @return Успешность удаления
 	 **/
-	public boolean deleteConsultation(Consultation consultation)
+	public boolean deleteConsultation(Connection con,Consultation consultation)
 	{
-		String sql = "DELETE FROM nbc_proc\n" +
+		String sql =
+			"DELETE FROM nbc_proc\n" +
 			"WHERE N = ?\n";
-		try (
-			Connection con = DB.getConnection()
-		) {
-			Object[] params = new Object[]{consultation.getN()};
+		try
+		 {
+			 Object[] params = new Object[]{consultation.getN()};
 			int updateRows = qr.update(con, sql, params);
 			if(updateRows == 0)
 			{
 				con.rollback();
 				return false;
 			}
-			con.commit();
+
 			return true;
 		}
 		catch (SQLException e) {
@@ -108,6 +122,8 @@ public class ConsultationManager
 		}
 	}
 
+
+	// Редектирование пока нет
 	 /**
 	 * Обновить данные о консультации  в таблице nbc_proc
 	 * @param consultation - консультация

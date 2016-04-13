@@ -61,5 +61,16 @@ public class People {
 		this.birthday = birthday;
 	}
 
+	@Override
+	public String toString() {
+		return "People{" +
+			"n=" + n +
+			", name='" + name + '\'' +
+			", surname='" + surname + '\'' +
+			", patronymic='" + patronymic + '\'' +
+			", sex='" + sex + '\'' +
+			", birthday=" + birthday +
+			'}';
+	}
 
 }

@@ -26,7 +26,7 @@ public class Consultation
 		this.n = n;
 	}
 
-	public Long getN()
+	public Long getN ()
 	{
 		return n;
 	}
@@ -101,7 +101,8 @@ public class Consultation
 	@Override
 	public String toString() {
 		return "Consultation{" +
-			"procbegintime=" + getProcbegintime() +
+			"n=" + getN()+
+			", procbegintime=" + getProcbegintime() +
 			", procendtime=" + getProcendtime() +
 			", surname='" + getSurname() + '\'' +
 			", name='" + getName() + '\'' +
