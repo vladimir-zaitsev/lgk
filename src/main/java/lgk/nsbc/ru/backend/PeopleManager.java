@@ -49,6 +49,7 @@ public class PeopleManager
 				con.rollback();
 				return false;
 			}
+			con.commit();
 			return true;
 		}
 		catch (SQLException e) {
