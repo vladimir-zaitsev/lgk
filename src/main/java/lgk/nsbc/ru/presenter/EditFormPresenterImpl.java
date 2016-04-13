@@ -19,7 +19,6 @@ public class EditFormPresenterImpl implements EditFormPresenter {
 	private InsertManager insertManager;
 	private HeadManager headManager;
 	private Consumer<ConsultationEvent> deleteEvent;
-	private boolean newEvent;
 
 	public EditFormPresenterImpl(HeadManager headManager,Consumer<ConsultationEvent> deleteEvent )
 	{
@@ -54,6 +53,7 @@ public class EditFormPresenterImpl implements EditFormPresenter {
 
 	@Override
 	public void deleteEvent() {
+		headManager.getConsultationManager().deleteConsultation(consultationEvent.getConsultation());
 		deleteEvent.accept(consultationEvent);
 	}
 
@@ -63,18 +63,15 @@ public class EditFormPresenterImpl implements EditFormPresenter {
 		editFormView.bindConsultationEvent();
 	}
 	@Override
-	public void saveData()
-	{
+	public void saveData() {
 		Patient patient = consultationEvent.getCurrentPatient();
 		// Выполняются данные действия, если пациент не существует в базе
 		insertManager = new InsertManager(consultationEvent,headManager);
-		if (patient.getN() == null)
-		{
+		if (patient.getN() == null) {
 			insertManager.insertData();
 		}
 		// Выполняются данные действия, если пациент  существует в базе
-		if (patient.getN() != null)
-		{
+		if (patient.getN() != null) {
 			insertManager.insertConsultation();
 		}
 	}

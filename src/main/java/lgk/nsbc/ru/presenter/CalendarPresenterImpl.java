@@ -54,7 +54,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 	public void start() {
 		LocalDateTime consultationTimeRange = LocalDateTime.of(2016,2,1,0,0);
 		List<Consultation> consultations = new ArrayList<>(headManager.getConsultationManager().listConsultation(
-			localDateTimeToDate(consultationTimeRange), localDateTimeToDate(consultationTimeRange.plusMonths(2))));
+			localDateTimeToDate(consultationTimeRange), localDateTimeToDate(consultationTimeRange.plusMonths(4))));
 		System.out.println(consultations.size());
 		for (int i = 0; i < consultations.size(); i++) {
 			Random random = new Random();

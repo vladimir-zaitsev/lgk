@@ -99,16 +99,48 @@ public class PatientsManager {
 	{
 		// TODO подумать про enum
 		String sql = "INSERT into nbc_patients\n" +
-			"(N, OP_CREATE, NBC_ORGANIZATIONS_N, NBC_STAFF_N,CASE_HISTORY_NUM,CASE_HISTORY_DATE,\n" +
-			"BAS_PEOPLE_N, REPRESENT,REPRESENT_TELEPHONE, DIAGNOSIS, NBC_DIAGNOSIS_N,\n"+
-			"FULL_DIAGNOSIS, STATIONARY, ALLERGY, INFORMATION_SOURCE, FOLDER, DISORDER_HISTORY,\n"+
-			"NBC_DIAG_2015_N, NBC_DIAG_LOC_N)\n"+
+			"(N, " +
+			"OP_CREATE, " +
+			"NBC_ORGANIZATIONS_N, " +
+			"NBC_STAFF_N," +
+			"CASE_HISTORY_NUM," +
+			"CASE_HISTORY_DATE,\n" +
+			"BAS_PEOPLE_N, " +
+			"REPRESENT," +
+			"REPRESENT_TELEPHONE, " +
+			"DIAGNOSIS, " +
+			"NBC_DIAGNOSIS_N,\n"+
+			"FULL_DIAGNOSIS, " +
+			"STATIONARY, " +
+			"ALLERGY, " +
+			"INFORMATION_SOURCE, " +
+			"FOLDER, " +
+			"DISORDER_HISTORY,\n"+
+			"NBC_DIAG_2015_N, " +
+			"NBC_DIAG_LOC_N)\n"+
 			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n";
 		try
 		{
-			Object[] params = new Object[]{genIdPatient,genIdOperation,null,null,
-				null,null,genIdPeople,null,null,null,null,null,
-				null,null,null,null,null,null,null};
+			Object[] params = new Object[]{
+				genIdPatient,
+				genIdOperation,
+				12, // "деловой" центр гамма нож
+				null,
+				patient.getCase_history_num(),
+				null,
+				genIdPeople,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null};
 			int updateRows = qr.update(con, sql, params);
 			if (updateRows == 0)
 			{

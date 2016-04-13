@@ -2,6 +2,8 @@ package lgk.nsbc.ru.view;
 
 import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.util.converter.StringToDateConverter;
+import com.vaadin.data.validator.RegexpValidator;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.shared.ui.MarginInfo;
 import lgk.nsbc.ru.backend.HeadManager;
 import lgk.nsbc.ru.backend.PatientContainer;
@@ -128,6 +130,7 @@ public class EditFormViewImpl implements EditFormView{
 
 		executorField.setInputPrompt("Человек,отвественный за процедуру");
 		executorField.setNullRepresentation("");
+		executorField.setValidationVisible(true);
 
 		nameField.setInputPrompt("имя пациента");
 		nameField.setNullRepresentation("");

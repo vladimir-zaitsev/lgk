@@ -27,6 +27,7 @@ public class ConsultationManager
 			con.setAutoCommit(false);
 			String sql =
 				"SELECT\n" +
+					"nbc_proc.n, " +
 					"procbegintime," +
 					"procendtime,\n" +
 					"surname," +
@@ -59,19 +60,25 @@ public class ConsultationManager
 									    Long genIdOperation, Long genIdPatient)
 	{
 		String sql = "INSERT into NBC_PROC\n" +
-			"(N, OP_CREATE, NBC_PATIENTS_N, PROC_TYPE, PROCBEGINTIME, PROCENDTIME, TIME_APPROX,\n" +
+			"(N, " +
+			"OP_CREATE, " +
+			"NBC_PATIENTS_N, " +
+			"PROC_TYPE, PROCBEGINTIME, PROCENDTIME, TIME_APPROX,\n" +
 			"COMMENT, RECOMMENDATION, NBC_STUD_N, STUD_COMMENT,RT_DEVICE,RT_TECH,\n" +
 			"PARENT_PROC, NBC_ORGANIZATIONS_N)\n" +
 			"VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n";
 		try
 		{
-			Object[] params = new Object[]{genIdConsultation,genIdOperation,genIdPatient,
-				null, new java.sql.Timestamp(consultation.getProcbegintime().getTime()),
+			Object[] params = new Object[]{
+				genIdConsultation,
+				genIdOperation,
+				genIdPatient,
+				4, // Тип консультация же, незя ставить null, с этим работать будет нельзя
+				new java.sql.Timestamp(consultation.getProcbegintime().getTime()),
 				new java.sql.Timestamp(consultation.getProcendtime().getTime()),
 				null,null,null,null,null,null,null,null,null};
 			int updateRows = qr.update(con, sql, params);
-			if (updateRows == 0)
-			{
+			if (updateRows == 0) {
 				con.rollback();
 				return false;
 			}
@@ -90,13 +97,10 @@ public class ConsultationManager
 	{
 		String sql = "DELETE FROM nbc_proc\n" +
 			"WHERE N = ?\n";
-		try (
-			Connection con = DB.getConnection()
-		) {
+		try (Connection con = DB.getConnection()) {
 			Object[] params = new Object[]{consultation.getN()};
 			int updateRows = qr.update(con, sql, params);
-			if(updateRows == 0)
-			{
+			if(updateRows == 0) {
 				con.rollback();
 				return false;
 			}

@@ -23,7 +23,9 @@ public class App extends UI {
     @Override
     protected void init(VaadinRequest vaadinRequest) {
 		String lgkSessionId = getPage().getUriFragment();
-		System.out.println(lgkSessionId);
+		if (lgkSessionId==null) {
+			lgkSessionId = "9ec2104e97256dc639754ae07b5eb7bf";
+		}
 		getPage().setUriFragment(null, false);
 		new CalendarMainPage(this,lgkSessionId);
 	}
