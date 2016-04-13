@@ -26,7 +26,6 @@ public class App extends UI {
 		if (lgkSessionId == null) {
 			lgkSessionId = "9ec2104e97256dc639754ae07b5eb7bf";
 		}
-		System.out.println(lgkSessionId);
 		getPage().setUriFragment(null, false);
 		new CalendarMainPage(this,lgkSessionId);
 	}

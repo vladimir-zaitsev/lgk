@@ -2,10 +2,7 @@ package lgk.nsbc.ru.view;
 
 import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.util.converter.StringToDateConverter;
-import com.vaadin.data.validator.BigIntegerRangeValidator;
-import com.vaadin.data.validator.IntegerRangeValidator;
-import com.vaadin.data.validator.RegexpValidator;
-import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.data.validator.*;
 import com.vaadin.shared.ui.MarginInfo;
 import lgk.nsbc.ru.backend.HeadManager;
 import lgk.nsbc.ru.backend.PatientContainer;
@@ -22,6 +19,7 @@ import com.vaadin.ui.*;
 
 import java.math.BigInteger;
 import java.text.DateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -123,14 +121,21 @@ public class EditFormViewImpl implements EditFormView{
 
 		startDateField.setResolution(Resolution.MINUTE);
 		startDateField.setValidationVisible(true);
+		startDateField.addValidator(new DateRangeValidator("Недопустимая дата",null,null,Resolution.MINUTE));
+
 		endDateField.setResolution(Resolution.MINUTE);
 		endDateField.setValidationVisible(true);
+		endDateField.addValidator(new DateRangeValidator("Недопустимая дата",null,null,Resolution.MINUTE));
 		allDayField.setImmediate(true);
 		allDayField.addValueChangeListener(event -> {
 			Resolution resolution = allDayField.getValue() ? Resolution.DAY : Resolution.MINUTE;
 			if (startDateField != null && endDateField != null) {
+				startDateField.removeAllValidators();
 				startDateField.setResolution(resolution);
+				startDateField.addValidator(new DateRangeValidator("Недопустимая дата",null,null,resolution));
 				endDateField.setResolution(resolution);
+				endDateField.removeAllValidators();
+				endDateField.addValidator(new DateRangeValidator("Недопустимая дата",null,null,resolution));
 			}
 		});
 
@@ -164,6 +169,7 @@ public class EditFormViewImpl implements EditFormView{
 		caseHistoryNumTextField.addValidator(new IntegerRangeValidator("Недопустимое значение", 1,Integer.MAX_VALUE));
 
 		birthdayField.setResolution(Resolution.DAY);
+		birthdayField.addValidator(new DateRangeValidator("Недопустимая дата",null,null,Resolution.DAY));
 		birthdayField.setValidationVisible(true);
 
 		selectProcedure.select(CalendarPresenterImpl.PROCEDURES.get(0));

@@ -20,9 +20,9 @@ public class EditFormPresenterImpl implements EditFormPresenter {
 	private DeleteManager  deleteManager;
 	private HeadManager headManager;
 	private Consumer<ConsultationEvent> deleteEvent;
+	private boolean newEvent;
 
-	public EditFormPresenterImpl(HeadManager headManager,Consumer<ConsultationEvent> deleteEvent )
-	{
+	public EditFormPresenterImpl(HeadManager headManager,Consumer<ConsultationEvent> deleteEvent ) {
 		this.headManager = headManager;
 		this.deleteEvent = deleteEvent;
 	}
@@ -52,14 +52,12 @@ public class EditFormPresenterImpl implements EditFormPresenter {
 	}
 
 	@Override
-	public void discardEvent()
-	{
+	public void discardEvent() {
 		editFormView.discardEvent();
 	}
 
 	@Override
 	public void deleteEvent() {
-		headManager.getConsultationManager().deleteConsultation(consultationEvent.getConsultation());
 		deleteEvent.accept(consultationEvent);
 		deleteConsult();
 	}
@@ -76,20 +74,15 @@ public class EditFormPresenterImpl implements EditFormPresenter {
 		insertManager = new InsertManager(consultationEvent,headManager);
 		if (patient.getN() == null) {
 			insertManager.insertData();
-		}
-		// Выполняются данные действия, если пациент  существует в базе
-		if (patient.getN() != null) {
+		} else {
 			insertManager.insertConsultation();
 			System.out.println((patient.getN()));
 		}
 	}
 
 	@Override
-	public void deleteConsult()
-	{
+	public void deleteConsult() {
         deleteManager = new DeleteManager(consultationEvent,headManager);
 		deleteManager.deleteConsul();
 	}
-
-
 }
