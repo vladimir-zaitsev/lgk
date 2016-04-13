@@ -2,6 +2,8 @@ package lgk.nsbc.ru.view;
 
 import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.util.converter.StringToDateConverter;
+import com.vaadin.data.validator.BigIntegerRangeValidator;
+import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.shared.ui.MarginInfo;
@@ -17,6 +19,8 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
+
+import java.math.BigInteger;
 import java.text.DateFormat;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -118,7 +122,9 @@ public class EditFormViewImpl implements EditFormView{
 		deleteEventButton.addStyleName("primary");
 
 		startDateField.setResolution(Resolution.MINUTE);
+		startDateField.setValidationVisible(true);
 		endDateField.setResolution(Resolution.MINUTE);
+		endDateField.setValidationVisible(true);
 		allDayField.setImmediate(true);
 		allDayField.addValueChangeListener(event -> {
 			Resolution resolution = allDayField.getValue() ? Resolution.DAY : Resolution.MINUTE;
@@ -131,20 +137,34 @@ public class EditFormViewImpl implements EditFormView{
 		executorField.setInputPrompt("Человек,отвественный за процедуру");
 		executorField.setNullRepresentation("");
 		executorField.setValidationVisible(true);
+		executorField.addValidator(new StringLengthValidator("Недопустимое имя",0,254,true));
+		executorField.addValidator(new RegexpValidator("[А-Яа-я ]+",true,"Недопустимое значение"));
 
 		nameField.setInputPrompt("имя пациента");
 		nameField.setNullRepresentation("");
+		nameField.setValidationVisible(true);
+		nameField.addValidator(new StringLengthValidator("Недопустимое имя",0,254,true));
+		nameField.addValidator(new RegexpValidator("[А-Яа-я ]+",true,"Недопустимое значение"));
 
 		surnameField.setInputPrompt("фамилия пациента");
 		surnameField.setNullRepresentation("");
+		surnameField.setValidationVisible(true);
+		surnameField.addValidator(new StringLengthValidator("Недопустимое имя",0,254,true));
+		surnameField.addValidator(new RegexpValidator("[А-Яа-я ]+",true,"Недопустимое значение"));
 
 		patronymicField.setInputPrompt("отчество пациента");
 		patronymicField.setNullRepresentation("");
+		patronymicField.setValidationVisible(true);
+		patronymicField.addValidator(new StringLengthValidator("Недопустимое имя",0,254,true));
+		patronymicField.addValidator(new RegexpValidator("[А-Яа-я ]+",true,"Недопустимое значение"));
 
 		caseHistoryNumTextField = new TextField("Номер истории");
 		caseHistoryNumTextField.setNullRepresentation("");
+		caseHistoryNumTextField.setValidationVisible(true);
+		caseHistoryNumTextField.addValidator(new IntegerRangeValidator("Недопустимое значение", 1,Integer.MAX_VALUE));
 
 		birthdayField.setResolution(Resolution.DAY);
+		birthdayField.setValidationVisible(true);
 
 		selectProcedure.select(CalendarPresenterImpl.PROCEDURES.get(0));
 		initLayout();
