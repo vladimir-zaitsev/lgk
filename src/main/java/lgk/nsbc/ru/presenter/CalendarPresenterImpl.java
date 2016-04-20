@@ -3,6 +3,7 @@ package lgk.nsbc.ru.presenter;
 import lgk.nsbc.ru.backend.ConsultationManager;
 import lgk.nsbc.ru.backend.DeleteManager;
 import lgk.nsbc.ru.backend.HeadManager;
+import lgk.nsbc.ru.backend.PatientContainer;
 import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 import lgk.nsbc.ru.backend.entity.Consultation;
 import lgk.nsbc.ru.backend.entity.Patient;
@@ -28,6 +29,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 	private static ArrayList<String> hourOfDay = new ArrayList<>(24);
 	private final EditFormPresenter editFormPresenter;
 	private DeleteManager deleteManager;
+	private PatientContainer patientSearch;
 	static {
 		for (int i=0;i<24;i++) {
 			hourOfDay.add(String.format("%02d:00",i));
@@ -50,6 +52,32 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 		calendarView.setStartDate(getTime());
 		calendarView.setEndDate(localDateTimeToDate(time.plusWeeks(1).minusSeconds(1)));
 		start();
+		patientSearch = new PatientContainer() {
+
+			@Override
+			protected void filterItems(String filterString) {
+				removeAllItems();
+				if (filterString.length() >= 3) {
+					// Case insensitive (?iu)
+					String pattern = "(?iu)^"+filterString+"[А-Яа-я ]*";
+					patients = new ArrayList<>(consultationModel.getBeanItemContainer().size()/5+5);
+					ConsultationEvent firstId = consultationModel.getBeanItemContainer().firstItemId();
+					if (firstId.getSurname()!=null&&firstId.getSurname().matches(pattern)) {
+						patients.add(firstId.getCurrentPatient());
+					}
+					if (firstId!=null) {
+						ConsultationEvent nextId = consultationModel.getBeanItemContainer().nextItemId(firstId);
+						while (nextId!=null) {
+							if (nextId.getSurname()!=null&&nextId.getSurname().matches(pattern)) {
+								patients.add(nextId.getCurrentPatient());
+							}
+							nextId = consultationModel.getBeanItemContainer().nextItemId(nextId);
+						}
+					}
+				}
+				addAll(patients);
+			}
+		};
 		updateCaptionLabel();
 	}
 
@@ -209,6 +237,36 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 	@Override
 	public List getComboBoxValues() {
 		return hourOfDay;
+	}
+
+	@Override
+	public PatientContainer getPatientSearchContainer() {
+		return patientSearch;
+	}
+
+	@Override
+	public void handlePatientSearch(Patient patient) {
+		// Это лишь игрушка, не более. Реально надо серьёзно править класс PatientContainer. Его надо превращать в Generic,
+		// Т.к. Класс обладает огромным потенциалом искать чего угодно где угодно.
+		ConsultationEvent firstId = consultationModel.getBeanItemContainer().firstItemId();
+		if (firstId!=null) {
+			if (firstId.getCurrentPatient()!=null&&firstId.getCurrentPatient()==patient) {
+				time = dateToLocalDateTime(getStartOfDay(firstId.getStart()));
+			} else {
+				ConsultationEvent nextId = consultationModel.getBeanItemContainer().nextItemId(firstId);
+				while (nextId != null) {
+					if (nextId.getCurrentPatient() != null && nextId.getCurrentPatient() == patient) {
+						time = dateToLocalDateTime(getStartOfDay(nextId.getStart()));
+						break;
+					}
+					nextId = consultationModel.getBeanItemContainer().nextItemId(nextId);
+				}
+			}
+			currentViewMode = Mode.DAY;
+			calendarView.setStartDate(localDateTimeToDate(time));
+			calendarView.setEndDate(localDateTimeToDate(time.plusDays(1).minusSeconds(1)));
+			updateCaptionLabel();
+		}
 	}
 
 	private static Date localDateTimeToDate(LocalDateTime ldt) {

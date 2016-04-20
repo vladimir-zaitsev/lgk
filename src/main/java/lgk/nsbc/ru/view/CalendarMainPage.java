@@ -1,6 +1,5 @@
 package lgk.nsbc.ru.view;
 
-import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
 import lgk.nsbc.ru.backend.*;

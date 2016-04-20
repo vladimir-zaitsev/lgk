@@ -1,6 +1,8 @@
 package lgk.nsbc.ru.presenter;
 
+import lgk.nsbc.ru.backend.PatientContainer;
 import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
+import lgk.nsbc.ru.backend.entity.Patient;
 
 import java.util.Date;
 import java.util.List;
@@ -14,7 +16,7 @@ public interface CalendarPresenter {
 		DAY, WEEK, MONTH
 	}
 	Date getTime();
-
+	PatientContainer getPatientSearchContainer();
 	// Create/Delete/Edit event
 	void handleDeleteEvent(ConsultationEvent consultationEvent);
 	void handleRangeSelectEvent(Date start, Date end,boolean isMonthlyMode);
@@ -26,6 +28,7 @@ public interface CalendarPresenter {
 	void handleMonthButtonClick();
 	void handleWeekButtonClick();
 	void handleDayButtonClick();
+	void handlePatientSearch(Patient patient);
 
 	void handleCalendarWeekClick(int week,int year);
 	void handleCalendarDateClick(Date date);

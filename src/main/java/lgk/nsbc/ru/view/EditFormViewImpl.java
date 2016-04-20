@@ -1,7 +1,6 @@
 package lgk.nsbc.ru.view;
 
 import com.vaadin.data.fieldgroup.PropertyId;
-import com.vaadin.data.util.converter.StringToDateConverter;
 import com.vaadin.data.validator.*;
 import com.vaadin.shared.ui.MarginInfo;
 import lgk.nsbc.ru.backend.HeadManager;
@@ -9,7 +8,6 @@ import lgk.nsbc.ru.backend.PatientContainer;
 import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 import lgk.nsbc.ru.backend.entity.Patient;
 import lgk.nsbc.ru.presenter.CalendarPresenterImpl;
-import lgk.nsbc.ru.presenter.EditFormPresenterImpl;
 import lgk.nsbc.ru.presenter.EditFormPresenter;
 import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.FieldGroup;
@@ -17,10 +15,6 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
 
-import java.math.BigInteger;
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,7 +23,7 @@ public class EditFormViewImpl implements EditFormView{
 
 	private Window eventPopup = new Window();
 	private FormLayout eventFormLayout = new FormLayout();
-	private PatientCombobox combobox = new PatientCombobox("Быстрый ввод");
+	private PatientComboBox combobox = new PatientComboBox("Быстрый ввод");
 	private FieldGroup fieldGroup = new FieldGroup();
 	private Button deleteEventButton = new Button("Удалить");
 	private Button applyEventButton = new Button("Применить");
@@ -105,8 +99,19 @@ public class EditFormViewImpl implements EditFormView{
 		combobox.focus();
 
 		applyEventButton.addClickListener(clickEvent -> {
-			presenter.commitEvent();
-			eventPopup.close();
+			if (startDateField.isValid()&&
+				endDateField.isValid()&&
+				nameField.isValid()&&
+				surnameField.isValid()&&
+				patronymicField.isValid()&&
+				birthdayField.isValid()&&
+				executorField.isValid()&&
+				caseHistoryNumTextField.isValid()) {
+				presenter.commitEvent();
+				eventPopup.close();
+			} else {
+				Notification.show("Проверьте правильность введенных данных", Notification.Type.WARNING_MESSAGE);
+			}
 		});
 		applyEventButton.addStyleName("primary");
 

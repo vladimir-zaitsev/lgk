@@ -1,5 +1,6 @@
 package lgk.nsbc.ru.view;
 
+import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
@@ -10,7 +11,9 @@ import com.vaadin.ui.components.calendar.ContainerEventProvider;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import lgk.nsbc.ru.backend.ConsultationManager;
 import lgk.nsbc.ru.backend.HeadManager;
+import lgk.nsbc.ru.backend.PatientContainer;
 import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
+import lgk.nsbc.ru.backend.entity.Patient;
 import lgk.nsbc.ru.model.ConsultationModel;
 import lgk.nsbc.ru.presenter.CalendarPresenter;
 import lgk.nsbc.ru.presenter.CalendarPresenterImpl;
@@ -37,6 +40,7 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 	private CheckBox hideWeekendsButton = new CheckBox("Выходные");
 	private ComboBox firstHourOfDay = new ComboBox("Начало дня");
 	private ComboBox lastHourOfDay = new ComboBox("Конец дня");
+	private PatientComboBox patientSearch = new PatientComboBox("Поиск консультации по пациенту:");
 
 	CalendarPresenter calendarPresenter;
 
@@ -167,15 +171,26 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 		lastHourOfDay.setWidth(150,Unit.PIXELS);
 		lastHourOfDay.addValueChangeListener(valueChangeEvent -> calendarPresenter.handleLastHourOfDayChange());
 		lastHourOfDay.addItems(calendarPresenter.getComboBoxValues());
+
+		patientSearch.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
+		patientSearch.setItemCaptionPropertyId("surname,name,patronymic,birthday");
+		patientSearch.setImmediate(true);
+		patientSearch.setContainerDataSource(calendarPresenter.getPatientSearchContainer());
+		patientSearch.addValueChangeListener((Property.ValueChangeListener) event -> calendarPresenter.handlePatientSearch((Patient) event.getProperty().getValue()));
+		// Не пашет?
+		patientSearch.addItemSetChangeListener(event -> patientSearch.clear());
+		patientSearch.addContextClickListener(event -> patientSearch.clear());
 	}
 
 	private void initLayoutContent() {
 		gridLayout.setSizeFull();
+		gridLayout.setSpacing(true);
 		calendarComponent.setSizeFull();
 		calendarComponent.setHeight(650,Unit.PIXELS);
 		HorizontalLayout hl = new HorizontalLayout();
 		hl.setWidth("100%");
 		hl.setHeightUndefined();
+		hl.setSpacing(true);
 
 		CssLayout group = new CssLayout();
 		group.addComponents(dayButton, weekButton, monthButton);
@@ -189,7 +204,8 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 		HorizontalLayout controlPanel = new HorizontalLayout();
 		controlPanel.setHeightUndefined();
 		controlPanel.setSpacing(true);
-		controlPanel.addComponents(hideWeekendsButton,firstHourOfDay,lastHourOfDay,addNewEventButton);
+		patientSearch.setWidth("400px");
+		controlPanel.addComponents(hideWeekendsButton,firstHourOfDay,lastHourOfDay,addNewEventButton,patientSearch);
 		controlPanel.setComponentAlignment(hideWeekendsButton,Alignment.MIDDLE_LEFT);
 		controlPanel.setComponentAlignment(addNewEventButton,Alignment.MIDDLE_LEFT);
 		gridLayout.addComponent(controlPanel);

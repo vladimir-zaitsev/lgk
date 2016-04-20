@@ -14,12 +14,16 @@ import java.util.List;
 public class PatientContainer extends BeanItemContainer<Patient> {
 
 	protected Object missingBoxValue;
-	private List<Patient> patients = new ArrayList<>();
-	private PatientsManager patientsManager;
+	protected List<Patient> patients = new ArrayList<>();
+	protected PatientsManager patientsManager;
 
 	public PatientContainer(PatientsManager patientsManager) throws IllegalArgumentException {
 		super(Patient.class);
 		this.patientsManager = patientsManager;
+	}
+
+	public PatientContainer() throws IllegalArgumentException {
+		super(Patient.class);
 	}
 
 	@Override
@@ -28,8 +32,7 @@ public class PatientContainer extends BeanItemContainer<Patient> {
 		filterItems(suggestionFilter.getFilterString());
 	}
 
-	private void filterItems(String filterString)
-	{
+	protected void filterItems(String filterString) {
 		removeAllItems();
 		if (filterString.length() >= 3) {
 			patients = patientsManager.listPatients(filterString);
@@ -40,7 +43,6 @@ public class PatientContainer extends BeanItemContainer<Patient> {
 	public void setSelectedPatientBean(Patient patientBean) {
 		removeAllItems();
 		addBean(patientBean);
-
 	}
 
 	@Override
