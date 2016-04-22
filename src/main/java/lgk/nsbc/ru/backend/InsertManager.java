@@ -40,12 +40,10 @@ public class InsertManager {
 			headManager.getRegistrationManager().registrOperPeople(con,genIdOperPeople);
 
 			Patient patient = consultationEvent.getCurrentPatient();
-			Long genIdPatient = headManager.getGeneratorManager().genIdPatient();
 			// Устанавливаем ID для пациента
-			consultationEvent.getConsultation().getCurrentPatient().setN(genIdPatient);
 			Long genIdOperPatient = headManager.getGeneratorManager().genIdOperation();
-			headManager.getPatientsManager().insertPatient(con, patient, genIdPeople, genIdPatient,
-				genIdOperPatient);
+			Long genIdPatient = headManager.getPatientsManager().insertPatient(con, patient, genIdPeople, genIdOperPatient);
+			consultationEvent.getConsultation().getCurrentPatient().setN(genIdPatient);
 			headManager.getRegistrationManager().registrOperPatients(con,genIdOperPatient);
 
 			Consultation consultation = consultationEvent.getConsultation();

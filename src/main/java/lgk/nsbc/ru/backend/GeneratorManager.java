@@ -1,6 +1,8 @@
 package lgk.nsbc.ru.backend;
 
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.ResultSetHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -9,8 +11,25 @@ import java.sql.SQLException;
  * Created by user on 10.04.2016.
  */
 public class GeneratorManager {
+	public static final GeneratorManager instace = new GeneratorManager();
 
 	private final QueryRunner qr = new QueryRunner();
+	private final ScalarHandler<Long> rs = new ScalarHandler<>();
+
+	public Long genId(String generatorName){
+		StringBuilder sql =
+			new StringBuilder("SELECT gen_id(")
+			.append(generatorName)
+			.append(", 1) as id FROM rdb$database")
+		;
+		try (
+			Connection con = DB.getConnection()
+		) {
+			return qr.query(con, sql.toString(), rs);
+		} catch (SQLException e) {
+			throw new IllegalStateException(e);
+		}
+	}
 
 	/**
 	 * Получить сгенерируемое ID человека
@@ -27,27 +46,6 @@ public class GeneratorManager {
 			return qr.query(con, sql, result -> {
 				result.next();
 				return result.getLong("Id_People");
-			});
-		} catch (SQLException e) {
-			throw new IllegalStateException(e);
-		}
-	}
-
-	/**
-	 * Получить сгенерируемое ID пациента
-	 * @return N (primary key) таблицы nbc_patients
-	 **/
-	public Long genIdPatient()
-	{
-		String sql =
-			"SELECT gen_id(nbc_patients_n, 1) as Id_Patient\n" +
-				"FROM rdb$database\n";
-		try (
-			Connection con = DB.getConnection()
-		) {
-			return qr.query(con, sql, result -> {
-				result.next();
-				return result.getLong("Id_Patient");
 			});
 		} catch (SQLException e) {
 			throw new IllegalStateException(e);

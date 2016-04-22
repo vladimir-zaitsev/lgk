@@ -13,6 +13,8 @@ import java.util.List;
 
 public class PatientsManager {
 
+	public static final String patientsTableName = "nbc_patients";
+
 	private final QueryRunner qr = new QueryRunner();
 	private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -92,53 +94,52 @@ public class PatientsManager {
 		}
 	}
 
+
 	/**
 	 * Добавить данные о пациенте в таблицу nbc_patients
 	 * @param con,patient,genIdPatient,genIdOperation
 	 * @return Успешность добавления
 	 **/
-	public boolean insertPatient(Connection con,Patient patient,Long genIdPeople,Long genIdPatient,
-								 Long genIdOperation)
+	public Long insertPatient(
+		 Connection con
+		,Patient patient
+		,Long genIdPeople // @todo: взять из patient
+		,Long genIdOperation // @todo: сгенерить здесь (как и genIdPatient);
+	) throws SQLException
 	{
-		String sql = "INSERT into nbc_patients\n" +
+		final Long genIdPatient =
+			GeneratorManager.instace.genId(patientsTableName+"_n")
+		;
+		String sql = "INSERT INTO "+patientsTableName+"\n" +
 			"(N, OP_CREATE, NBC_ORGANIZATIONS_N, NBC_STAFF_N,CASE_HISTORY_NUM,CASE_HISTORY_DATE,\n" +
 			"BAS_PEOPLE_N, REPRESENT,REPRESENT_TELEPHONE, DIAGNOSIS, NBC_DIAGNOSIS_N,\n"+
 			"FULL_DIAGNOSIS, STATIONARY, ALLERGY, INFORMATION_SOURCE, FOLDER, DISORDER_HISTORY,\n"+
 			"NBC_DIAG_2015_N, NBC_DIAG_LOC_N)\n"+
 			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n";
-		try
-		{
-			Object[] params = new Object[]{
-				genIdPatient,
-				genIdOperation,
-				selectOrganization(con),
-				null,
-				null,
-				null,
-				genIdPeople,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null};
-			int updateRows = qr.update(con, sql, params);
-			if (updateRows == 0)
-			{
-				con.rollback();
-				return false;
-			}
-			return true;
-
-		} catch (SQLException e) {
-			throw new IllegalStateException(e);
-		}
+		Object[] params = new Object[]{
+			genIdPatient,
+			genIdOperation,
+			selectOrganization(con),
+			null,
+			null,
+			null,
+			genIdPeople,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null
+		};
+		qr.update(con, sql, params);
+		patient.setN(genIdPatient);
+		return genIdPatient;
 	}
 
 	// В каком случае надо удалять пациента, пока непонятно
