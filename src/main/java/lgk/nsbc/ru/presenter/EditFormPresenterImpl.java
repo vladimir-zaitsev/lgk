@@ -2,6 +2,7 @@ package lgk.nsbc.ru.presenter;
 
 import lgk.nsbc.ru.backend.*;
 import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
+import lgk.nsbc.ru.backend.entity.Consultation;
 import lgk.nsbc.ru.backend.entity.Patient;
 import lgk.nsbc.ru.backend.entity.People;
 import lgk.nsbc.ru.model.ConsultationModel;
@@ -16,14 +17,20 @@ import java.util.function.Consumer;
 public class EditFormPresenterImpl implements EditFormPresenter {
 	private EditFormView editFormView;
 	private ConsultationEvent consultationEvent;
-	private InsertManager insertManager;
-	private DeleteManager  deleteManager;
-	private HeadManager headManager;
+	private final PeopleManager peopleManager;
+	private  final PatientsManager patientsManager;
+	private final  ConsultationManager consultationManager;
+	private  ProcedureManager procedureManager;
 	private Consumer<ConsultationEvent> deleteEvent;
 	private boolean newEvent;
 
-	public EditFormPresenterImpl(HeadManager headManager,Consumer<ConsultationEvent> deleteEvent ) {
-		this.headManager = headManager;
+	public EditFormPresenterImpl(PeopleManager peopleManager
+		,PatientsManager patientsManager
+		,ConsultationManager consultationManager
+		,Consumer<ConsultationEvent> deleteEvent ) {
+		this.peopleManager = peopleManager;
+		this.patientsManager = patientsManager;
+		this.consultationManager = consultationManager;
 		this.deleteEvent = deleteEvent;
 	}
 
@@ -31,7 +38,7 @@ public class EditFormPresenterImpl implements EditFormPresenter {
 	public void handleNewEvent(ConsultationEvent consultationEvent) {
 		this.consultationEvent = consultationEvent;
 		newEvent = true;
-		editFormView = new EditFormViewImpl(this, consultationEvent,headManager,newEvent);
+		editFormView = new EditFormViewImpl(this, consultationEvent,patientsManager,newEvent);
 	}
 
 	@Override
@@ -39,7 +46,7 @@ public class EditFormPresenterImpl implements EditFormPresenter {
 		this.consultationEvent = consultationEvent;
 		System.out.println(consultationEvent.getConsultation().getN());
 		newEvent = false;
-		editFormView = new EditFormViewImpl(this,consultationEvent,headManager,newEvent);
+		editFormView = new EditFormViewImpl(this,consultationEvent,patientsManager,newEvent);
 
 	}
 
@@ -47,7 +54,7 @@ public class EditFormPresenterImpl implements EditFormPresenter {
 	public void commitEvent() {
 		editFormView.commitEvent();
 		if (newEvent) {
-			saveData();
+			saveConsultation();
 		}
 	}
 
@@ -59,30 +66,32 @@ public class EditFormPresenterImpl implements EditFormPresenter {
 	@Override
 	public void deleteEvent() {
 		deleteEvent.accept(consultationEvent);
-		deleteConsult();
+		deleteConsultation();
 	}
 
 	@Override
 	public void handleSelectPatient(Patient patient) {
-		consultationEvent.setNewPatient(headManager.getPatientsManager().selectPatient(patient));
+		consultationEvent.setNewPatient(patientsManager.selectPatient(patient));
 		editFormView.bindConsultationEvent();
 	}
 	@Override
-	public void saveData() {
+	public void saveConsultation() {
+		procedureManager = new ProcedureManager(consultationEvent
+			,peopleManager
+			,patientsManager
+			,consultationManager);
 		Patient patient = consultationEvent.getCurrentPatient();
-		// Выполняются данные действия, если пациент не существует в базе
-		insertManager = new InsertManager(consultationEvent,headManager);
 		if (patient.getN() == null) {
-			insertManager.insertData();
-		} else {
-			insertManager.insertConsultation();
-			System.out.println((patient.getN()));
+			procedureManager.insertConsultation();
+		}
+		else {
+			procedureManager.insertOnlyConsultation();
 		}
 	}
 
 	@Override
-	public void deleteConsult() {
-        deleteManager = new DeleteManager(consultationEvent,headManager);
-		deleteManager.deleteConsul();
+	public void deleteConsultation() {
+		Consultation consultation = consultationEvent.getConsultation();
+		consultationManager.deleteConsultation(consultation);
 	}
 }

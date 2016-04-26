@@ -4,21 +4,33 @@ import java.util.Date;
 
 public class Patient {
 
-
 	public enum Props
 	{
 		n
-		,case_history_num
-		,diagnosis
+		,op_create
 		,nbc_organizations_n
-
+		,nbc_staff_n
+		,case_history_num
+		,case_history_date
+		,bas_people_n
+		,represent
+		,represent_telephone
+		,diagnosis
+		,nbc_diagnosis_n
+		,full_diagnosis
+		,stationary
+		,allergy
+		,information_source
+		,folder
+		,disorder_history
+		,nbc_diag_2015_n
+		,nbc_diag_loc_n
 	}
 	private People people = new People();
 	private Long n;
 	private Integer case_history_num;
 	private int diagnosis;
 	private int nbc_organizations_n;
-
 
 	public Patient() {}
 

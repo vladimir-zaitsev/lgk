@@ -16,6 +16,6 @@ public interface EditFormPresenter {
 	void handleSelectPatient(Patient patient);
 	void handleNewEvent(ConsultationEvent consultationEvent);
     void handleEventClick(ConsultationEvent consultationEvent);
-	void saveData();
-	void deleteConsult();
+	void saveConsultation();
+	void deleteConsultation();
 }

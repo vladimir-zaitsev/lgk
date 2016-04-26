@@ -3,6 +3,7 @@ package lgk.nsbc.ru;
 import lgk.nsbc.ru.backend.*;
 import lgk.nsbc.ru.backend.entity.Consultation;
 import lgk.nsbc.ru.backend.entity.Patient;
+import lgk.nsbc.ru.backend.entity.People;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -51,31 +52,10 @@ public class Tests {
 	@Ignore
 	@Test
 	public void caption(){
-	//	System.out.println(new I18nManager().getCaption(Patient.relationName, Patient.Props.birthday.toString()));
-	}
-
-	@Ignore
-	@Test
-	public void consult()
-	{
-		LocalDateTime consultationTimeRange = LocalDateTime.of(2016,2,1,0,0);
-		ConsultationManager consultationManager = new ConsultationManager();
-		GregorianCalendar calendar = new GregorianCalendar(2016, 1, 1);
-		Date startDay = calendar.getTime();
-		calendar.add(calendar.MONTH, 1);
-		Date endDay = calendar.getTime();
-		System.out.println( consultationManager.listConsultation(startDay, endDay));
-	}
-
-
-	@Test
-	public void findPatient()
-	{
-		PatientsManager patientsManager = new PatientsManager();
-		String filter =  "Кос";
-		System.out.println(patientsManager.listPatients(filter));
-
 
 	}
+
+
+
 
 }

@@ -1,7 +1,9 @@
 package lgk.nsbc.ru.backend;
 
+import com.vaadin.ui.Notification;
 import lgk.nsbc.ru.backend.entity.Consultation;
 import lgk.nsbc.ru.backend.entity.Patient;
+import lgk.nsbc.ru.backend.entity.People;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
@@ -12,12 +14,27 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class ConsultationManager
 {
 	private  final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 	private final QueryRunner qr = new QueryRunner();
+
+	public static final String procTableName = "nbc_proc";
+	public static final String generatorName = "nbc_proc_n";
+	public static final String commandInsert = "nbc_proc_put";
+	public static final String commandDelete = "nbc_proc_del";
+	private static final String genNameOperation = "sys_operation_n";
+	private final String lgkSessId;
+
+	public  ConsultationManager(String lgkSessId)
+		{
+		this.lgkSessId = lgkSessId;
+	}
+
 
 	public List<Consultation> listConsultation(Date fromDate, Date toDate) // дата будет браться от 01.01.2016 и 20.02.2016
 	{
@@ -52,24 +69,48 @@ public class ConsultationManager
 	}
 	/**
 	 * Добавление консультации в таблицу nbc_proc
-	 * @param con,consultation,genIdConsultation,genIdOperation,genIdPatient
-	 * @return Успешность добавления
+	 * @param con,consultation,genIdPatient
 	 **/
-	public boolean insertConsultation(Connection con, Consultation consultation,Long genIdConsultation,
-									    Long genIdOperation, Long genIdPatient)
+	public void insertConsultation(
+		Connection con
+		,Consultation consultation
+	) throws SQLException
 	{
-		String sql = "INSERT into NBC_PROC\n" +
-			"(N, OP_CREATE, NBC_PATIENTS_N, PROC_TYPE, PROCBEGINTIME, PROCENDTIME, TIME_APPROX,\n" +
-			"COMMENT, RECOMMENDATION, NBC_STUD_N, STUD_COMMENT,RT_DEVICE,RT_TECH,\n" +
-			"PARENT_PROC, NBC_ORGANIZATIONS_N)\n" +
+
+		String sql =
+			"INSERT INTO "+procTableName+"\n"+
+		    "( " +
+		    Consultation.Props.n.toString()+",\n"+
+		    Consultation.Props.op_create.toString()+",\n"+
+		    Consultation.Props.nbc_patients_n.toString()+",\n"+
+		    Consultation.Props.proc_type.toString()+",\n"+
+		    Consultation.Props.procbegintime.toString()+",\n"+
+		    Consultation.Props.procendtime.toString()+",\n"+
+		    Consultation.Props.time_approx.toString()+",\n"+
+		    Consultation.Props.comment.toString()+",\n"+
+		    Consultation.Props.recommendation.toString()+",\n"+
+		    Consultation.Props.nbc_stud_n.toString()+",\n"+
+		    Consultation.Props.stud_comment.toString()+",\n"+
+		    Consultation.Props.rt_device.toString()+",\n"+
+		    Consultation.Props.rt_tech.toString()+",\n"+
+		    Consultation.Props.parent_proc.toString()+",\n"+
+		    Consultation.Props.nbc_organizations_n.toString()+
+			" )" +"\n"+
 			"VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n";
-		try
-		{
-			Object[] params = new Object[]
-				{
+
+		Long genIdConsultation =
+			GeneratorManager.instace.genId(procTableName+"_n")
+		;
+		Long genIdOperation	 =
+			GeneratorManager.instace.genId(genNameOperation);
+		;
+		RegistrationManager.instace.regOperation(con,genIdOperation,commandInsert,lgkSessId);
+
+		Object[] params = new Object[]
+			{
 				genIdConsultation,
 				genIdOperation,
-				genIdPatient,
+				consultation.getCurrentPatient().getN(),
 				4,
 				new java.sql.Timestamp(consultation.getProcbegintime().getTime()),
 				new java.sql.Timestamp(consultation.getProcendtime().getTime()),
@@ -82,89 +123,70 @@ public class ConsultationManager
 				null,
 				null,
 				null
-				};
-			int updateRows = qr.update(con, sql, params);
-			if (updateRows == 0)
-			{
-				con.rollback();
-				return false;
-			}
-			return true;
-		} catch (SQLException e) {
-			throw new IllegalStateException(e);
-		}
+			};
+		qr.update(con, sql, params);
+		consultation.setN(genIdConsultation);
 	}
 
 	/**
 	 * Удалить консультацию из таблицы nbc_proc
-	 * @param  consultation - консультация
-	 * @return Успешность удаления
+	 * @param consultation
 	 **/
-	public boolean deleteConsultation(Connection con,Consultation consultation)
+	public void deleteConsultation(Consultation consultation)
 	{
-		String sql =
-			"DELETE FROM nbc_proc\n" +
-			"WHERE N = ?\n";
-		try
-		 {
-			 Object[] params = new Object[]{consultation.getN()};
-			int updateRows = qr.update(con, sql, params);
-			if(updateRows == 0)
-			{
-				con.rollback();
-				return false;
-			}
-
-			return true;
-		}
-		catch (SQLException e) {
-			throw new IllegalStateException(e);
+		try (
+			Connection con = DB.getConnection()
+		) {
+			String sql =
+				"DELETE FROM " + procTableName + "\n" +
+					"WHERE N = ?\n";
+			Long genIdOperation
+				= GeneratorManager.instace.genId(genNameOperation)
+			;
+			RegistrationManager.instace.regOperation(con,genIdOperation,commandDelete,lgkSessId);
+			Object[] params = new Object[]{consultation.getN()};
+			qr.update(con, sql, params);
+		} catch (SQLException e) {
+			Logger.getGlobal().log(Level.SEVERE,"Problems with Database",e);
+			Notification.show("Problems with Database", Notification.Type.WARNING_MESSAGE);
 		}
 	}
 
-
-	// Редектирование пока нет
 	 /**
 	 * Обновить данные о консультации  в таблице nbc_proc
 	 * @param consultation - консультация
-	 * @return Успешность обновления
 	 **/
-	public boolean updateConsultation(Consultation consultation)
+	public void updateConsultation(Consultation consultation)
 	{
-		String sql = "UPDATE nbc_proc SET\n" +
-			"OP_CREATE = ?,\n" +
-			"NBC_PATIENTS_N = ?,\n" +
-			"PROC_TYPE = ?,\n" +
-			"PROCBEGINTIME = ?,\n" +
-			"PROCENDTIME = ?,\n " +
-			"TIME_APPROX = ?,\n" +
-			"COMMENT = ?,\n" +
-			"RECOMMENDATION = ?,\n" +
-			"NBC_STUD_N = ?,\n" +
-			"STUD_COMMENT = ?,\n" +
-			"RT_DEVICE = ?,\n" +
-			"RT_TECH = ?,\n" +
-			"PARENT_PROC = ?,\n" +
-			"NBC_ORGANIZATIONS_N = ?\n"+
-			"WHERE N = ?\n"; // ID
+		String sql = "UPDATE "+procTableName +" SET"+"\n" +
+			Consultation.Props.op_create.toString()+" = ?,\n"+
+			Consultation.Props.nbc_patients_n.toString()+" = ?,\n"+
+			Consultation.Props.proc_type.toString()+" = ?,\n"+
+			Consultation.Props.procbegintime.toString()+" = ?,\n"+
+			Consultation.Props.procendtime.toString()+" = ?,\n"+
+			Consultation.Props.time_approx.toString()+" = ?,\n"+
+			Consultation.Props.comment.toString()+" = ?,\n"+
+			Consultation.Props.recommendation.toString()+" = ?,\n"+
+			Consultation.Props.nbc_stud_n.toString()+" = ?,\n"+
+			Consultation.Props.stud_comment.toString()+" = ?,\n"+
+			Consultation.Props.rt_device.toString()+" = ?,\n"+
+			Consultation.Props.rt_tech.toString()+" = ?,\n"+
+			Consultation.Props.parent_proc.toString()+" = ?,\n"+
+			Consultation.Props.nbc_organizations_n.toString()+" = ?\n"+
+			"WHERE "+Consultation.Props.n.toString()+" = ?\n";
 		try (
 			Connection con = DB.getConnection()
 		)
 		{
-			// TODO изменить параметры????
-			Object[] params = new Object[]{consultation.getN(),null};
-			int updateRows = qr.update(con, sql, params);
-			if(updateRows == 0)
-			{
-				con.rollback();
-				return false;
-			}
+			Long genIdOperation =
+				GeneratorManager.instace.genId(genNameOperation)
+			;
+			RegistrationManager.instace.regOperation(con,genIdOperation,commandInsert,lgkSessId);
+			// TODO изменить параметры
+			Object[] params = new Object[]{};
+			qr.update(con, sql, params);
 			con.commit();
-			return true;
-		}
-		catch (SQLException e)
-		{
-			throw new IllegalStateException(e);
-		}
+		} catch (SQLException e)
+		{ }
 	}
 }

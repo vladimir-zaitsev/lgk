@@ -10,8 +10,8 @@ import com.vaadin.ui.components.calendar.CalendarDateRange;
 import com.vaadin.ui.components.calendar.ContainerEventProvider;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import lgk.nsbc.ru.backend.ConsultationManager;
-import lgk.nsbc.ru.backend.HeadManager;
-import lgk.nsbc.ru.backend.PatientContainer;
+import lgk.nsbc.ru.backend.PatientsManager;
+import lgk.nsbc.ru.backend.PeopleManager;
 import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 import lgk.nsbc.ru.backend.entity.Patient;
 import lgk.nsbc.ru.model.ConsultationModel;
@@ -40,14 +40,21 @@ public class CalendarViewImpl extends AbstractView<ConsultationModel> implements
 	private CheckBox hideWeekendsButton = new CheckBox("Выходные");
 	private ComboBox firstHourOfDay = new ComboBox("Начало дня");
 	private ComboBox lastHourOfDay = new ComboBox("Конец дня");
-	private PatientComboBox patientSearch = new PatientComboBox("Поиск консультации по пациенту:");
+	private PatientCombobox patientSearch = new PatientCombobox("Поиск консультации по пациенту:");
 
 	CalendarPresenter calendarPresenter;
 
-	public CalendarViewImpl(ConsultationModel consultationModel, HeadManager headManager) {
+	public CalendarViewImpl(ConsultationModel consultationModel
+		,PeopleManager peopleManager
+		,PatientsManager patientsManager
+		,ConsultationManager consultationManager
+	) {
 		super(consultationModel);
 		// Создадим в начале
-		this.calendarPresenter = new CalendarPresenterImpl(this,consultationModel,headManager);
+		this.calendarPresenter = new CalendarPresenterImpl(this,consultationModel
+			,peopleManager
+			,patientsManager
+		    ,consultationManager);
 		ContainerEventProvider eventProvider = new ContainerEventProvider(consultationModel.getBeanItemContainer());
 		calendarComponent.setEventProvider(eventProvider);
 		calendarComponent.setLocale(Locale.getDefault());

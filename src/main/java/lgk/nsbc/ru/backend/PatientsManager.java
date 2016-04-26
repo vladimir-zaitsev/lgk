@@ -1,23 +1,37 @@
 package lgk.nsbc.ru.backend;
 
+import com.vaadin.ui.Notification;
 import lgk.nsbc.ru.backend.entity.Consultation;
 import lgk.nsbc.ru.backend.entity.Patient;
+import lgk.nsbc.ru.backend.entity.People;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PatientsManager {
 
 	public static final String patientsTableName = "nbc_patients";
-
+	public static final String generatorName = "nbc_patients_n";
+	public static final String commandInsert = "nbc_patients_put";
+	private static final String genNameOperation = "sys_operation_n";
+	public static final String commandDelete = "nbc_patients_del";
 	private final QueryRunner qr = new QueryRunner();
+	private final ScalarHandler<Long> rs = new ScalarHandler<>();
 	private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+	public final String lgkSessId;
 
+	public  PatientsManager (String lgkSessId)
+	{
+		this.lgkSessId = lgkSessId;
+	}
 
 	public List<Patient> listPatients()
 	{
@@ -97,24 +111,43 @@ public class PatientsManager {
 
 	/**
 	 * Добавить данные о пациенте в таблицу nbc_patients
-	 * @param con,patient,genIdPatient,genIdOperation
-	 * @return Успешность добавления
+	 * @param con,patient
+	 * @return id-пациента
 	 **/
-	public Long insertPatient(
-		 Connection con
+	public void insertPatient(Connection con
 		,Patient patient
-		,Long genIdPeople // @todo: взять из patient
-		,Long genIdOperation // @todo: сгенерить здесь (как и genIdPatient);
 	) throws SQLException
 	{
 		final Long genIdPatient =
 			GeneratorManager.instace.genId(patientsTableName+"_n")
 		;
-		String sql = "INSERT INTO "+patientsTableName+"\n" +
-			"(N, OP_CREATE, NBC_ORGANIZATIONS_N, NBC_STAFF_N,CASE_HISTORY_NUM,CASE_HISTORY_DATE,\n" +
-			"BAS_PEOPLE_N, REPRESENT,REPRESENT_TELEPHONE, DIAGNOSIS, NBC_DIAGNOSIS_N,\n"+
-			"FULL_DIAGNOSIS, STATIONARY, ALLERGY, INFORMATION_SOURCE, FOLDER, DISORDER_HISTORY,\n"+
-			"NBC_DIAG_2015_N, NBC_DIAG_LOC_N)\n"+
+		final Long genIdOperation =
+			GeneratorManager.instace.genId(genNameOperation)
+		;
+		RegistrationManager.instace.regOperation(con,genIdOperation,commandInsert,lgkSessId);
+		String sql =
+			"INSERT INTO "+patientsTableName+"\n"+
+		    "( " +
+		    Patient.Props.n.toString()+",\n"+
+		    Patient.Props.op_create.toString()+",\n"+
+		    Patient.Props.nbc_organizations_n.toString()+",\n"+
+		    Patient.Props.nbc_staff_n.toString()+",\n"+
+	     	Patient.Props.case_history_num.toString()+",\n"+
+		    Patient.Props.case_history_date.toString()+",\n"+
+		    Patient.Props.bas_people_n.toString()+",\n"+
+		    Patient.Props.represent.toString()+",\n"+
+		    Patient.Props.represent_telephone.toString()+",\n"+
+		    Patient.Props.diagnosis.toString()+",\n"+
+		    Patient.Props.nbc_diagnosis_n.toString()+",\n"+
+		    Patient.Props.full_diagnosis.toString()+",\n"+
+		    Patient.Props.stationary.toString()+",\n"+
+		    Patient.Props.allergy.toString()+",\n"+
+		    Patient.Props.information_source.toString()+",\n"+
+		    Patient.Props.folder.toString()+",\n"+
+		    Patient.Props.disorder_history.toString()+",\n"+
+		    Patient.Props.nbc_diag_2015_n.toString()+",\n"+
+		    Patient.Props.nbc_diag_loc_n.toString()+"\n"+
+		    " )" +"\n"+
 			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n";
 		Object[] params = new Object[]{
 			genIdPatient,
@@ -123,7 +156,7 @@ public class PatientsManager {
 			null,
 			null,
 			null,
-			genIdPeople,
+			patient.getCurrentPeople().getN(),
 			null,
 			null,
 			null,
@@ -139,102 +172,86 @@ public class PatientsManager {
 		};
 		qr.update(con, sql, params);
 		patient.setN(genIdPatient);
-		return genIdPatient;
+	}
+	// Нахождение организации
+	public Long selectOrganization(Connection con) throws SQLException
+	{
+		String sql = "SELECT SYS_CONST.data_bigint as n\n"+
+			"FROM sys_const\n"+
+			"LEFT JOIN nbc_organizations on nbc_organizations.n = sys_const.data_bigint\n"+
+			"WHERE sys_const.name = ?";
+			String name = "NBC_ORGANIZATIONS_MAIN_N";
+			Object[] params = new Object[]{name};
+			return qr.query(con, sql,rs,params);
 	}
 
-	// В каком случае надо удалять пациента, пока непонятно
-	/**
+	 /**
 	 * Удалить данные о пациенте из таблицы nbc_patients
 	 * @param patient - пациент
-	 * @return Успешность добавления
 	 **/
-	public  boolean deletePatient(Patient patient)
+	public void deletePatient(Patient patient)
 	{
 		try (
 			Connection con = DB.getConnection()
-		)
-		{
+		) {
 			con.setAutoCommit(false);
-			String sql = "DELETE FROM nbc_patients\n" +
+			String sql = "DELETE FROM "+patientsTableName+"\n" +
 				"WHERE n = ?\n";
+			Long genIdOperation =
+				GeneratorManager.instace.genId(genNameOperation)
+			;
+			RegistrationManager.instace.regOperation(con,genIdOperation,commandDelete,lgkSessId);
 			Object[] params = new Object[]{patient.getN()};
-			int updateRows = qr.update(con, sql, params);
-			if (updateRows == 0)
-			{
-				con.rollback();
-				return false;
-			}
+			 qr.update(con, sql, params);
 			con.commit();
-			return true;
 		} catch (SQLException e) {
-			throw new IllegalStateException(e);
+			Logger.getGlobal().log(Level.SEVERE,"Problems with database",e);
+			Notification.show("Problems with database", Notification.Type.WARNING_MESSAGE);
 		}
 
 	}
 	/**
 	 * Обновить данные пациента из таблицы nbc_patients
 	 * @param patient - пациент
-	 * @return Успешность добавления
 	 **/
-	public boolean updatePatient(Patient patient)
+	public void updatePatient(Patient patient)
 	{
-		String sql = "UPDATE nbc_patients SET\n" +
-			"OP_CREATE = ?\n" +
-			"NBC_ORGANIZATIONS_N = ?\n"+
-			"NBC_STAFF_N = ?\n" +
-			"CASE_HISTORY_NUM = ?\n"+
-			"CASE_HISTORY_DATE = ?\n"+
-			"BAS_PEOPLE_N = ?\n"+
-			"REPRESENT = ?,\n"+
-			"REPRESENT_TELEPHONE = ?,\n"+
-			"DIAGNOSIS = ?,\n" +
-			"NBC_DIAGNOSIS_N = ?,\n" +
-			"FULL_DIAGNOSIS = ?,\n" +
-			"STATIONARY = ?,\n" +
-			"ALLERGY = ?,\n" +
-			"INFORMATION_SOURCE = ?,\n" +
-			"FOLDER, DISORDER_HISTORY = ?,\n" +
-			"NBC_DIAG_2015_N = ?,\n"+
-			"NBC_DIAG_LOC_N = ?,\n" +
-			"WHERE N = ?"; // ID;
+		String sql = "UPDATE "+patientsTableName+" SET" + "\n" +
+			Patient.Props.op_create.toString()+" = ?,\n"+
+			Patient.Props.nbc_organizations_n.toString()+" = ?,\n"+
+			Patient.Props.nbc_staff_n.toString()+" = ?,\n"+
+			Patient.Props.case_history_num.toString()+" = ?,\n"+
+			Patient.Props.case_history_date.toString()+" = ?,\n"+
+			Patient.Props.bas_people_n.toString()+" = ?,\n"+
+			Patient.Props.represent.toString()+" = ?,\n"+
+			Patient.Props.represent_telephone.toString()+" = ?,\n"+
+			Patient.Props.diagnosis.toString()+" = ?,\n"+
+			Patient.Props.nbc_diagnosis_n.toString()+" = ?,\n"+
+			Patient.Props.full_diagnosis.toString()+" = ?,\n"+
+			Patient.Props.stationary.toString()+" = ?,\n"+
+			Patient.Props.allergy.toString()+" = ?,\n"+
+			Patient.Props.information_source.toString()+" = ?,\n"+
+			Patient.Props.folder.toString()+" = ?,\n"+
+			Patient.Props.disorder_history.toString()+" = ?,\n"+
+			Patient.Props.nbc_diag_2015_n.toString()+" = ?,\n"+
+			Patient.Props.nbc_diag_loc_n.toString()+" = ?\n"+
+			"WHERE " + Patient.Props.n.toString()+" = ?\n";
 		try (
 			Connection con = DB.getConnection()
 		)
 		{
 			con.setAutoCommit(false);
-			// TODO Параметры ???
+			Long genIdOperation =
+				GeneratorManager.instace.genId(genNameOperation)
+			;
+			RegistrationManager.instace.regOperation(con,genIdOperation,commandInsert,lgkSessId);
+			// TODO Параметры
 			Object[] params = new Object[]{};
-			int updateRows = qr.update(con, sql, params);
-			if (updateRows == 0)
-			{
-				con.rollback();
-				return false;
-			}
+			qr.update(con, sql, params);
 			con.commit();
-			return true;
 		} catch (SQLException e) {
-			throw new IllegalStateException(e);
+			Logger.getGlobal().log(Level.SEVERE,"Problems with database",e);
+			Notification.show("Problems with database", Notification.Type.WARNING_MESSAGE);
 		}
 	}
-
-	// Нахождение организации
-	public Long selectOrganization(Connection con)
-	{
-		String sql = "SELECT SYS_CONST.data_bigint as n\n"+
-			"FROM sys_const\n"+
-			"LEFT JOIN nbc_organizations on nbc_organizations.n = sys_const.data_bigint\n"+
-			"WHERE sys_const.name = ?";
-		try
-		{
-		    String name = "NBC_ORGANIZATIONS_MAIN_N";
-			Object[] params = new Object[]{name};
-			return qr.query(con, sql, result -> {
-				result.next();
-				return result.getLong("n");
-			},params);
-		} catch (SQLException e) {
-			throw new IllegalStateException(e);
-		}
-	}
-
 }

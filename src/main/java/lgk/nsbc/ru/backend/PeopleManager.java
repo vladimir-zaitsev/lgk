@@ -1,117 +1,152 @@
 package lgk.nsbc.ru.backend;
 
+import com.vaadin.ui.Notification;
 import lgk.nsbc.ru.backend.entity.People;
 import org.apache.commons.dbutils.QueryRunner;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by user on 08.04.2016.
  */
 public class PeopleManager {
+
 	private final QueryRunner qr = new QueryRunner();
 	private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+	public static final String peopleTableName ="bas_people";
+	private static final String genNameOperation = "sys_operation_n";
+	public static final String commandInsert = "bas_people_put";
+	public static final String commandDelete = "bas_people_del";
 
+	public final String lgkSessId;
+
+	public  PeopleManager(String lgkSessId)
+	{
+		this.lgkSessId = lgkSessId;
+	}
 	/**
 	 * Добавить данные о человеке в таблицу bas_people
-	 * @param con,people,genIdPeople,genIdOperation
-	 * @return Успешность добавления
+	 * @param con,people
+	 * @return id - человека
 	 **/
-	public boolean insertPeople( Connection con,People people,Long genIdPeople,Long genIdOperation) {
+	public void insertPeople(Connection con
+		,People people
+	) throws SQLException
+	{
+		final Long
+			genIdPeople = GeneratorManager.instace.genId(peopleTableName+"_n")
+		;
+		final Long
+			genIdOperation = GeneratorManager.instace.genId(genNameOperation)
+		;
+		RegistrationManager.instace.regOperation(con,genIdOperation,commandInsert,lgkSessId);
 		String sql =
-			"INSERT INTO bas_people\n" +
-				"(N, OP_CREATE, NAME, SURNAME,PATRONYMIC, BIRTHDAY, SEX,\n" +
-				"CITIZENSHIP, JOB, OBIT)\n" +
+			"INSERT INTO "+peopleTableName+"\n"+
+				"( " +
+				People.Props.n.toString()+",\n"+
+				People.Props.op_create.toString()+",\n"+
+				People.Props.name.toString()+ ",\n"+
+				People.Props.surname.toString()+ ",\n"+
+				People.Props.patronymic.toString()+ ",\n"+
+				People.Props.birthday.toString()+ ",\n"+
+				People.Props.sex.toString()+ ",\n"+
+				People.Props.citizenship.toString()+",\n"+
+				People.Props.job.toString()+ ",\n"+
+				People.Props.obit.toString()+
+				" )" +"\n"+
 				"VALUES (?,?,?,?,?,?,?,?,?,?)\n";
-		try {
-			String birthdayPeople = null;
-			if (people.getBirthday()!=null) {
-				birthdayPeople = formatter.format(people.getBirthday());
-			}
-			Object[] params = new Object[]{
-				genIdPeople,
-				genIdOperation,
-				people.getName(),
-				people.getSurname(),
-				people.getPatronymic(),
-				birthdayPeople,
-				null,
-				null,
-				null,
-				null};
-			int updateRows = qr.update(con, sql, params);
-			if (updateRows == 0) {
-				con.rollback();
-				return false;
-			}
-			con.commit();
-			return true;
+		String birthdayPeople = null;
+		if (people.getBirthday()!= null) {
+			birthdayPeople = formatter.format(people.getBirthday());
 		}
-		catch (SQLException e) {
-			throw new IllegalStateException(e);
-		}
+		Object[] params = new Object[]{
+			genIdPeople,
+			genIdOperation,
+			people.getName(),
+			people.getSurname(),
+			people.getPatronymic(),
+			birthdayPeople,
+			null,
+			null,
+			null,
+			null
+		};
+		qr.update(con, sql, params);
+		people.setN(genIdPeople);
 	}
 
-
-	// Когда удалять человека????
 	/**
 	 * Удалить человека из  таблицы bas_people
 	 * @param people - человек
-	 * @return Успешность удаления
 	 **/
-	public boolean deletePeople(People people) {
+	public void deletePeople(People people) {
 		String sql =
-			"DELETE FROM bas_people\n" +
+			"DELETE FROM "+ peopleTableName+"\n"+
 				"WHERE n = ?\n";
-		try (Connection con = DB.getConnection()) {
-			Object[] params = new Object[]{};
-			int updateRows = qr.update(con, sql, params); // количество удаленных строчек
-			if(updateRows == 0) {
-				con.rollback();
-				return false;
-			}
+
+		try (Connection con = DB.getConnection()
+		) {
+			Long genIdOperation =
+				GeneratorManager.instace.genId(genNameOperation)
+			;
+			RegistrationManager.instace.regOperation(con,genIdOperation,commandDelete,lgkSessId);
+			Object[] params = new Object[]{people.getN()};
+			qr.update(con, sql, params);
 			con.commit();
-			return true;
+
 		}
 		catch (SQLException e) {
-			throw new IllegalStateException(e);
+			Logger.getGlobal().log(Level.SEVERE,"Problems with database",e);
+			Notification.show("Problems with database", Notification.Type.WARNING_MESSAGE);
 		}
 	}
 	/**
 	 * Обновить данные человека в таблице bas_people
 	 * @param people - человек
-	 * @return Успешность обновления
 	 **/
-	public boolean updatePeople(People people) {
+	public void updatePeople(People people)
+	{
 		String sql =
-			"UPDATE bas_people SET\n" +
-				"OP_CREATE = ?\n" +
-				"NAME = ?,\n" +
-				"SURNAME = ?,\n" +
-				"PATRONYMIC  = ?,\n " +
-				"BIRTHDAY  = ?,\n" +
-				"SEX = ?,\n" +
-				"CITIZENSHIP = ?,\n"+
-				"JOB = ?,\n" +
-				"OBIT = ?,\n" +
-				"WHERE N = ?\n"; // ID
-		try (Connection con = DB.getConnection()) {
-			String birthdayPeople = formatter.format(people.getBirthday());
-			Object[] params = new Object[]{people.getName(), people.getSurname(),
-				people.getPatronymic(), birthdayPeople,null,null,null,null,
-				people.getN()};
-			int updateRows = qr.update(con, sql, params);
-			if(updateRows == 0) {
-				con.rollback();
-				return false;
+			"UPDATE " + peopleTableName + " SET" + "\n" +
+				People.Props.op_create.toString() + " = ?,\n" +
+				People.Props.name.toString() + " = ?,\n"  +
+				People.Props.surname.toString() + " = ?,\n" +
+				People.Props.patronymic.toString() +" = ?,\n"+
+				People.Props.birthday.toString() +" = ?,\n" +
+				People.Props.sex.toString() + " = ?,\n" +
+				People.Props.citizenship.toString() +" = ?,\n"+
+				People.Props.job.toString() +" = ?,\n" +
+				People.Props.obit.toString() + " = ?\n"+
+				"WHERE "+ People.Props.n.toString()+ " = ?\n";
+		try (Connection con = DB.getConnection()
+		) {
+			Long genIdOperation =
+				GeneratorManager.instace.genId(genNameOperation)
+			;
+			RegistrationManager.instace.regOperation(con,genIdOperation,commandInsert,lgkSessId);
+			String birthdayPeople = null;
+			if (people.getBirthday() != null) {
+				birthdayPeople = formatter.format(people.getBirthday());
 			}
+			Object[] params = new Object[]{people.getName()
+				, people.getSurname()
+				, people.getPatronymic()
+				, birthdayPeople
+				, null
+				, null
+				, null
+				, null
+				, people.getN()
+			};
+			qr.update(con, sql, params);
 			con.commit();
-			return true;
-		}
-		catch (SQLException e) {
-			throw new IllegalStateException(e);
+		} catch (SQLException e) {
+			Logger.getGlobal().log(Level.SEVERE,"Problems with database",e);
+			Notification.show("Problems with database", Notification.Type.WARNING_MESSAGE);
 		}
 	}
 }

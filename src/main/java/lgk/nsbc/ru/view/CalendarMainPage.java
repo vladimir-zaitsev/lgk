@@ -11,17 +11,13 @@ import lgk.nsbc.ru.model.ConsultationModel;
 public class CalendarMainPage {
 	public CalendarMainPage(UI ui, String  lgkSessionId) {
 		ConsultationModel consultationModel = new ConsultationModel();
-		SessionManager sessionManager = new SessionManager(lgkSessionId);
-		RegistrationManager registrationManager  = new RegistrationManager(sessionManager);
-		PeopleManager peopleManager = new PeopleManager();
-		PatientsManager patientsManager = new PatientsManager();
-		ConsultationManager consultationManager = new ConsultationManager();
-		GeneratorManager generatorManager = new GeneratorManager();
-
-		HeadManager headManager  = new HeadManager(peopleManager,patientsManager,consultationManager,
-			generatorManager,registrationManager,sessionManager);
-
-		CalendarView calendarView = new CalendarViewImpl(consultationModel,headManager);
+		PeopleManager peopleManager = new PeopleManager(lgkSessionId);
+		PatientsManager patientsManager = new PatientsManager(lgkSessionId);
+		ConsultationManager consultationManager = new ConsultationManager(lgkSessionId);
+		CalendarView calendarView = new CalendarViewImpl(consultationModel
+			,peopleManager
+			,patientsManager
+			,consultationManager);
 
 		TabSheet tabSheet = new TabSheet();
 		tabSheet.setHeightUndefined();

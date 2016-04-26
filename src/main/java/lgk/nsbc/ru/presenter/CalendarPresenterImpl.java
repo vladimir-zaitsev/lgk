@@ -1,15 +1,11 @@
 package lgk.nsbc.ru.presenter;
 
-import lgk.nsbc.ru.backend.ConsultationManager;
-import lgk.nsbc.ru.backend.DeleteManager;
-import lgk.nsbc.ru.backend.HeadManager;
-import lgk.nsbc.ru.backend.PatientContainer;
+import lgk.nsbc.ru.backend.*;
 import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 import lgk.nsbc.ru.backend.entity.Consultation;
 import lgk.nsbc.ru.backend.entity.Patient;
 import lgk.nsbc.ru.model.ConsultationModel;
 import lgk.nsbc.ru.view.CalendarView;
-import com.vaadin.ui.components.calendar.event.CalendarEvent;
 
 import java.text.DateFormatSymbols;
 import java.time.*;
@@ -23,12 +19,13 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 
 	private final CalendarView calendarView;
 	private  final ConsultationModel consultationModel;
-	private  final HeadManager headManager;
+	private final PeopleManager peopleManager;
+	private final  PatientsManager patientsManager;
+	private final  ConsultationManager consultationManager;
 	public static final ArrayList<String> PROCEDURES = new ArrayList<>(4);
 	private static final List<String> executor = new ArrayList<>(5);
 	private static ArrayList<String> hourOfDay = new ArrayList<>(24);
 	private final EditFormPresenter editFormPresenter;
-	private DeleteManager deleteManager;
 	private PatientContainer patientSearch;
 	static {
 		for (int i=0;i<24;i++) {
@@ -41,12 +38,21 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 	private LocalDateTime time = LocalDateTime.of(LocalDate.now(),LocalTime.MIDNIGHT);
 	private Mode currentViewMode = Mode.WEEK;
 
-	public CalendarPresenterImpl(CalendarView calendarView, ConsultationModel consultationModel,
-								 HeadManager headManager) {
-		this.headManager = headManager;
+	public CalendarPresenterImpl(CalendarView calendarView
+		,ConsultationModel consultationModel
+		,PeopleManager peopleManager
+		,PatientsManager patientsManager
+		,ConsultationManager consultationManager
+	    ) {
+		this.peopleManager = peopleManager;
+		this.patientsManager = patientsManager;
+		this.consultationManager = consultationManager;
 		this.consultationModel = consultationModel;
 		this.calendarView = calendarView;
-		editFormPresenter = new EditFormPresenterImpl(headManager,consultationEvent -> handleDeleteEvent(consultationEvent));
+		editFormPresenter = new EditFormPresenterImpl(peopleManager
+			,patientsManager
+			,consultationManager
+			,consultationEvent -> handleDeleteEvent(consultationEvent));
 		// Starting from monday
 		time = time.minusDays(time.getDayOfWeek().getValue()-1);
 		calendarView.setStartDate(getTime());
@@ -83,7 +89,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 
 	public void start() {
 		LocalDateTime consultationTimeRange = LocalDateTime.of(2016,2,1,0,0);
-		List<Consultation> consultations = new ArrayList<>(headManager.getConsultationManager().listConsultation(
+		List<Consultation> consultations = new ArrayList<>(consultationManager.listConsultation(
 			localDateTimeToDate(consultationTimeRange), localDateTimeToDate(consultationTimeRange.plusMonths(6))));
 		System.out.println(consultations.size());
 		for (int i = 0; i < consultations.size(); i++) {
@@ -103,9 +109,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
 	@Override
 	public void handleDeleteEvent(ConsultationEvent consultationEvent) {
 		consultationModel.getBeanItemContainer().removeItem(consultationEvent);
-		deleteManager = new DeleteManager(consultationEvent,headManager);
-		deleteManager.deleteConsul();
-
+	    consultationManager.deleteConsultation(consultationEvent.getConsultation());
 	}
 
 

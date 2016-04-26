@@ -3,6 +3,7 @@ package lgk.nsbc.ru.backend;
 import lgk.nsbc.ru.backend.entity.Session;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -11,16 +12,15 @@ import java.sql.SQLException;
  * Управление сессией в базе
  */
 public class SessionManager {
+
+
 	final private QueryRunner qr = new QueryRunner();
 	final private BeanHandler<Session> handler = new BeanHandler<>(Session.class);
-	private String lgkSessId;
+	private final ScalarHandler<Long> rs = new ScalarHandler<>();
+	private static final String sessionTableName = "sys_sessions";
+	public  static final SessionManager instance = new SessionManager();
 
-	public SessionManager(String lgkSessId)
-	{
-		this.lgkSessId = lgkSessId;
-	}
-
-	public Session loadSession(){
+	public Session loadSession(String lgkSessId) {
 		String sql =
 			"SELECT\n" +
 				"sys_agents.n,\n" +
@@ -31,8 +31,7 @@ public class SessionManager {
 				"FROM sys_sessions\n" +
 				"JOIN sys_agents ON sys_agents.n = sys_sessions.agent_n\n" +
 				"JOIN bas_people ON bas_people.n = sys_agents.people_n\n" +
-				"WHERE sid = ?\n"
-			;
+				"WHERE sid = ?\n";
 		try (
 			Connection con = DB.getConnection()
 		) {
@@ -41,27 +40,19 @@ public class SessionManager {
 			throw new IllegalStateException(e);
 		}
 	}
+
 	/**
 	 * Получить N сессии из таблицы sys_sessions
-	 * @param  con - соединение
+	 * @param con,lgkSessId
 	 * @return N (Primary key)
 	 **/
-	public Long IdSession(Connection con)
-	{
+	public Long IdSession(Connection con
+		,String lgkSessId
+	) throws SQLException {
 		String sql =
-			"SELECT n \n" +
-				"FROM sys_sessions\n" +
-				"WHERE sid = ?\n";
-		try
-		{
-			final QueryRunner qr = new QueryRunner();
-			return qr.query(con, sql, result -> {
-				result.next();
-				return result.getLong("n");
-			},lgkSessId);
-		} catch (SQLException e)
-		{
-			throw new IllegalStateException(e);
-		}
+			"SELECT n\n" +
+		    "FROM " +sessionTableName + "\n"+
+		    "WHERE sid = ?\n";
+		return qr.query(con, sql, rs, lgkSessId);
 	}
 }

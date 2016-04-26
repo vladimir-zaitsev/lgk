@@ -7,6 +7,20 @@ import java.util.Date;
  */
 public class People {
 
+	public enum Props
+	{
+		n
+		,op_create
+		,name
+		,surname
+		,patronymic
+		,sex
+		,birthday
+		,citizenship
+		,job
+		,obit
+	}
+
 	private Long n;
 	private String name;
 	private String surname;

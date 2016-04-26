@@ -3,8 +3,8 @@ package lgk.nsbc.ru.view;
 import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.validator.*;
 import com.vaadin.shared.ui.MarginInfo;
-import lgk.nsbc.ru.backend.HeadManager;
 import lgk.nsbc.ru.backend.PatientContainer;
+import lgk.nsbc.ru.backend.PatientsManager;
 import lgk.nsbc.ru.backend.basicevent.ConsultationEvent;
 import lgk.nsbc.ru.backend.entity.Patient;
 import lgk.nsbc.ru.presenter.CalendarPresenterImpl;
@@ -23,7 +23,7 @@ public class EditFormViewImpl implements EditFormView{
 
 	private Window eventPopup = new Window();
 	private FormLayout eventFormLayout = new FormLayout();
-	private PatientComboBox combobox = new PatientComboBox("Быстрый ввод");
+	private PatientCombobox combobox = new PatientCombobox("Быстрый ввод");
 	private FieldGroup fieldGroup = new FieldGroup();
 	private Button deleteEventButton = new Button("Удалить");
 	private Button applyEventButton = new Button("Применить");
@@ -60,13 +60,16 @@ public class EditFormViewImpl implements EditFormView{
 
 	EditFormPresenter presenter;
 	ConsultationEvent consultationEvent;
-	HeadManager headManager;
+	PatientsManager patientsManager;
 
-	public EditFormViewImpl(EditFormPresenter editFormPresenter,
-							ConsultationEvent consultationEvent, HeadManager headManager, boolean newEvent) {
+	public EditFormViewImpl(EditFormPresenter editFormPresenter
+		,ConsultationEvent consultationEvent
+		,PatientsManager patientsManager
+		, boolean newEvent)
+	{
 		this.consultationEvent = consultationEvent;
 		this.presenter = editFormPresenter;
-		this.headManager = headManager;
+		this.patientsManager= patientsManager;
 		initForm(newEvent);
 		bindConsultationEvent();
 		UI.getCurrent().addWindow(eventPopup);
@@ -85,7 +88,7 @@ public class EditFormViewImpl implements EditFormView{
 		combobox.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
 		combobox.setItemCaptionPropertyId("surname,name,patronymic,birthday");
 		combobox.setImmediate(true);
-	    PatientContainer patientContainer = new PatientContainer(headManager.getPatientsManager());
+	    PatientContainer patientContainer = new PatientContainer(patientsManager);
 		if (!newEvent) {
 			combobox.setContainerDataSource(patientContainer);
 			combobox.setValue(consultationEvent.getCurrentPatient());

@@ -101,7 +101,6 @@ public class PatientContainer extends BeanItemContainer<Patient> {
 
 		@Override
 		public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
-
 			return false;
 		}
 

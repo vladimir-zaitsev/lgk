@@ -5,6 +5,25 @@ import java.util.Date;
 
 public class Consultation
 {
+	public enum Props
+	{
+		n
+		,op_create
+		,nbc_patients_n
+		,proc_type
+		,procbegintime
+		,procendtime
+		,time_approx
+		,comment
+		,recommendation
+		,nbc_stud_n
+		,stud_comment
+		,rt_device
+		,rt_tech
+		,parent_proc
+		,nbc_organizations_n
+	}
+
 	private Patient patient = new Patient();
 	/** Оставлю тут заметочку о том, что в ConsultaionEvent будут другие даты. По всей
 	 * видимости будут нужны два набора дат, те, которые будут в календаре, и те, что

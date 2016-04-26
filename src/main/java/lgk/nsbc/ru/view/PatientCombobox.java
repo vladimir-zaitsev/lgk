@@ -15,14 +15,14 @@ import java.util.List;
 /**
  * Created by user on 16.03.2016.
  */
-public class PatientComboBox extends ComboBox {
+public class PatientCombobox extends ComboBox {
     private List<String> myPropIds = Collections.emptyList();
 
-    public PatientComboBox(String caption) {
+    public PatientCombobox(String caption) {
         super(caption);
     }
 
-    public PatientComboBox() {
+    public PatientCombobox() {
 
     }
 
