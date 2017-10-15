@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>jar</packaging>
+
+    <groupId>lgk.nsbc.ru</groupId>
+    <artifactId>lgk-base-db</artifactId>
+    <version>1.0.3</version>
+    <description>
+        Соединение с БД.
+        Может собираться отдельно для каждого окружения (разработка, тестовое, боевое)
+        Учитывет требования по использованию хостов, баз (схем), авторизации, пулинга соединений,
+        параметров (лимитов и таймаутов), вложеных или двухфазных транзакций, подключения и настройки ORM.
+        Включает драйвер БД и вообще все необходимое для подключения.
+        При сборке выполняет автотест подключения.
+        Зависимость от этого артефактв должна быть в scope "provided", что бы не попасть в war.
+        В jetty его надо заливать просто jar-ом в lib (надо брать jar-with-dependencies).
+        Залитый jar надо переименовать в соответствии с окружением.
+    </description>
+    <dependencies>
+        <dependency>
+            <groupId>org.firebirdsql.jdbc</groupId>
+            <artifactId>jaybird-jdk18</artifactId>
+            <version>2.2.9</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

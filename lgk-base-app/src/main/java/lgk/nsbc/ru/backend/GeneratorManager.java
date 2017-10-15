@@ -1,7 +1,7 @@
 package lgk.nsbc.ru.backend;
 
+import lgk.nsbc.ru.backend.db.DB;
 import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 
 import java.sql.Connection;

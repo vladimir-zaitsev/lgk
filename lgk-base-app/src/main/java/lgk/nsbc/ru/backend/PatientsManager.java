@@ -1,9 +1,8 @@
 package lgk.nsbc.ru.backend;
 
 import com.vaadin.ui.Notification;
-import lgk.nsbc.ru.backend.entity.Consultation;
+import lgk.nsbc.ru.backend.db.DB;
 import lgk.nsbc.ru.backend.entity.Patient;
-import lgk.nsbc.ru.backend.entity.People;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;

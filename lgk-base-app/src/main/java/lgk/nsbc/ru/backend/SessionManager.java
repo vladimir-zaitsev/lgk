@@ -1,5 +1,6 @@
 package lgk.nsbc.ru.backend;
 
+import lgk.nsbc.ru.backend.db.DB;
 import lgk.nsbc.ru.backend.entity.Session;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanHandler;

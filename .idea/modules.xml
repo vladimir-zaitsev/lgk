@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/lgk-base.iml" filepath="$PROJECT_DIR$/lgk-base.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lgk-base-app/lgk-base-app.iml" filepath="$PROJECT_DIR$/lgk-base-app/lgk-base-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lgk-base-db/lgk-base-db.iml" filepath="$PROJECT_DIR$/lgk-base-db/lgk-base-db.iml" />
     </modules>
   </component>
 </project>

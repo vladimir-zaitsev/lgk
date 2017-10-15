@@ -1,6 +1,7 @@
 package lgk.nsbc.ru.backend;
 
 import com.vaadin.ui.Notification;
+import lgk.nsbc.ru.backend.db.DB;
 import lgk.nsbc.ru.backend.entity.People;
 import org.apache.commons.dbutils.QueryRunner;
 

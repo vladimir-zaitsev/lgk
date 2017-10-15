@@ -1,4 +1,4 @@
-package lgk.nsbc.ru.backend;
+package lgk.nsbc.ru.backend.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
