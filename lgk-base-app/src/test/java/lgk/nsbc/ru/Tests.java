@@ -1,9 +1,6 @@
 package lgk.nsbc.ru;
 
-import lgk.nsbc.ru.backend.*;
-import lgk.nsbc.ru.backend.entity.Consultation;
-import lgk.nsbc.ru.backend.entity.Patient;
-import lgk.nsbc.ru.backend.entity.People;
+import lgk.nsbc.ru.backend.db.DB;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -12,15 +9,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
+@Ignore
 public class Tests {
 
-	/*
-	@Ignore
 	@Test
 	public void conn() throws SQLException {
 		//noinspection UnnecessarySemicolon
@@ -41,21 +33,16 @@ public class Tests {
 		}
 	}
 
-  */
-	@Ignore
 	@Test
 	public void patients(){
 	//	Collection<? extends Patient> patients = new PatientsManager().listPatients();
 		// System.out.println(patients);
 	}
 
-	@Ignore
 	@Test
 	public void caption(){
 
 	}
-
-
 
 
 }
